@@ -1,0 +1,8 @@
+{
+  "watch": ["src"],
+  "ignore": ["src/**/*.spec.ts"],
+  "ext": "ts,json",
+  "exec": "node -r esbuild-runner/register ./src/main.ts",
+  "legacyWatch": true,
+  "delay": 1000
+}
