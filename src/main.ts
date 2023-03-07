@@ -1,10 +1,16 @@
-import dnsServer from "./dns";
-import httpServer from "./http";
-
-const servers = [dnsServer, httpServer];
+import { configuration, logger } from "./commons";
+import { Gateway } from "./servers";
 
 (async (): Promise<void> => {
-  for (const initServer of servers) {
-    await initServer();
+  try {
+    // setting up gateway requirements
+    const gateway = await Gateway.create(configuration);
+
+    // start proxying requests
+    await gateway.start();
+
+    logger.info("🚀 Successfully proxying internet computer requests");
+  } catch (e) {
+    logger.error(`❌ Failed to start (${String(e)})`);
   }
 })();
