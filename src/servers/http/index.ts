@@ -1,5 +1,6 @@
 import { IncomingMessage, ServerResponse } from "http";
 import https from "https";
+import { logger } from "src/commons";
 import { SecureContext, createSecureContext } from "tls";
 import { HTTPServerOpts } from "./typings";
 
@@ -22,8 +23,8 @@ export class HTTPServer {
   private initHttpsServer(): void {
     this.httpsServer = https.createServer(
       {
-        key: this.configuration.certificate.keyPem,
-        cert: this.configuration.certificate.pem,
+        key: this.configuration.certificate.default.keyPem,
+        cert: this.configuration.certificate.default.pem,
         SNICallback: this.SNICallback.bind(this),
       },
       this.handleRequest.bind(this)
@@ -31,13 +32,16 @@ export class HTTPServer {
   }
 
   private async SNICallback(
-    _servername: string,
+    servername: string,
     cb: (err: Error | null, ctx?: SecureContext | undefined) => void
   ): Promise<void> {
-    // todo: create certificate for servername
+    logger.info({ servername });
+    const domainCertificate = await this.configuration.certificate.create(
+      servername
+    );
     const ctx = createSecureContext({
-      key: this.configuration.certificate.keyPem,
-      cert: this.configuration.certificate.pem,
+      key: domainCertificate.keyPem,
+      cert: domainCertificate.pem,
     });
 
     cb(null, ctx);
@@ -49,6 +53,7 @@ export class HTTPServer {
       req: IncomingMessage;
     }
   ): Promise<void> {
+    logger.info({ req });
     // todo: implement request response verification
     res.writeHead(502, { "Content-Type": "text/plain" });
     res.end("IC HTTP Server");

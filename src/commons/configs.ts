@@ -19,8 +19,8 @@ const configuration: InitConfiguration = {
     },
   },
   httpServer: {
-    host: "localhost",
-    port: 443,
+    host: "127.0.0.1",
+    port: 4343,
   },
 };
 

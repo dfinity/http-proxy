@@ -9,7 +9,7 @@ import { Gateway } from "./servers";
     // start proxying requests
     await gateway.start();
 
-    logger.info("🚀 Successfully proxying internet computer requests");
+    logger.info("🚀 Proxying internet computer requests");
   } catch (e) {
     logger.error(`❌ Failed to start (${String(e)})`);
   }

@@ -1,10 +1,5 @@
-import crypto from "node:crypto";
-import {
-  GenerateCertificateOpts,
-  GenerateKeyPairOpts,
-  KeyPair,
-} from "./typings";
-import { pki } from "node-forge";
+import { md, pki } from "node-forge";
+import { GenerateCertificateOpts, GenerateKeyPairOpts } from "./typings";
 
 export const DEFAULT_KEY_PAIR_BITS = 2048;
 
@@ -26,7 +21,7 @@ export const generateCertificate = async ({
   subject,
   issuer,
   extensions,
-  signingKey
+  signingKey,
 }: GenerateCertificateOpts): Promise<string> => {
   const certificate = pki.createCertificate();
 
@@ -39,37 +34,7 @@ export const generateCertificate = async ({
   certificate.setIssuer(issuer);
   certificate.setExtensions(extensions);
 
-  certificate.sign(signingKey);
+  certificate.sign(signingKey, md.sha256.create());
 
   return pki.certificateToPem(certificate);
-
-  // crypto.cert(
-  //   {
-  //     subject: {
-  //       country: "US",
-  //       state: "California",
-  //       locality: "San Francisco",
-  //       organization: "My Organization",
-  //       commonName: "My Root CA",
-  //     },
-  //     issuer: {
-  //       country: "US",
-  //       state: "California",
-  //       locality: "San Francisco",
-  //       organization: "My Organization",
-  //       commonName: "My Root CA",
-  //     },
-  //     serialNumber: "01",
-  //     notBefore: new Date(),
-  //     notAfter: new Date(new Date().getFullYear() + 10, 0),
-  //     keyUsage: crypto.constants.keyCertSign,
-  //     extensions: [
-  //       {
-  //         name: "basicConstraints",
-  //         cA: true,
-  //       },
-  //     ],
-  //   },
-  //   key.privateKey
-  // );
 };

@@ -33,3 +33,16 @@ export interface GenerateCertificateOpts {
   extensions: any[];
   signingKey: pki.PrivateKey;
 }
+
+export interface CertificateStoreConfiguration {
+  folder: string;
+}
+
+export interface CertificateDTO {
+  id: string;
+  pem: {
+    key: string;
+    publicKey: string;
+    cert: string;
+  };
+}

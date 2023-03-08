@@ -1,9 +1,10 @@
 import { InitConfiguration, SupportedPlatforms } from "src/commons";
 import {
-  MissingProxyCertificateError,
+  MissingCertificateError,
   MissingRequirementsError,
   UnsupportedPlatformError,
 } from "src/errors";
+import { MacPlatform } from "src/platforms";
 import { Certificate, CertificateFactory } from "src/tls";
 import { HTTPServer } from "./http";
 
@@ -38,14 +39,21 @@ export class Gateway {
       ca: this.certificates.ca,
     });
 
+    if (this.configs.macosx) {
+      const certPath = this.certificateFactory.store.certificatePath(
+        this.certificates.ca.id
+      );
+      await MacPlatform.trustCertificate(certPath);
+    }
+
     return true;
   }
 
   public static async create(configs: InitConfiguration): Promise<Gateway> {
-    const gateway = new Gateway(
-      configs,
-      new CertificateFactory(configs.certificate)
+    const certificateFactory = await CertificateFactory.build(
+      configs.certificate
     );
+    const gateway = new Gateway(configs, certificateFactory);
 
     if (!gateway.isSupportedPlatform()) {
       throw new UnsupportedPlatformError(configs.platform);
@@ -57,13 +65,26 @@ export class Gateway {
     }
 
     if (!gateway.certificates.proxy) {
-      throw new MissingProxyCertificateError();
+      throw new MissingCertificateError("proxy");
     }
 
     gateway.httpsServer = HTTPServer.create({
       host: configs.httpServer.host,
       port: configs.httpServer.port,
-      certificate: gateway.certificates.proxy,
+      certificate: {
+        default: gateway.certificates.proxy,
+        create: async (servername): Promise<Certificate> => {
+          if (!gateway.certificates.ca) {
+            throw new MissingCertificateError("ca");
+          }
+
+          return await gateway.certificateFactory.create({
+            type: "domain",
+            hostname: servername,
+            ca: gateway.certificates.ca,
+          });
+        },
+      },
     });
 
     return gateway;

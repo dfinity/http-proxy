@@ -1,12 +1,15 @@
 import { pki } from "node-forge";
-import { CertificateOpts } from "./typings";
+import { CertificateDTO, CertificateOpts } from "./typings";
 
 export class Certificate {
   public readonly key: pki.PrivateKey;
   public readonly publicKey: pki.PublicKey;
   public readonly pem: string;
 
-  constructor(private readonly id: string, opts: CertificateOpts) {
+  constructor(
+    public readonly id: string,
+    public readonly opts: CertificateOpts
+  ) {
     this.key = opts.key;
     this.publicKey = opts.public;
     this.pem = opts.pem;
@@ -22,6 +25,25 @@ export class Certificate {
 
   get info(): pki.Certificate {
     return pki.certificateFromPem(this.pem);
+  }
+
+  public toDTO(): CertificateDTO {
+    return {
+      id: this.id,
+      pem: {
+        key: this.keyPem,
+        publicKey: this.publicKeyPem,
+        cert: this.pem,
+      },
+    };
+  }
+
+  public static restore(dto: CertificateDTO): Certificate {
+    return new Certificate(dto.id, {
+      key: pki.privateKeyFromPem(dto.pem.key),
+      public: pki.publicKeyFromPem(dto.pem.publicKey),
+      pem: dto.pem.cert,
+    });
   }
 
   toString(): string {

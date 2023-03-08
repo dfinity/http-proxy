@@ -4,11 +4,15 @@ import { generateCertificate, generateKeyPair } from "./utils";
 import { CertificateConfiguration } from "src/commons";
 import { pki } from "node-forge";
 import { UnsupportedCertificateTypeError } from "src/errors";
+import { CertificateStore } from "./store";
 
 export class CertificateFactory {
   private readonly issuer: pki.CertificateField[];
+  public store!: CertificateStore;
 
-  constructor(private readonly configuration: CertificateConfiguration) {
+  private constructor(
+    private readonly configuration: CertificateConfiguration
+  ) {
     this.issuer = [
       { name: "commonName", value: configuration.commonName },
       { name: "countryName", value: configuration.countryName },
@@ -17,6 +21,21 @@ export class CertificateFactory {
       { name: "organizationName", value: configuration.organizationName },
       { shortName: "OU", value: configuration.organizationName },
     ];
+  }
+
+  public static async build(
+    configuration: CertificateConfiguration
+  ): Promise<CertificateFactory> {
+    const factory = new CertificateFactory(configuration);
+    await factory.init();
+
+    return factory;
+  }
+
+  private async init(): Promise<void> {
+    this.store = await CertificateStore.create({
+      folder: this.configuration.storage.folder,
+    });
   }
 
   async create(opts: CreateCertificateOpts): Promise<Certificate> {
@@ -31,6 +50,11 @@ export class CertificateFactory {
   }
 
   private async createRootCA(id = "ca"): Promise<Certificate> {
+    const current = await this.store.find(id);
+    if (current) {
+      return current;
+    }
+
     const keyPair = await generateKeyPair();
     const pem = await generateCertificate({
       publicKey: keyPair.publicKey,
@@ -39,7 +63,7 @@ export class CertificateFactory {
       // same as issuer since this is self signed
       subject: [...this.issuer],
       extensions: [
-        { name: "basicConstraints", cA: true },
+        { name: "basicConstraints", cA: true, critical: true },
         {
           name: "keyUsage",
           keyCertSign: true,
@@ -58,20 +82,29 @@ export class CertificateFactory {
       ],
     });
 
-    return new Certificate(id, {
+    const certificate = new Certificate(id, {
       key: keyPair.privateKey,
       public: keyPair.publicKey,
       pem,
     });
+
+    await this.store.save(certificate);
+
+    return certificate;
   }
 
   private async createHostCertificate(
     hostname: string,
     ca: Certificate
   ): Promise<Certificate> {
+    const id = `${this.configuration.storage.hostPrefix}:${hostname}`;
+    const current = await this.store.find(id);
+    if (current) {
+      return current;
+    }
+
     const keyPair = await generateKeyPair();
     const caCert = ca.info;
-    const id = `${this.configuration.storage.hostPrefix}:${hostname}`;
 
     const pem = await generateCertificate({
       publicKey: keyPair.publicKey,
@@ -89,8 +122,12 @@ export class CertificateFactory {
         { name: "localityName", value: this.configuration.locality },
       ],
       extensions: [
-        { name: "basicConstraints", cA: false },
-        { name: "keyUsage", digitalSignature: true, keyEncipherment: true },
+        { name: "basicConstraints", cA: false, critical: true },
+        {
+          name: "keyUsage",
+          digitalSignature: true,
+          keyEncipherment: true,
+        },
         { name: "extKeyUsage", serverAuth: true },
         { name: "subjectKeyIdentifier" },
         {
@@ -110,10 +147,14 @@ export class CertificateFactory {
       ],
     });
 
-    return new Certificate(id, {
+    const certificate = new Certificate(id, {
       key: keyPair.privateKey,
       public: keyPair.publicKey,
       pem,
     });
+
+    await this.store.save(certificate);
+
+    return certificate;
   }
 }
