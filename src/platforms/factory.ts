@@ -2,6 +2,7 @@ import { SupportedPlatforms } from "../commons";
 import { UnsupportedPlatformError } from "../errors";
 import { MacPlatform } from "./mac";
 import { Platform, PlatformBuildConfigs } from "./typings";
+import { WindowsPlatform } from "./windows";
 
 export class PlatformFactory {
   public static async create(configs: PlatformBuildConfigs): Promise<Platform> {
@@ -12,7 +13,10 @@ export class PlatformFactory {
           proxy: configs.proxy,
         });
       case SupportedPlatforms.Windows:
-        throw new Error("not implemented");
+        return new WindowsPlatform({
+          ca: configs.ca,
+          proxy: configs.proxy,
+        });
       default:
         throw new UnsupportedPlatformError("unknown");
     }

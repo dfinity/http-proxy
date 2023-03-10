@@ -1,7 +1,9 @@
 import { exec } from "child_process";
 import { resolve } from "path";
-import { getFile, saveFile } from "../../commons";
+import { BACKGROUND_LOGS_PATH } from "../../background/utils";
+import { envConfigs, getFile, saveFile } from "../../commons";
 import { Platform } from "../typings";
+import { execAsync } from "../utils";
 import {
   PlatformConfigs,
   PlatformProxyInfo,
@@ -32,19 +34,24 @@ export class MacPlatform implements Platform {
     });
   }
 
-  public addCommandAdminPrivileges(
-    command: string,
-    promptMessage: string
-  ): string {
-    return [
+  public async spawnTaskManager(): Promise<void> {
+    const execCommand = [
+      `TASK_MANAGER=1`,
+      `node`, 
+      ...process.execArgv, 
+      resolve(envConfigs.rootPath, 'background', 'main.js'),
+      `&>${BACKGROUND_LOGS_PATH}`,
+      `&`
+    ].join(" ");
+
+    const promptMessage = "IC HTTP Proxy needs your permission to create a secure environment";
+    const runCommand = [
       "osascript",
       "-e",
-      `'do shell script "${command}" with prompt "${promptMessage}" with administrator privileges'`,
+      `'do shell script "${execCommand}" with prompt "${promptMessage}" with administrator privileges'`,
     ].join(" ");
-  }
 
-  public addCommandDetachArgs(command: string, logsOutput: string): string {
-    return [command, `&>${logsOutput}`, `&`].join(" ");
+    return execAsync(runCommand);
   }
 
   private async isTrustedCertificate(path: string): Promise<boolean> {

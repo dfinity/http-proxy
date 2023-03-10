@@ -15,11 +15,12 @@ import { ONLINE_DESCRIPTOR } from "./utils";
 
     logger.info("🚀 Waiting for tasks");
 
-    process.on("SIGTERM", () => {
+    process.on("SIGINT", () => {
       logger.info("⚠️ Shutting down.");
 
       rmSync(ONLINE_DESCRIPTOR, { force: true });
       server.shutdown();
+      process.exit(0);
     });
   } catch (e) {
     logger.error(`❌ Failed to start (${String(e)})`);

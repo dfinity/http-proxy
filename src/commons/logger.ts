@@ -3,9 +3,9 @@ import { envConfigs } from "./configs";
 
 const logger = pino(
   {
-    name: !envConfigs.isBackgroundControllerProcess
+    name: !envConfigs.isTaskManager
       ? "IC HTTP Proxy"
-      : "IC HTTP Background Process",
+      : "IC HTTP Task Manager",
     customLevels: {
       log: 30,
     },

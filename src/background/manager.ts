@@ -128,7 +128,7 @@ export class TaskManager {
       );
 
       await this.platform?.detach();
-      setTimeout(() => process.kill(process.pid), 1000);
+      setTimeout(() => process.kill(process.pid, 'SIGINT'), 1000);
     }, CHECK_PROXY_PROCESS_MS);
   }
 

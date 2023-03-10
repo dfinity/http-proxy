@@ -28,7 +28,8 @@ export interface NetServerConfiguration {
 export type BackgrroundServerConfiguration = NetServerConfiguration;
 
 export interface InitConfiguration {
-  isBackgroundControllerProcess: boolean;
+  isTaskManager: boolean;
+  rootPath: string;
   dataPath: string;
   platform: string;
   windows: boolean;

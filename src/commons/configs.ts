@@ -1,12 +1,18 @@
 import os from "node:os";
 import { InitConfiguration, SupportedPlatforms } from "./typings";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 
 const platform = os.platform();
 
+const isTaskManager = !!process.env.TASK_MANAGER;
+const rootPath = !isTaskManager
+  ? dirname(require.main?.filename ?? process.cwd())
+  : resolve(dirname(require.main?.filename ?? process.cwd()), "..");
+
 const envConfigs: InitConfiguration = {
-  isBackgroundControllerProcess: !!process.env.BACKGROUND_CONTROLLER,
-  dataPath: resolve(process.env.INIT_CWD ?? ".", "data"),
+  isTaskManager: isTaskManager,
+  rootPath: dirname(require.main?.filename ?? process.cwd()),
+  dataPath: resolve(rootPath, "..", "data"),
   platform,
   macosx: platform === SupportedPlatforms.MacOSX,
   windows: platform === SupportedPlatforms.Windows,
