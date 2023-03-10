@@ -3,7 +3,7 @@ import { envConfigs } from "./configs";
 
 const logger = pino(
   {
-    name: envConfigs.isBackgroundControllerProcess
+    name: !envConfigs.isBackgroundControllerProcess
       ? "IC HTTP Proxy"
       : "IC HTTP Background Process",
     customLevels: {
