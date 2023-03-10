@@ -21,5 +21,5 @@ node_modules
 # Build folder
 built
 
-# Certificate storage
-certs
+# Data storage
+data

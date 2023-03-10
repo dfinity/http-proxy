@@ -1,8 +1,11 @@
 import pino from "pino";
+import { envConfigs } from "./configs";
 
 const logger = pino(
   {
-    name: "IC HTTP Proxy",
+    name: envConfigs.isBackgroundControllerProcess
+      ? "IC HTTP Proxy"
+      : "IC HTTP Background Process",
     customLevels: {
       log: 30,
     },

@@ -1,6 +1,6 @@
 import { Certificate } from "src/tls";
 
-export interface HTTPServerOpts {
+export interface ICPServerOpts {
   host: string;
   port: number;
   certificate: {

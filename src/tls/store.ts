@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { Certificate } from "./certificate";
 import { CertificateDTO, CertificateStoreConfiguration } from "./typings";
-import { createDir, getFile, saveFile } from "../commons";
+import { createDir, getFile, saveFile, envConfigs } from "../commons";
 
 export class CertificateStore {
   private readonly storePath: string;
@@ -10,7 +10,7 @@ export class CertificateStore {
     private readonly configuration: CertificateStoreConfiguration
   ) {
     this.storePath = resolve(
-      process.env.INIT_CWD ?? ".",
+      envConfigs.dataPath,
       this.configuration.folder
     );
   }

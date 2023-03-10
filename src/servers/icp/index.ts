@@ -1,26 +1,29 @@
 import { IncomingMessage, ServerResponse } from "http";
 import https from "https";
-import { logger } from "src/commons";
 import { SecureContext, createSecureContext } from "tls";
-import { HTTPServerOpts } from "./typings";
+import { ICPServerOpts } from "./typings";
 
-export class HTTPServer {
+export class ICPServer {
   private httpsServer!: https.Server;
 
-  private constructor(private readonly configuration: HTTPServerOpts) {}
+  private constructor(private readonly configuration: ICPServerOpts) {}
 
-  public static create(configuration: HTTPServerOpts): HTTPServer {
-    const server = new HTTPServer(configuration);
-    server.initHttpsServer();
+  public static create(configuration: ICPServerOpts): ICPServer {
+    const server = new ICPServer(configuration);
+    server.init();
 
     return server;
+  }
+
+  public shutdown(): void {
+    this.httpsServer.close();
   }
 
   public async start(): Promise<void> {
     this.httpsServer.listen(this.configuration.port, this.configuration.host);
   }
 
-  private initHttpsServer(): void {
+  private init(): void {
     this.httpsServer = https.createServer(
       {
         key: this.configuration.certificate.default.keyPem,
@@ -35,7 +38,6 @@ export class HTTPServer {
     servername: string,
     cb: (err: Error | null, ctx?: SecureContext | undefined) => void
   ): Promise<void> {
-    logger.info({ servername });
     const domainCertificate = await this.configuration.certificate.create(
       servername
     );
@@ -53,9 +55,8 @@ export class HTTPServer {
       req: IncomingMessage;
     }
   ): Promise<void> {
-    logger.info({ req });
     // todo: implement request response verification
-    res.writeHead(502, { "Content-Type": "text/plain" });
+    res.writeHead(200, { "Content-Type": "text/plain" });
     res.end("IC HTTP Server");
   }
 }

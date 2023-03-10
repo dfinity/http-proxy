@@ -1,9 +1,9 @@
 import { CreateCertificateOpts } from "./typings";
 import { Certificate } from "./certificate";
 import { generateCertificate, generateKeyPair } from "./utils";
-import { CertificateConfiguration } from "src/commons";
+import { CertificateConfiguration } from "../commons";
 import { pki } from "node-forge";
-import { UnsupportedCertificateTypeError } from "src/errors";
+import { UnsupportedCertificateTypeError } from "../errors";
 import { CertificateStore } from "./store";
 
 export class CertificateFactory {

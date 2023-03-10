@@ -1,15 +1,21 @@
-import { InitConfiguration, SupportedPlatforms } from "src/commons";
+import { InitConfiguration, SupportedPlatforms } from "../commons";
 import {
   MissingCertificateError,
   MissingRequirementsError,
   UnsupportedPlatformError,
 } from "src/errors";
-import { MacPlatform } from "src/platforms";
+import { Platform } from "src/platforms";
 import { Certificate, CertificateFactory } from "src/tls";
-import { HTTPServer } from "./http";
+import { ICPServer } from "./icp";
+import { NetProxy } from "./net";
+import { PlatformFactory } from "src/platforms/factory";
+import { BackgroundProcess } from "src/background";
+import { BackgroundEventTypes } from "src/background/typings";
 
 export class Gateway {
-  private httpsServer!: HTTPServer;
+  private icpServer!: ICPServer;
+  private netServer!: NetProxy;
+  private platform!: Platform;
 
   private certificates: {
     ca?: Certificate;
@@ -22,7 +28,48 @@ export class Gateway {
   ) {}
 
   public async start(): Promise<void> {
-    await this.httpsServer.start();
+    await this.icpServer.start();
+    await this.netServer.start();
+
+    if (!this.certificates.ca) {
+      throw new MissingCertificateError("ca");
+    }
+
+    // setup servers to be used by the operating system
+    const rootCAId = this.certificates.ca.id;
+    this.platform = await PlatformFactory.create({
+      platform: this.configs.platform,
+      ca: {
+        path: this.certificateFactory.store.certificatePath(rootCAId),
+      },
+      proxy: {
+        host: this.configs.netServer.host,
+        port: this.configs.netServer.port,
+      },
+    });
+
+    // starts the background task manager (requires admin privileges)
+    const taskManager = await BackgroundProcess.init(this.platform);
+
+    // setup the proxy to to work across the operating system
+    const platformRequirements = await taskManager.processMessage({
+      type: BackgroundEventTypes.SetupSystem,
+      data: {
+        certificatePath:
+          this.certificateFactory.store.certificatePath(rootCAId),
+      },
+    });
+
+    if (!platformRequirements.processed) {
+      throw new MissingRequirementsError(
+        `Failed to setup platform requirements(${platformRequirements.err})`
+      );
+    }
+  }
+
+  public async shutdown(): Promise<void> {
+    this.netServer.shutdown();
+    this.icpServer.shutdown();
   }
 
   public isSupportedPlatform(): boolean {
@@ -38,13 +85,6 @@ export class Gateway {
       hostname: "localhost",
       ca: this.certificates.ca,
     });
-
-    if (this.configs.macosx) {
-      const certPath = this.certificateFactory.store.certificatePath(
-        this.certificates.ca.id
-      );
-      await MacPlatform.trustCertificate(certPath);
-    }
 
     return true;
   }
@@ -68,9 +108,18 @@ export class Gateway {
       throw new MissingCertificateError("proxy");
     }
 
-    gateway.httpsServer = HTTPServer.create({
-      host: configs.httpServer.host,
-      port: configs.httpServer.port,
+    gateway.netServer = NetProxy.create({
+      host: configs.netServer.host,
+      port: configs.netServer.port,
+      icpServer: {
+        host: configs.icpServer.host,
+        port: configs.icpServer.port,
+      },
+    });
+
+    gateway.icpServer = ICPServer.create({
+      host: configs.icpServer.host,
+      port: configs.icpServer.port,
       certificate: {
         default: gateway.certificates.proxy,
         create: async (servername): Promise<Certificate> => {

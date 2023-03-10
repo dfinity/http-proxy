@@ -15,15 +15,26 @@ export interface CertificateConfiguration {
   };
 }
 
-export interface HTTPServerConfiguration {
+export interface ICPServerConfiguration {
   host: string;
   port: number;
 }
 
+export interface NetServerConfiguration {
+  host: string;
+  port: number;
+}
+
+export type BackgrroundServerConfiguration = NetServerConfiguration;
+
 export interface InitConfiguration {
+  isBackgroundControllerProcess: boolean;
+  dataPath: string;
   platform: string;
   windows: boolean;
   macosx: boolean;
   certificate: CertificateConfiguration;
-  httpServer: HTTPServerConfiguration;
+  netServer: NetServerConfiguration;
+  icpServer: ICPServerConfiguration;
+  backgroundServer: BackgrroundServerConfiguration;
 }

@@ -1,4 +1,4 @@
-import { SupportedPlatforms } from "src/commons";
+import { SupportedPlatforms } from "../commons";
 
 const supported = Object.values(SupportedPlatforms).join(",");
 
