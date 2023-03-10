@@ -1,10 +1,13 @@
-import { existsSync, mkdirSync, readFile, rmdirSync, writeFile } from "fs";
+import { existsSync, mkdirSync, readFile, writeFile } from "fs";
+import { dirname } from "path";
 
 export const saveFile = async (
   path: string,
   data: string,
   { encoding }: { encoding: BufferEncoding }
 ): Promise<void> => {
+  const directory = dirname(path);
+  createDir(directory);
   return new Promise<void>((ok, err) => {
     writeFile(path, data, { encoding }, (failed) => {
       if (failed) {
