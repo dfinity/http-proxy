@@ -1,7 +1,8 @@
 import net from 'net';
-import { ConnectionInfo, NetProxyOpts, ServerInfo } from './typings';
-import { logger } from '../../commons';
 import { MissingConnectionHostError } from 'src/errors';
+import { logger } from '../../commons';
+import { lookupIcDomain } from '../icp/domains';
+import { ConnectionInfo, NetProxyOpts, ServerInfo } from './typings';
 
 export enum DefaultPorts {
   secure = 443,
@@ -73,10 +74,17 @@ export class NetProxy {
   }
 
   private async onConnection(socket: net.Socket): Promise<void> {
-    logger.info('Client Connected To Proxy');
+    let info: ConnectionInfo | undefined;
+
     socket.once('data', async (data) => {
       const socketData = data.toString();
       const connectionInfo = this.getConnectionInfo(socketData);
+      info = connectionInfo;
+
+      logger.info(
+        `Proxying request for ${connectionInfo.host}:${connectionInfo.port}`
+      );
+
       const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
       if (icRequest) {
         this.handleInternetComputerConnection(connectionInfo, socket, data);
@@ -95,8 +103,11 @@ export class NetProxy {
     });
 
     socket.on('error', (err) => {
-      logger.error('CLIENT TO PROXY ERROR');
-      logger.error(err);
+      logger.error(
+        !info
+          ? `Client socket error (${err})`
+          : `Client socket error ${info.host}:${info.port} (${err})`
+      );
     });
   }
 
@@ -144,7 +155,6 @@ export class NetProxy {
         port: originServer.port,
       },
       () => {
-        console.log('PROXY TO SERVER SET UP');
         if (connection.secure) {
           clientSocket.write('HTTP/1.1 200 Connection established\r\n\r\n');
         } else {
@@ -156,26 +166,24 @@ export class NetProxy {
         serverSocket.pipe(clientSocket);
 
         serverSocket.on('error', (err) => {
-          logger.error('PROXY TO SERVER ERROR');
-          logger.error(err);
+          logger.error(`Passthrough server socket error (${err})`);
         });
       }
     );
-
-    serverSocket.on('error', (err) => {
-      logger.error('CLIENT TO PROXY ERROR');
-      logger.error(err);
-    });
   }
 
   private async shouldHandleAsICPRequest(
     connection: ConnectionInfo
   ): Promise<boolean> {
-    if (connection.host === 'internetcomputer.org') {
-      return true;
-    }
+    const canister = await lookupIcDomain(connection.host).catch((err) => {
+      logger.error(
+        `Failed to query dns record of ${connection.host} with ${err}`
+      );
 
-    return false;
+      return null;
+    });
+
+    return canister !== null ? true : false;
   }
 
   private async onClose(): Promise<void> {
