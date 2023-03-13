@@ -1,6 +1,6 @@
 export enum BackgroundEventTypes {
-  Ping = "ping",
-  SetupSystem = "setup-system",
+  Ping = 'ping',
+  SetupSystem = 'setup-system',
 }
 
 export interface SetupSystemMessage {

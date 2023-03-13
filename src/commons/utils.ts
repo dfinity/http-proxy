@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFile, writeFile } from "fs";
-import { dirname } from "path";
+import { existsSync, mkdirSync, readFile, writeFile } from 'fs';
+import { dirname } from 'path';
 
 export const saveFile = async (
   path: string,

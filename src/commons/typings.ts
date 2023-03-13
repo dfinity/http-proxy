@@ -1,6 +1,6 @@
 export enum SupportedPlatforms {
-  Windows = "win32",
-  MacOSX = "darwin",
+  Windows = 'win32',
+  MacOSX = 'darwin',
 }
 
 export interface CertificateConfiguration {

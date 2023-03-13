@@ -1,13 +1,13 @@
-import findProcess from "find-process";
-import net from "net";
-import { envConfigs, getFile } from "../commons";
-import { Platform } from "../platforms";
+import findProcess from 'find-process';
+import net from 'net';
+import { envConfigs, getFile } from '../commons';
+import { Platform } from '../platforms';
 import {
   BackgroundEventMessage,
   BackgroundEventTypes,
   BackgroundResultMessage,
-} from "./typings";
-import { ONLINE_DESCRIPTOR } from "./utils";
+} from './typings';
+import { ONLINE_DESCRIPTOR } from './utils';
 
 export class BackgroundProcess {
   private constructor(private readonly platform: Platform) {}
@@ -28,7 +28,7 @@ export class BackgroundProcess {
 
         if (!retryCheckProcessSpawned) {
           clearInterval(interval);
-          return err("Failed to create task manager");
+          return err('Failed to create task manager');
         }
       }, 1000);
     });
@@ -45,11 +45,11 @@ export class BackgroundProcess {
         },
         () => {
           socket.write(JSON.stringify(event));
-          socket.on("error", (error) => {
+          socket.on('error', (error) => {
             err(error);
           });
 
-          socket.on("data", (data) => {
+          socket.on('data', (data) => {
             const result = JSON.parse(
               data.toString()
             ) as BackgroundResultMessage;
@@ -62,12 +62,12 @@ export class BackgroundProcess {
   }
 
   private async isAlreadyRunning(): Promise<boolean> {
-    const pid = await getFile(ONLINE_DESCRIPTOR, { encoding: "utf8" });
+    const pid = await getFile(ONLINE_DESCRIPTOR, { encoding: 'utf8' });
     if (!pid) {
       return false;
     }
 
-    const info = await findProcess("pid", Number(pid), true);
+    const info = await findProcess('pid', Number(pid), true);
     const processIsRunning = !!info.length;
     if (!processIsRunning) {
       return false;

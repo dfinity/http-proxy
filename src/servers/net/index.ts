@@ -1,7 +1,7 @@
-import net from "net";
-import { ConnectionInfo, NetProxyOpts, ServerInfo } from "./typings";
-import { logger } from "../../commons";
-import { MissingConnectionHostError } from "src/errors";
+import net from 'net';
+import { ConnectionInfo, NetProxyOpts, ServerInfo } from './typings';
+import { logger } from '../../commons';
+import { MissingConnectionHostError } from 'src/errors';
 
 export enum DefaultPorts {
   secure = 443,
@@ -22,8 +22,8 @@ export class NetProxy {
   }
 
   private init(): void {
-    this.server.addListener("connection", this.onConnection.bind(this));
-    this.server.addListener("close", this.onClose.bind(this));
+    this.server.addListener('connection', this.onConnection.bind(this));
+    this.server.addListener('close', this.onClose.bind(this));
   }
 
   public shutdown(): void {
@@ -33,18 +33,18 @@ export class NetProxy {
   public async start(): Promise<void> {
     return new Promise<void>((ok, err) => {
       const onListenError = (e: Error) => {
-        if ("code" in e && e.code === "EADDRINUSE") {
+        if ('code' in e && e.code === 'EADDRINUSE') {
           this.server.close();
         }
 
         return err(e);
       };
 
-      this.server.addListener("error", onListenError);
+      this.server.addListener('error', onListenError);
 
       this.server.listen(this.opts.port, this.opts.host, () => {
-        this.server.removeListener("error", onListenError);
-        this.server.addListener("error", this.onError.bind(this));
+        this.server.removeListener('error', onListenError);
+        this.server.addListener('error', this.onError.bind(this));
 
         ok();
       });
@@ -52,10 +52,11 @@ export class NetProxy {
   }
 
   private getConnectionInfo(data: string): ConnectionInfo {
-    const isTLSConnection = data.indexOf("CONNECT") !== -1;
-    const [host, port] = isTLSConnection
-      ? data.split("CONNECT ")?.[1].split(" ")?.[0].split(":")
-      : data.split("Host: ")?.[1].split("\r\n")?.[0].split(":");
+    const isTLSConnection = data.indexOf('CONNECT') !== -1;
+    const info = isTLSConnection
+      ? data.split('CONNECT ')?.[1]?.split(' ')?.[0]?.split(':')
+      : data.split('Host: ')?.[1]?.split('\r\n')?.[0]?.split(':');
+    const [host, port] = info ?? [];
     const defaultPort = isTLSConnection
       ? DefaultPorts.secure
       : DefaultPorts.insecure;
@@ -72,8 +73,8 @@ export class NetProxy {
   }
 
   private async onConnection(socket: net.Socket): Promise<void> {
-    logger.info("Client Connected To Proxy");
-    socket.once("data", async (data) => {
+    logger.info('Client Connected To Proxy');
+    socket.once('data', async (data) => {
       const socketData = data.toString();
       const connectionInfo = this.getConnectionInfo(socketData);
       const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
@@ -93,8 +94,8 @@ export class NetProxy {
       );
     });
 
-    socket.on("error", (err) => {
-      logger.error("CLIENT TO PROXY ERROR");
+    socket.on('error', (err) => {
+      logger.error('CLIENT TO PROXY ERROR');
       logger.error(err);
     });
   }
@@ -105,13 +106,13 @@ export class NetProxy {
     data: Buffer
   ): Promise<void> {
     if (!connection.secure) {
-      const body = "Page moved permanently";
+      const body = 'Page moved permanently';
 
       clientSocket.write(
-        "HTTP/1.1 301 Moved Permanently\r\n" +
-          "Server: IC HTTP Gateway\r\n" +
-          "Content-Type: text/plain\r\n" +
-          "Connection: keep-alive\r\n" +
+        'HTTP/1.1 301 Moved Permanently\r\n' +
+          'Server: IC HTTP Gateway\r\n' +
+          'Content-Type: text/plain\r\n' +
+          'Connection: keep-alive\r\n' +
           `Content-Length: ${body.length}\r\n` +
           `Location: https://${connection.host}\r\n\n`
       );
@@ -143,9 +144,9 @@ export class NetProxy {
         port: originServer.port,
       },
       () => {
-        console.log("PROXY TO SERVER SET UP");
+        console.log('PROXY TO SERVER SET UP');
         if (connection.secure) {
-          clientSocket.write("HTTP/1.1 200 Connection established\r\n\r\n");
+          clientSocket.write('HTTP/1.1 200 Connection established\r\n\r\n');
         } else {
           serverSocket.write(data);
         }
@@ -154,15 +155,15 @@ export class NetProxy {
         clientSocket.pipe(serverSocket);
         serverSocket.pipe(clientSocket);
 
-        serverSocket.on("error", (err) => {
-          logger.error("PROXY TO SERVER ERROR");
+        serverSocket.on('error', (err) => {
+          logger.error('PROXY TO SERVER ERROR');
           logger.error(err);
         });
       }
     );
 
-    serverSocket.on("error", (err) => {
-      logger.error("CLIENT TO PROXY ERROR");
+    serverSocket.on('error', (err) => {
+      logger.error('CLIENT TO PROXY ERROR');
       logger.error(err);
     });
   }
@@ -170,7 +171,7 @@ export class NetProxy {
   private async shouldHandleAsICPRequest(
     connection: ConnectionInfo
   ): Promise<boolean> {
-    if (connection.host === "internetcomputer.org") {
+    if (connection.host === 'internetcomputer.org') {
       return true;
     }
 
@@ -178,7 +179,7 @@ export class NetProxy {
   }
 
   private async onClose(): Promise<void> {
-    logger.info("Client disconnected");
+    logger.info('Client disconnected');
   }
 
   private async onError(err: Error): Promise<void> {

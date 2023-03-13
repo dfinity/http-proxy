@@ -1,6 +1,6 @@
-import { SupportedPlatforms } from "../commons";
+import { SupportedPlatforms } from '../commons';
 
-const supported = Object.values(SupportedPlatforms).join(",");
+const supported = Object.values(SupportedPlatforms).join(',');
 
 export class UnsupportedPlatformError extends Error {
   constructor(platform: string) {

@@ -1,4 +1,4 @@
-import { PlatformRootCA } from "../typings";
+import { PlatformRootCA } from '../typings';
 
 export interface PlatformProxyInfo {
   host: string;

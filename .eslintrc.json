@@ -1,24 +1,26 @@
 {
 	"root": true,
 	"extends": [
-		"prettier",
-		"eslint:recommended"
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended"
 	],
-	"env": {
-    "commonjs": true,
-		"node": true,
-		"es2021": true
-	},
-	"parser": "@typescript-eslint/parser",
-	"parserOptions": {
-		"ecmaVersion": 2021
-	},
 	"plugins": [
 		"@typescript-eslint",
 		"prettier"
 	],
-	"ignorePatterns": ["node_modules/*", "built/*", "data/*"],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "./tsconfig.json"
+	},
+	"ignorePatterns": [
+		"node_modules/*",
+		"built/*",
+		"data/*"
+	],
 	"rules": {
+		"no-underscore-dangle": 0,
+		"no-async-promise-executor": 0,
 		"prettier/prettier": [
 			"error",
 			{
@@ -26,7 +28,7 @@
 				"singleQuote": true,
 				"printWidth": 80,
 				"tabWidth": 2,
-				"endOfLine": "lf",
+				"endOfLine": "auto",
 				"arrowParens": "always"
 			},
 			{

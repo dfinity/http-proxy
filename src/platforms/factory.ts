@@ -1,8 +1,8 @@
-import { SupportedPlatforms } from "../commons";
-import { UnsupportedPlatformError } from "../errors";
-import { MacPlatform } from "./mac";
-import { Platform, PlatformBuildConfigs } from "./typings";
-import { WindowsPlatform } from "./windows";
+import { SupportedPlatforms } from '../commons';
+import { UnsupportedPlatformError } from '../errors';
+import { MacPlatform } from './mac';
+import { Platform, PlatformBuildConfigs } from './typings';
+import { WindowsPlatform } from './windows';
 
 export class PlatformFactory {
   public static async create(configs: PlatformBuildConfigs): Promise<Platform> {
@@ -18,7 +18,7 @@ export class PlatformFactory {
           proxy: configs.proxy,
         });
       default:
-        throw new UnsupportedPlatformError("unknown");
+        throw new UnsupportedPlatformError('unknown');
     }
   }
 }

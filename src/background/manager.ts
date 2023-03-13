@@ -1,15 +1,15 @@
-import net from "net";
-import { InitConfiguration, getFile, logger } from "../commons";
+import net from 'net';
+import { InitConfiguration, getFile, logger } from '../commons';
 import {
   BackgroundEventMessage,
   BackgroundEventTypes,
   BackgroundResultMessage,
   SetupSystemMessage,
-} from "./typings";
-import { Platform, PlatformFactory } from "../platforms";
-import { CHECK_PROXY_PROCESS_MS } from "./utils";
-import { ONLINE_DESCRIPTOR as PROXY_ONLINE_DESCRIPTOR } from "../utils";
-import findProcess from "find-process";
+} from './typings';
+import { Platform, PlatformFactory } from '../platforms';
+import { CHECK_PROXY_PROCESS_MS } from './utils';
+import { ONLINE_DESCRIPTOR as PROXY_ONLINE_DESCRIPTOR } from '../utils';
+import findProcess from 'find-process';
 
 export class TaskManager {
   private platform?: Platform;
@@ -28,8 +28,8 @@ export class TaskManager {
 
   private async init(): Promise<void> {
     // setup servers to be used by the operating system
-    this.server.addListener("connection", this.onConnection.bind(this));
-    this.server.addListener("close", this.onClose.bind(this));
+    this.server.addListener('connection', this.onConnection.bind(this));
+    this.server.addListener('close', this.onClose.bind(this));
 
     this.registerProxyShutdownListener();
   }
@@ -41,21 +41,21 @@ export class TaskManager {
   public async start(): Promise<void> {
     return new Promise<void>((ok, err) => {
       const onListenError = (e: Error) => {
-        if ("code" in e && e.code === "EADDRINUSE") {
+        if ('code' in e && e.code === 'EADDRINUSE') {
           this.server.close();
         }
 
         return err(e);
       };
 
-      this.server.addListener("error", onListenError);
+      this.server.addListener('error', onListenError);
 
       this.server.listen(
         this.configs.backgroundServer.port,
         this.configs.backgroundServer.host,
         () => {
-          this.server.removeListener("error", onListenError);
-          this.server.addListener("error", this.onError.bind(this));
+          this.server.removeListener('error', onListenError);
+          this.server.addListener('error', this.onError.bind(this));
 
           ok();
         }
@@ -64,7 +64,7 @@ export class TaskManager {
   }
 
   private async onConnection(socket: net.Socket): Promise<void> {
-    socket.on("data", async (data) => {
+    socket.on('data', async (data) => {
       const result: BackgroundResultMessage = { processed: false };
 
       try {
@@ -87,7 +87,7 @@ export class TaskManager {
       }
     });
 
-    socket.on("error", (err) => {
+    socket.on('error', (err) => {
       logger.error(`Client socket error(${String(err)})`);
     });
   }
@@ -125,7 +125,7 @@ export class TaskManager {
       }
 
       logger.info(
-        "Proxy server not running, removing configuration from system"
+        'Proxy server not running, removing configuration from system'
       );
 
       await this.platform?.detach();
@@ -134,18 +134,18 @@ export class TaskManager {
   }
 
   private async isProxyRunning(): Promise<boolean> {
-    const pid = await getFile(PROXY_ONLINE_DESCRIPTOR, { encoding: "utf8" });
+    const pid = await getFile(PROXY_ONLINE_DESCRIPTOR, { encoding: 'utf8' });
     if (!pid) {
       return false;
     }
 
-    const info = await findProcess("pid", Number(pid), true);
+    const info = await findProcess('pid', Number(pid), true);
 
     return !!info.length;
   }
 
   private async onClose(): Promise<void> {
-    logger.info("Server closed");
+    logger.info('Server closed');
   }
 
   private async onError(err: Error): Promise<void> {

@@ -1,10 +1,10 @@
-import { CreateCertificateOpts } from "./typings";
-import { Certificate } from "./certificate";
-import { generateCertificate, generateKeyPair } from "./utils";
-import { CertificateConfiguration } from "../commons";
-import { pki } from "node-forge";
-import { UnsupportedCertificateTypeError } from "../errors";
-import { CertificateStore } from "./store";
+import { CreateCertificateOpts } from './typings';
+import { Certificate } from './certificate';
+import { generateCertificate, generateKeyPair } from './utils';
+import { CertificateConfiguration } from '../commons';
+import { pki } from 'node-forge';
+import { UnsupportedCertificateTypeError } from '../errors';
+import { CertificateStore } from './store';
 
 export class CertificateFactory {
   private readonly issuer: pki.CertificateField[];
@@ -14,9 +14,12 @@ export class CertificateFactory {
     private readonly configuration: CertificateConfiguration
   ) {
     this.issuer = [
-      { name: "commonName", value: configuration.rootca.commonName },
-      { name: "organizationName", value: configuration.rootca.organizationName },
-      { shortName: "OU", value: configuration.rootca.organizationUnit },
+      { name: 'commonName', value: configuration.rootca.commonName },
+      {
+        name: 'organizationName',
+        value: configuration.rootca.organizationName,
+      },
+      { shortName: 'OU', value: configuration.rootca.organizationUnit },
     ];
   }
 
@@ -37,16 +40,16 @@ export class CertificateFactory {
 
   async create(opts: CreateCertificateOpts): Promise<Certificate> {
     switch (opts.type) {
-      case "ca":
+      case 'ca':
         return this.createRootCA();
-      case "domain":
+      case 'domain':
         return this.createHostCertificate(opts.hostname, opts.ca);
       default:
         throw new UnsupportedCertificateTypeError();
     }
   }
 
-  private async createRootCA(caId = "ca"): Promise<Certificate> {
+  private async createRootCA(caId = 'ca'): Promise<Certificate> {
     const id = `root_${caId}`;
     const current = await this.store.find(id);
     if (current) {
@@ -61,22 +64,22 @@ export class CertificateFactory {
       // same as issuer since this is self signed
       subject: [...this.issuer],
       extensions: [
-        { name: "basicConstraints", cA: true, critical: true },
+        { name: 'basicConstraints', cA: true, critical: true },
         {
-          name: "keyUsage",
+          name: 'keyUsage',
           keyCertSign: true,
           digitalSignature: true,
           keyEncipherment: true,
         },
         {
-          name: "extKeyUsage",
+          name: 'extKeyUsage',
           serverAuth: true,
           clientAuth: true,
           codeSigning: true,
           emailProtection: true,
           timeStamping: true,
         },
-        { name: "subjectKeyIdentifier" },
+        { name: 'subjectKeyIdentifier' },
       ],
     });
 
@@ -109,24 +112,24 @@ export class CertificateFactory {
       signingKey: ca.key,
       issuer: caCert.subject.attributes,
       subject: [
-        { name: "commonName", value: hostname },
+        { name: 'commonName', value: hostname },
         {
-          name: "organizationName",
+          name: 'organizationName',
           value: `${this.configuration.rootca.organizationName} (${hostname})`,
         },
-        { shortName: "OU", value: this.configuration.rootca.organizationUnit },
+        { shortName: 'OU', value: this.configuration.rootca.organizationUnit },
       ],
       extensions: [
-        { name: "basicConstraints", cA: false, critical: true },
+        { name: 'basicConstraints', cA: false, critical: true },
         {
-          name: "keyUsage",
+          name: 'keyUsage',
           digitalSignature: true,
           keyEncipherment: true,
         },
-        { name: "extKeyUsage", serverAuth: true },
-        { name: "subjectKeyIdentifier" },
+        { name: 'extKeyUsage', serverAuth: true },
+        { name: 'subjectKeyIdentifier' },
         {
-          name: "subjectAltName",
+          name: 'subjectAltName',
           altNames: [
             // https://www.rfc-editor.org/rfc/rfc5280#page-38
             {
@@ -135,7 +138,7 @@ export class CertificateFactory {
             },
             {
               type: 7, // IP
-              ip: "127.0.0.1",
+              ip: '127.0.0.1',
             },
           ],
         },
