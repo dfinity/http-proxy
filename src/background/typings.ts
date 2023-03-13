@@ -6,6 +6,7 @@ export enum BackgroundEventTypes {
 export interface SetupSystemMessage {
   type: BackgroundEventTypes.SetupSystem;
   data: {
+    commonName: string;
     certificatePath: string;
   };
 }

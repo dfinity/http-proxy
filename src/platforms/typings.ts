@@ -5,6 +5,7 @@ export interface Platform {
 }
 
 export interface PlatformRootCA {
+  commonName: string;
   path: string;
 }
 

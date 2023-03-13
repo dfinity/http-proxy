@@ -1,4 +1,4 @@
-import { InitConfiguration, SupportedPlatforms } from "../commons";
+import { envConfigs, InitConfiguration, SupportedPlatforms } from "../commons";
 import {
   MissingCertificateError,
   MissingRequirementsError,
@@ -41,6 +41,7 @@ export class Gateway {
       platform: this.configs.platform,
       ca: {
         path: this.certificateFactory.store.certificatePath(rootCAId),
+        commonName: envConfigs.certificate.rootca.commonName,
       },
       proxy: {
         host: this.configs.netServer.host,
@@ -55,6 +56,7 @@ export class Gateway {
     const platformRequirements = await taskManager.processMessage({
       type: BackgroundEventTypes.SetupSystem,
       data: {
+        commonName: envConfigs.certificate.rootca.commonName,
         certificatePath:
           this.certificateFactory.store.certificatePath(rootCAId),
       },

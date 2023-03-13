@@ -14,12 +14,9 @@ export class CertificateFactory {
     private readonly configuration: CertificateConfiguration
   ) {
     this.issuer = [
-      { name: "commonName", value: configuration.commonName },
-      { name: "countryName", value: configuration.countryName },
-      { shortName: "ST", value: configuration.state },
-      { name: "localityName", value: configuration.locality },
-      { name: "organizationName", value: configuration.organizationName },
-      { shortName: "OU", value: configuration.organizationName },
+      { name: "commonName", value: configuration.rootca.commonName },
+      { name: "organizationName", value: configuration.rootca.organizationName },
+      { shortName: "OU", value: configuration.rootca.organizationUnit },
     ];
   }
 
@@ -49,7 +46,8 @@ export class CertificateFactory {
     }
   }
 
-  private async createRootCA(id = "ca"): Promise<Certificate> {
+  private async createRootCA(caId = "ca"): Promise<Certificate> {
+    const id = `root_${caId}`;
     const current = await this.store.find(id);
     if (current) {
       return current;
@@ -97,7 +95,7 @@ export class CertificateFactory {
     hostname: string,
     ca: Certificate
   ): Promise<Certificate> {
-    const id = `${this.configuration.storage.hostPrefix}:${hostname}`;
+    const id = `${this.configuration.storage.hostPrefix}_${hostname}`;
     const current = await this.store.find(id);
     if (current) {
       return current;
@@ -114,12 +112,9 @@ export class CertificateFactory {
         { name: "commonName", value: hostname },
         {
           name: "organizationName",
-          value: hostname,
+          value: `${this.configuration.rootca.organizationName} (${hostname})`,
         },
-        { shortName: "OU", value: hostname },
-        { name: "countryName", value: this.configuration.countryName },
-        { shortName: "ST", value: this.configuration.state },
-        { name: "localityName", value: this.configuration.locality },
+        { shortName: "OU", value: this.configuration.rootca.organizationUnit },
       ],
       extensions: [
         { name: "basicConstraints", cA: false, critical: true },
@@ -135,7 +130,7 @@ export class CertificateFactory {
           altNames: [
             // https://www.rfc-editor.org/rfc/rfc5280#page-38
             {
-              type: 2, // dna name
+              type: 2, // dns name
               value: hostname,
             },
             {

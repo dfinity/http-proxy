@@ -17,14 +17,14 @@ const envConfigs: InitConfiguration = {
   macosx: platform === SupportedPlatforms.MacOSX,
   windows: platform === SupportedPlatforms.Windows,
   certificate: {
-    countryName: "CH",
-    state: "Zurich",
-    locality: "Zurich",
-    organizationName: "IC HTTP Gateway CA",
-    commonName: "IC HTTP Gateway CA",
     storage: {
       folder: "certs",
       hostPrefix: "host",
+    },
+    rootca: {
+      commonName: "Internet Computer Root Authority",
+      organizationName: "Internet Computer",
+      organizationUnit: "IC",
     },
   },
   netServer: {

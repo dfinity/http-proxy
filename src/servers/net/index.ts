@@ -145,7 +145,7 @@ export class NetProxy {
       () => {
         console.log("PROXY TO SERVER SET UP");
         if (connection.secure) {
-          clientSocket.write("HTTP/1.1 200 OK\r\n\n");
+          clientSocket.write("HTTP/1.1 200 Connection established\r\n\r\n");
         } else {
           serverSocket.write(data);
         }

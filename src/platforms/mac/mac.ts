@@ -51,7 +51,7 @@ export class MacPlatform implements Platform {
       `'do shell script "${execCommand}" with prompt "${promptMessage}" with administrator privileges'`,
     ].join(" ");
 
-    return execAsync(runCommand);
+    await execAsync(runCommand);
   }
 
   private async isTrustedCertificate(path: string): Promise<boolean> {

@@ -97,6 +97,7 @@ export class TaskManager {
       platform: this.configs.platform,
       ca: {
         path: message.data.certificatePath,
+        commonName: message.data.commonName,
       },
       proxy: {
         host: this.configs.netServer.host,
