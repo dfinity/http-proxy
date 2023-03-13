@@ -1,5 +1,5 @@
-import { pki } from "node-forge";
-import { CertificateDTO, CertificateOpts } from "./typings";
+import { pki } from 'node-forge';
+import { CertificateDTO, CertificateOpts } from './typings';
 
 export class Certificate {
   public readonly key: pki.PrivateKey;

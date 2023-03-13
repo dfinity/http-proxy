@@ -1,17 +1,17 @@
 export enum SupportedPlatforms {
-  Windows = "win32",
-  MacOSX = "darwin",
+  Windows = 'win32',
+  MacOSX = 'darwin',
 }
 
 export interface CertificateConfiguration {
-  countryName: string;
-  state: string;
-  locality: string;
-  organizationName: string;
-  commonName: string;
   storage: {
     hostPrefix: string;
     folder: string;
+  };
+  rootca: {
+    commonName: string;
+    organizationName: string;
+    organizationUnit: string;
   };
 }
 
@@ -28,7 +28,8 @@ export interface NetServerConfiguration {
 export type BackgrroundServerConfiguration = NetServerConfiguration;
 
 export interface InitConfiguration {
-  isBackgroundControllerProcess: boolean;
+  isTaskManager: boolean;
+  rootPath: string;
   dataPath: string;
   platform: string;
   windows: boolean;

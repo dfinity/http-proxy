@@ -1,7 +1,7 @@
-import { resolve } from "path";
-import { Certificate } from "./certificate";
-import { CertificateDTO, CertificateStoreConfiguration } from "./typings";
-import { createDir, getFile, saveFile, envConfigs } from "../commons";
+import { resolve } from 'path';
+import { Certificate } from './certificate';
+import { CertificateDTO, CertificateStoreConfiguration } from './typings';
+import { createDir, getFile, saveFile, envConfigs } from '../commons';
 
 export class CertificateStore {
   private readonly storePath: string;
@@ -9,10 +9,7 @@ export class CertificateStore {
   private constructor(
     private readonly configuration: CertificateStoreConfiguration
   ) {
-    this.storePath = resolve(
-      envConfigs.dataPath,
-      this.configuration.folder
-    );
+    this.storePath = resolve(envConfigs.dataPath, this.configuration.folder);
   }
 
   private async init(): Promise<void> {
@@ -29,7 +26,7 @@ export class CertificateStore {
 
   public async find(id: string): Promise<Certificate | null> {
     const dtoPath = this.certificateDtoPath(id);
-    const fileData = await getFile(dtoPath, { encoding: "utf8" });
+    const fileData = await getFile(dtoPath, { encoding: 'utf8' });
 
     if (!fileData) {
       return null;
@@ -44,8 +41,8 @@ export class CertificateStore {
     const dtoPath = this.certificateDtoPath(certificate.id);
     const dto = certificate.toDTO();
 
-    await saveFile(certPath, certificate.pem, { encoding: "utf8" });
-    await saveFile(dtoPath, JSON.stringify(dto), { encoding: "utf8" });
+    await saveFile(certPath, certificate.pem, { encoding: 'utf8' });
+    await saveFile(dtoPath, JSON.stringify(dto), { encoding: 'utf8' });
   }
 
   public static async create(

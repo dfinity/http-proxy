@@ -1,5 +1,5 @@
-import { md, pki } from "node-forge";
-import { GenerateCertificateOpts, GenerateKeyPairOpts } from "./typings";
+import { md, pki } from 'node-forge';
+import { GenerateCertificateOpts, GenerateKeyPairOpts } from './typings';
 
 export const DEFAULT_KEY_PAIR_BITS = 2048;
 
@@ -9,7 +9,7 @@ export const generateKeyPair = async (
   return pki.rsa.generateKeyPair(opts?.bits ?? DEFAULT_KEY_PAIR_BITS);
 };
 
-export const createValidityDate = (addDays: number = 0): Date => {
+export const createValidityDate = (addDays = 0): Date => {
   const current = new Date();
   current.setDate(current.getDate() + addDays);
 
@@ -26,7 +26,7 @@ export const generateCertificate = async ({
   const certificate = pki.createCertificate();
 
   certificate.publicKey = publicKey;
-  certificate.serialNumber = "01";
+  certificate.serialNumber = '01';
   certificate.validity.notBefore = createValidityDate();
   certificate.validity.notAfter = createValidityDate(365);
 

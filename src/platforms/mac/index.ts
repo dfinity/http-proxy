@@ -1,2 +1,2 @@
-export * from "./mac";
-export * from "./typings";
+export * from './mac';
+export * from './typings';

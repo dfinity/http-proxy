@@ -1,11 +1,11 @@
 export interface Platform {
   attach(): Promise<void>;
   detach(): Promise<void>;
-  addCommandAdminPrivileges(command: string, promptMessage: string): string;
-  addCommandDetachArgs(command: string, logsOutput: string): string;
+  spawnTaskManager(): Promise<void>;
 }
 
 export interface PlatformRootCA {
+  commonName: string;
   path: string;
 }
 
