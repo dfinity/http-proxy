@@ -1,6 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
-import { logger } from 'src/commons';
 import { CanisterNotFoundError } from 'src/errors';
 import { SecureContext, createSecureContext } from 'tls';
 import { lookupIcDomain } from './domains';
