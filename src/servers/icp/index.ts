@@ -1,7 +1,7 @@
-import { IncomingMessage, ServerResponse } from "http";
-import https from "https";
-import { SecureContext, createSecureContext } from "tls";
-import { ICPServerOpts } from "./typings";
+import { IncomingMessage, ServerResponse } from 'http';
+import https from 'https';
+import { SecureContext, createSecureContext } from 'tls';
+import { ICPServerOpts } from './typings';
 
 export class ICPServer {
   private httpsServer!: https.Server;
@@ -56,7 +56,7 @@ export class ICPServer {
     }
   ): Promise<void> {
     // todo: implement request response verification
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("IC HTTP Server");
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('IC HTTP Server');
   }
 }

@@ -1,16 +1,16 @@
-import { InitConfiguration, SupportedPlatforms } from "../commons";
+import { envConfigs, InitConfiguration, SupportedPlatforms } from '../commons';
 import {
   MissingCertificateError,
   MissingRequirementsError,
   UnsupportedPlatformError,
-} from "src/errors";
-import { Platform } from "src/platforms";
-import { Certificate, CertificateFactory } from "src/tls";
-import { ICPServer } from "./icp";
-import { NetProxy } from "./net";
-import { PlatformFactory } from "src/platforms/factory";
-import { BackgroundProcess } from "src/background";
-import { BackgroundEventTypes } from "src/background/typings";
+} from 'src/errors';
+import { Platform } from 'src/platforms';
+import { Certificate, CertificateFactory } from 'src/tls';
+import { ICPServer } from './icp';
+import { NetProxy } from './net';
+import { PlatformFactory } from 'src/platforms/factory';
+import { BackgroundProcess } from 'src/background';
+import { BackgroundEventTypes } from 'src/background/typings';
 
 export class Gateway {
   private icpServer!: ICPServer;
@@ -32,7 +32,7 @@ export class Gateway {
     await this.netServer.start();
 
     if (!this.certificates.ca) {
-      throw new MissingCertificateError("ca");
+      throw new MissingCertificateError('ca');
     }
 
     // setup servers to be used by the operating system
@@ -41,6 +41,7 @@ export class Gateway {
       platform: this.configs.platform,
       ca: {
         path: this.certificateFactory.store.certificatePath(rootCAId),
+        commonName: envConfigs.certificate.rootca.commonName,
       },
       proxy: {
         host: this.configs.netServer.host,
@@ -55,6 +56,7 @@ export class Gateway {
     const platformRequirements = await taskManager.processMessage({
       type: BackgroundEventTypes.SetupSystem,
       data: {
+        commonName: envConfigs.certificate.rootca.commonName,
         certificatePath:
           this.certificateFactory.store.certificatePath(rootCAId),
       },
@@ -79,10 +81,10 @@ export class Gateway {
   }
 
   private async setupRequirements(): Promise<boolean> {
-    this.certificates.ca = await this.certificateFactory.create({ type: "ca" });
+    this.certificates.ca = await this.certificateFactory.create({ type: 'ca' });
     this.certificates.proxy = await this.certificateFactory.create({
-      type: "domain",
-      hostname: "localhost",
+      type: 'domain',
+      hostname: 'localhost',
       ca: this.certificates.ca,
     });
 
@@ -105,7 +107,7 @@ export class Gateway {
     }
 
     if (!gateway.certificates.proxy) {
-      throw new MissingCertificateError("proxy");
+      throw new MissingCertificateError('proxy');
     }
 
     gateway.netServer = NetProxy.create({
@@ -124,11 +126,11 @@ export class Gateway {
         default: gateway.certificates.proxy,
         create: async (servername): Promise<Certificate> => {
           if (!gateway.certificates.ca) {
-            throw new MissingCertificateError("ca");
+            throw new MissingCertificateError('ca');
           }
 
           return await gateway.certificateFactory.create({
-            type: "domain",
+            type: 'domain',
             hostname: servername,
             ca: gateway.certificates.ca,
           });

@@ -1,4 +1,4 @@
-import { Certificate } from "src/tls";
+import { Certificate } from 'src/tls';
 
 export interface ICPServerOpts {
   host: string;

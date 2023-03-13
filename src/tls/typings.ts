@@ -1,5 +1,5 @@
-import { pki } from "node-forge";
-import { Certificate } from "./certificate";
+import { pki } from 'node-forge';
+import { Certificate } from './certificate';
 
 export interface KeyPair {
   private: string;
@@ -14,10 +14,10 @@ export interface CertificateOpts {
 
 export type CreateCertificateOpts =
   | {
-      type: "ca";
+      type: 'ca';
     }
   | {
-      type: "domain";
+      type: 'domain';
       hostname: string;
       ca: Certificate;
     };
@@ -30,7 +30,7 @@ export interface GenerateCertificateOpts {
   publicKey: pki.PublicKey;
   subject: pki.CertificateField[];
   issuer: pki.CertificateField[];
-  extensions: any[];
+  extensions: object[];
   signingKey: pki.PrivateKey;
 }
 

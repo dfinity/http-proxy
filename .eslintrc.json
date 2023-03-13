@@ -1,0 +1,39 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "ignorePatterns": [
+    "node_modules/*",
+    "built/*",
+    "data/*"
+  ],
+  "rules": {
+    "no-underscore-dangle": 0,
+    "no-async-promise-executor": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 80,
+        "tabWidth": 2,
+        "endOfLine": "auto",
+        "arrowParens": "always"
+      },
+      {
+        "usePrettierrc": false
+      }
+    ]
+  }
+}

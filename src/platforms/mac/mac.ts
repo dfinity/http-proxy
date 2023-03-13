@@ -1,17 +1,19 @@
-import { exec } from "child_process";
-import { resolve } from "path";
-import { getFile, saveFile } from "../../commons";
-import { Platform } from "../typings";
+import { exec } from 'child_process';
+import { resolve } from 'path';
+import { BACKGROUND_LOGS_PATH } from '../../background/utils';
+import { envConfigs, getFile, saveFile } from '../../commons';
+import { Platform } from '../typings';
+import { execAsync } from '../utils';
 import {
   PlatformConfigs,
   PlatformProxyInfo,
   WebProxyConfiguration,
-} from "./typings";
+} from './typings';
 import {
   CURL_RC_FILE,
   SHELL_SCRIPT_SEPARATOR,
   resolveNetworkInfo,
-} from "./utils";
+} from './utils';
 
 export class MacPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
@@ -32,23 +34,29 @@ export class MacPlatform implements Platform {
     });
   }
 
-  public addCommandAdminPrivileges(
-    command: string,
-    promptMessage: string
-  ): string {
-    return [
-      "osascript",
-      "-e",
-      `'do shell script "${command}" with prompt "${promptMessage}" with administrator privileges'`,
-    ].join(" ");
-  }
+  public async spawnTaskManager(): Promise<void> {
+    const execCommand = [
+      `TASK_MANAGER=1`,
+      `node`,
+      ...process.execArgv,
+      resolve(envConfigs.rootPath, 'background', 'main.js'),
+      `&>${BACKGROUND_LOGS_PATH}`,
+      `&`,
+    ].join(' ');
 
-  public addCommandDetachArgs(command: string, logsOutput: string): string {
-    return [command, `&>${logsOutput}`, `&`].join(" ");
+    const promptMessage =
+      'IC HTTP Proxy needs your permission to create a secure environment';
+    const runCommand = [
+      'osascript',
+      '-e',
+      `'do shell script "${execCommand}" with prompt "${promptMessage}" with administrator privileges'`,
+    ].join(' ');
+
+    await execAsync(runCommand);
   }
 
   private async isTrustedCertificate(path: string): Promise<boolean> {
-    return new Promise<boolean>((ok, err) => {
+    return new Promise<boolean>((ok) => {
       exec(
         `security verify-cert -k /Library/Keychains/System.keychain -c ${path}`,
         (error) => {
@@ -71,11 +79,11 @@ export class MacPlatform implements Platform {
 
     return new Promise<void>((ok, err) => {
       const shellScript =
-        "security authorizationdb write com.apple.trust-settings.admin allow" +
+        'security authorizationdb write com.apple.trust-settings.admin allow' +
         SHELL_SCRIPT_SEPARATOR +
         trustCommand +
         SHELL_SCRIPT_SEPARATOR +
-        "security authorizationdb remove com.apple.trust-settings.admin";
+        'security authorizationdb remove com.apple.trust-settings.admin';
 
       exec(`${shellScript}`, (error) => {
         if (error) {
@@ -95,15 +103,15 @@ export class MacPlatform implements Platform {
       try {
         // configure proxy for curl
         const curlrcPath = resolve(String(process.env.HOME), CURL_RC_FILE);
-        const curlrc = (await getFile(curlrcPath, { encoding: "utf8" })) ?? "";
+        const curlrc = (await getFile(curlrcPath, { encoding: 'utf8' })) ?? '';
         const curlrcLines = curlrc
-          .split("\n")
-          .filter((line) => !line.startsWith("proxy="));
+          .split('\n')
+          .filter((line) => !line.startsWith('proxy='));
         if (enable) {
           curlrcLines.push(`proxy=http://${host}:${port}`);
         }
-        await saveFile(curlrcPath, curlrcLines.join("\n"), {
-          encoding: "utf-8",
+        await saveFile(curlrcPath, curlrcLines.join('\n'), {
+          encoding: 'utf-8',
         });
 
         // configure proxy in all network interfaces
@@ -139,24 +147,24 @@ export class MacPlatform implements Platform {
     for (const [port, proxyStatus] of networkPorts.entries()) {
       if (!proxyStatus.http.enabled) {
         commands.push(
-          `networksetup -setwebproxy \"${port}\" ${this.configs.proxy.host} ${this.configs.proxy.port}`
+          `networksetup -setwebproxy "${port}" ${this.configs.proxy.host} ${this.configs.proxy.port}`
         );
       }
       if (!proxyStatus.https.enabled) {
         commands.push(
-          `networksetup -setsecurewebproxy \"${port}\" ${this.configs.proxy.host} ${this.configs.proxy.port}`
+          `networksetup -setsecurewebproxy "${port}" ${this.configs.proxy.host} ${this.configs.proxy.port}`
         );
       }
     }
-    const status = enable ? "on" : "off";
+    const status = enable ? 'on' : 'off';
     // toggle web proxy for all network interfaces
     for (const [port, proxyStatus] of networkPorts.entries()) {
       if (proxyStatus.http.enabled !== enable) {
-        commands.push(`networksetup -setwebproxystate \"${port}\" ${status}`);
+        commands.push(`networksetup -setwebproxystate "${port}" ${status}`);
       }
       if (proxyStatus.https.enabled !== enable) {
         commands.push(
-          `networksetup -setsecurewebproxystate \"${port}\" ${status}`
+          `networksetup -setsecurewebproxystate "${port}" ${status}`
         );
       }
     }
