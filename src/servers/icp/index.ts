@@ -57,6 +57,7 @@ export class ICPServer {
   ): Promise<void> {
     // todo: implement request response verification
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('IC HTTP Server');
+    res.write('IC HTTP Server');
+    res.end();
   }
 }
