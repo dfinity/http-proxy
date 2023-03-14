@@ -195,22 +195,42 @@ export const stringToIntArray = (body: string): Uint8Array => {
   return encoder.encode(body);
 };
 
-export const resolveServiceWorkerUninstallScript = (
-  request: Request
+export const processIcRequest = async (
+  canister: Principal,
+  request: Request,
+  shouldFetchRootKey = false
+): Promise<HttpResponse> => {
+  const httpResponse = await fetchFromInternetComputer(
+    canister,
+    request,
+    shouldFetchRootKey
+  );
+
+  const maybeUninstallServiceWorker = maybeUninstallHTTPGatewayServiceWorker(
+    request,
+    httpResponse
+  );
+
+  if (maybeUninstallServiceWorker) {
+    return maybeUninstallServiceWorker;
+  }
+
+  return httpResponse;
+};
+
+export const maybeUninstallHTTPGatewayServiceWorker = (
+  request: Request,
+  icResponse: HttpResponse
 ): HttpResponse | null => {
-  const referer = request.headers.get(HTTPHeaders.Referer);
   const serviceWorkerUpdateRequest = !!request.headers.get(
     HTTPHeaders.ServiceWorker
   );
-  if (!serviceWorkerUpdateRequest || !referer) {
+  if (!serviceWorkerUpdateRequest) {
     return null;
   }
 
-  const refererUrl = new URL(referer);
-  const pathParts = refererUrl.pathname.split('/').filter((part) => !!part);
-  const isRootScope = pathParts.length === 1;
-
-  if (!isRootScope) {
+  // if the ic response contains a service worker we ignore the uninstall script
+  if (icResponse.status <= 400) {
     return null;
   }
 
@@ -221,18 +241,12 @@ export const resolveServiceWorkerUninstallScript = (
   };
 };
 
-export const processIcRequest = async (
+export const fetchFromInternetComputer = async (
   canister: Principal,
   request: Request,
   shouldFetchRootKey = false
 ): Promise<HttpResponse> => {
   try {
-    const serviceWorkerUninstallResponse =
-      resolveServiceWorkerUninstallScript(request);
-    if (serviceWorkerUninstallResponse) {
-      return serviceWorkerUninstallResponse;
-    }
-
     const minAllowedVerificationVersion = getMinVerificationVersion();
     const desiredVerificationVersion = getMaxVerificationVersion();
 
