@@ -55,6 +55,9 @@ export enum HTTPHeaders {
   Range = 'range',
   ContentEncoding = 'content-encoding',
   ContentLength = 'content-length',
+  ServiceWorker = 'service-worker',
+  Referer = 'referer',
+  ContentType = 'content-type',
 }
 
 export enum HTTPMethods {

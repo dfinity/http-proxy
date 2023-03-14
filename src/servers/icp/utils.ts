@@ -172,12 +172,61 @@ const fromResponseVerificationHeaders = (
   return finalHeaders;
 };
 
+const SW_UNINSTALL_SCRIPT = `
+// Uninstalling the IC service worker in favor of the proxy.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => {
+  // uninstall itself & then reload page
+  self.registration
+    .unregister()
+    .then(function () {
+      return self.clients.matchAll();
+    })
+    .then(function (clients) {
+      clients.forEach((client) => client.navigate(client.url));
+    });
+});
+`;
+
+export const resolveServiceWorkerUninstallScript = (
+  request: Request
+): Response | null => {
+  const referer = request.headers.get(HTTPHeaders.Referer);
+  const serviceWorkerUpdateRequest = !!request.headers.get(
+    HTTPHeaders.ServiceWorker
+  );
+  if (!serviceWorkerUpdateRequest || !referer) {
+    return null;
+  }
+
+  const refererUrl = new URL(referer);
+  const pathParts = refererUrl.pathname.split('/').filter((part) => !!part);
+  const isRootScope = pathParts.length === 1;
+
+  if (!isRootScope) {
+    return null;
+  }
+
+  return new Response(SW_UNINSTALL_SCRIPT, {
+    status: 200,
+    headers: {
+      [HTTPHeaders.ContentType]: 'text/javascript',
+    },
+  });
+};
+
 export const processIcRequest = async (
   canister: Principal,
   request: Request,
   shouldFetchRootKey = false
 ): Promise<Response> => {
   try {
+    const serviceWorkerUninstallResponse =
+      resolveServiceWorkerUninstallScript(request);
+    if (serviceWorkerUninstallResponse) {
+      return serviceWorkerUninstallResponse;
+    }
+
     const minAllowedVerificationVersion = getMinVerificationVersion();
     const desiredVerificationVersion = getMaxVerificationVersion();
 
