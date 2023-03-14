@@ -21,6 +21,7 @@ import {
   FetchAssetResult,
   HTTPHeaders,
   HTTPMethods,
+  HttpResponse,
 } from './typings';
 
 export const maxCertTimeOffsetNs = BigInt.asUintN(64, BigInt(300_000_000_000));
@@ -188,9 +189,15 @@ self.addEventListener('activate', () => {
 });
 `;
 
+export const stringToIntArray = (body: string): Uint8Array => {
+  const encoder = new TextEncoder();
+
+  return encoder.encode(body);
+};
+
 export const resolveServiceWorkerUninstallScript = (
   request: Request
-): Response | null => {
+): HttpResponse | null => {
   const referer = request.headers.get(HTTPHeaders.Referer);
   const serviceWorkerUpdateRequest = !!request.headers.get(
     HTTPHeaders.ServiceWorker
@@ -207,19 +214,18 @@ export const resolveServiceWorkerUninstallScript = (
     return null;
   }
 
-  return new Response(SW_UNINSTALL_SCRIPT, {
+  return {
     status: 200,
-    headers: {
-      [HTTPHeaders.ContentType]: 'text/javascript',
-    },
-  });
+    headers: new Headers({ [HTTPHeaders.ContentType]: 'text/javascript' }),
+    body: stringToIntArray(SW_UNINSTALL_SCRIPT),
+  };
 };
 
 export const processIcRequest = async (
   canister: Principal,
   request: Request,
   shouldFetchRootKey = false
-): Promise<Response> => {
+): Promise<HttpResponse> => {
   try {
     const serviceWorkerUninstallResponse =
       resolveServiceWorkerUninstallScript(request);
@@ -250,7 +256,11 @@ export const processIcRequest = async (
         errMessage = result.error.message;
       }
 
-      return new Response(errMessage, { status: 500 });
+      return {
+        status: 500,
+        headers: new Headers(),
+        body: stringToIntArray(errMessage),
+      };
     }
 
     const assetFetchResult = result.data;
@@ -277,10 +287,11 @@ export const processIcRequest = async (
         assetFetchResult.response.encoding
       );
 
-      return new Response(decodedResponseBody, {
+      return {
         status: assetFetchResult.response.statusCode,
         headers: responseHeaders,
-      });
+        body: decodedResponseBody,
+      };
     }
 
     const currentTimeNs = BigInt.asUintN(64, BigInt(Date.now() * 1_000_000)); // from ms to nanoseconds
@@ -312,24 +323,25 @@ export const processIcRequest = async (
         assetCertification.response.headers
       );
 
-      const certifiedResponse = new Response(decodedResponseBody, {
-        status: assetCertification.response.statusCode,
-        headers: responseHeaders,
-      });
-
       certifiedResponseHeaders.forEach((headerValue, headerKey) => {
-        certifiedResponse.headers.append(headerKey, headerValue);
+        responseHeaders.append(headerKey, headerValue);
       });
 
-      return certifiedResponse;
+      return {
+        status: assetCertification.response.statusCode ?? 200,
+        headers: responseHeaders,
+        body: decodedResponseBody,
+      };
     }
   } catch (err) {
     logger.error(`ICRequest failed processing verification (${String(err)})`);
   }
 
-  return new Response('Body does not pass verification', {
+  return {
     status: 500,
-  });
+    headers: new Headers(),
+    body: stringToIntArray('Body does not pass verification'),
+  };
 };
 
 export const parseIncomingMessageHeaders = (

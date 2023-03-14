@@ -66,21 +66,19 @@ export class ICPServer {
         throw new CanisterNotFoundError(url.hostname);
       }
 
-      const response = await processIcRequest(canister, request);
-      const responseBody = await response.text();
+      const httpResponse = await processIcRequest(canister, request);
       const responseHeaders: { [key: string]: string } = {};
-      for (const [headerName, headerValue] of response.headers.entries()) {
+      for (const [headerName, headerValue] of httpResponse.headers.entries()) {
         responseHeaders[headerName] = headerValue;
       }
-      const contentLength = Buffer.byteLength(responseBody);
       responseHeaders[
         HTTPHeaders.ContentLength.toString()
-      ] = `${contentLength}`;
+      ] = `${httpResponse.body.length}`;
       responseHeaders.Server = 'IC HTTP Proxy';
       responseHeaders.Connection = 'close';
 
-      res.writeHead(response.status, response.statusText, responseHeaders);
-      res.end(responseBody);
+      res.writeHead(httpResponse.status, responseHeaders);
+      res.end(httpResponse.body);
     } catch (e) {
       const responseBody = `Proxy failed to handle internet computer request ${e}`;
       const bodyLength = Buffer.byteLength(responseBody);

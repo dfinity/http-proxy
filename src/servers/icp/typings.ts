@@ -73,3 +73,9 @@ export interface VerifiedResponse {
   response: Response;
   certifiedHeaders: Headers;
 }
+
+export interface HttpResponse {
+  status: number;
+  headers: Headers;
+  body: Uint8Array;
+}
