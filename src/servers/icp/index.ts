@@ -1,7 +1,10 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
+import { CanisterNotFoundError } from 'src/errors';
 import { SecureContext, createSecureContext } from 'tls';
-import { ICPServerOpts } from './typings';
+import { lookupIcDomain } from './domains';
+import { HTTPHeaders, ICPServerOpts } from './typings';
+import { convertIncomingMessage, processIcRequest } from './utils';
 
 export class ICPServer {
   private httpsServer!: https.Server;
@@ -50,14 +53,43 @@ export class ICPServer {
   }
 
   private async handleRequest(
-    req: IncomingMessage,
+    incomingMessage: IncomingMessage,
     res: ServerResponse<IncomingMessage> & {
       req: IncomingMessage;
     }
   ): Promise<void> {
-    // todo: implement request response verification
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('IC HTTP Server');
-    res.end();
+    try {
+      const request = await convertIncomingMessage(incomingMessage);
+      const url = new URL(request.url);
+      const canister = await lookupIcDomain(url.hostname);
+      if (!canister) {
+        throw new CanisterNotFoundError(url.hostname);
+      }
+
+      const httpResponse = await processIcRequest(canister, request);
+      const responseHeaders: { [key: string]: string } = {};
+      for (const [headerName, headerValue] of httpResponse.headers.entries()) {
+        responseHeaders[headerName] = headerValue;
+      }
+      responseHeaders[
+        HTTPHeaders.ContentLength.toString()
+      ] = `${httpResponse.body.length}`;
+      responseHeaders.Server = 'IC HTTP Proxy';
+      responseHeaders.Connection = 'close';
+
+      res.writeHead(httpResponse.status, responseHeaders);
+      res.end(httpResponse.body);
+    } catch (e) {
+      const responseBody = `Proxy failed to handle internet computer request ${e}`;
+      const bodyLength = Buffer.byteLength(responseBody);
+
+      res.writeHead(500, {
+        'Content-Type': 'text/plain',
+        [HTTPHeaders.ContentLength]: bodyLength,
+        Server: 'IC HTTP Proxy',
+        Connection: 'close',
+      });
+      res.end(responseBody);
+    }
   }
 }
