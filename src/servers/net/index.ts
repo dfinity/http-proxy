@@ -23,8 +23,8 @@ export class NetProxy {
   }
 
   private init(): void {
-    this.server.addListener('connection', this.onConnection.bind(this));
-    this.server.addListener('close', this.onClose.bind(this));
+    this.server.on('connection', this.onConnection.bind(this));
+    this.server.on('close', this.onClose.bind(this));
   }
 
   public shutdown(): void {
@@ -87,11 +87,15 @@ export class NetProxy {
 
       const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
       if (icRequest) {
-        this.handleInternetComputerConnection(connectionInfo, socket, data);
+        await this.handleInternetComputerConnection(
+          connectionInfo,
+          socket,
+          data
+        );
         return;
       }
 
-      this.connectionPassthrough(
+      await this.connectionPassthrough(
         {
           host: connectionInfo.host,
           port: connectionInfo.port,
@@ -124,15 +128,15 @@ export class NetProxy {
           'Server: IC HTTP Gateway\r\n' +
           'Content-Type: text/plain\r\n' +
           'Connection: keep-alive\r\n' +
-          `Content-Length: ${body.length}\r\n` +
-          `Location: https://${connection.host}\r\n\n`
+          `Content-Length: ${Buffer.byteLength(body)}\r\n` +
+          `Location: https://${connection.host}\r\n\r\n`
       );
       clientSocket.write(body);
       clientSocket.end();
       return;
     }
 
-    this.connectionPassthrough(
+    await this.connectionPassthrough(
       {
         host: this.opts.icpServer.host,
         port: this.opts.icpServer.port,
@@ -149,21 +153,25 @@ export class NetProxy {
     clientSocket: net.Socket,
     data: Buffer
   ): Promise<void> {
-    const serverSocket = net.createConnection(
+    const serverSocket = net.connect(
       {
         host: originServer.host,
         port: originServer.port,
       },
       () => {
         if (connection.secure) {
-          clientSocket.write('HTTP/1.1 200 Connection established\r\n\r\n');
+          clientSocket.write(
+            'HTTP/1.1 200 Connection established\r\n' +
+              'Proxy-agent: Internet Computer Proxy\r\n' +
+              '\r\n'
+          );
         } else {
           serverSocket.write(data);
         }
 
         // Piping the sockets
-        clientSocket.pipe(serverSocket);
         serverSocket.pipe(clientSocket);
+        clientSocket.pipe(serverSocket);
 
         serverSocket.on('error', (err) => {
           logger.error(`Passthrough server socket error (${err})`);
