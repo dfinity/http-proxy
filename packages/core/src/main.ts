@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import { envConfigs, logger, saveFile } from './commons';
 import { Gateway } from './servers';
 import { ONLINE_DESCRIPTOR } from './utils';

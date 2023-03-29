@@ -1,0 +1,44 @@
+{
+  "name": "@dfinity/http-proxy-ui",
+  "version": "0.0.1",
+  "description": "Desktop interface to facilitate user interaction with the HTTP Proxy server.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node ./built/main.js",
+    "build": "tsc && tsc-alias",
+    "lint": "eslint --ext ts,js src",
+    "lint:fix": "eslint --ext ts,js --fix src"
+  },
+  "_moduleAliases": {
+    "~src": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dfinity/http-proxy-poc.git"
+  },
+  "keywords": [
+    "ic",
+    "icp",
+    "http",
+    "proxy",
+    "dfinity"
+  ],
+  "author": "Kepler Vital <kepler.vital@dfinity.org>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18",
+    "pnpm": "~8",
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
+  },
+  "bugs": {
+    "url": "https://github.com/dfinity/http-proxy-poc/issues"
+  },
+  "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
+  "dependencies": {
+    "menubar": "^9.3.0"
+  },
+  "devDependencies": {
+    "electron": "^22.0.0"
+  }
+}

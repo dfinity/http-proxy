@@ -7,14 +7,14 @@ import {
 } from '@dfinity/response-verification/nodejs/nodejs.js';
 import { IncomingMessage } from 'http';
 import { inflate, ungzip } from 'pako';
-import { logger } from 'src/commons';
-import { idlFactory } from 'src/commons/http-interface/canister_http_interface';
+import { logger } from '~src/commons';
+import { idlFactory } from '~src/commons/http-interface/canister_http_interface';
 import {
   HttpRequest,
   _SERVICE,
-} from 'src/commons/http-interface/canister_http_interface_types';
-import { streamContent } from 'src/commons/streaming';
-import { NotAllowedRequestRedirectError } from 'src/errors/not-allowed-redirect-error';
+} from '~src/commons/http-interface/canister_http_interface_types';
+import { streamContent } from '~src/commons/streaming';
+import { NotAllowedRequestRedirectError } from '~src/errors/not-allowed-redirect-error';
 import { DEFAULT_GATEWAY } from './static';
 import {
   FetchAssetOptions,

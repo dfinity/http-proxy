@@ -1,7 +1,7 @@
 import { ActorSubclass, HttpAgent } from '@dfinity/agent';
 import { Principal } from '@dfinity/principal';
-import { _SERVICE } from 'src/commons/http-interface/canister_http_interface_types';
-import { Certificate } from 'src/tls';
+import { _SERVICE } from '~src/commons/http-interface/canister_http_interface_types';
+import { Certificate } from '~src/tls';
 
 export interface ICPServerOpts {
   host: string;

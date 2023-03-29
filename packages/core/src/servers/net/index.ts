@@ -1,5 +1,5 @@
 import net from 'net';
-import { MissingConnectionHostError } from 'src/errors';
+import { MissingConnectionHostError } from '~src/errors';
 import { logger } from '../../commons';
 import { lookupIcDomain } from '../icp/domains';
 import { ConnectionInfo, NetProxyOpts, ServerInfo } from './typings';
