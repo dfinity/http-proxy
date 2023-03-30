@@ -2,15 +2,13 @@
   "name": "@dfinity/http-proxy-ui",
   "version": "0.0.1",
   "description": "Desktop interface to facilitate user interaction with the HTTP Proxy server.",
-  "main": "main.js",
+  "main": "built/main.js",
   "scripts": {
-    "dev": "node ./built/main.js",
-    "build": "tsc && tsc-alias",
+    "dev": "electron .",
+    "build": "tsc && tsc-alias && pnpm copy-assets",
+    "copy-assets": "mkdir -p ./built/assets && cp -R ./src/assets ./built",
     "lint": "eslint --ext ts,js src",
     "lint:fix": "eslint --ext ts,js --fix src"
-  },
-  "_moduleAliases": {
-    "~src": "src"
   },
   "repository": {
     "type": "git",
@@ -36,9 +34,6 @@
   },
   "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
   "dependencies": {
-    "menubar": "^9.3.0"
-  },
-  "devDependencies": {
-    "electron": "^22.0.0"
+    "electron": "^23.2.1"
   }
 }
