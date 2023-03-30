@@ -8,7 +8,7 @@ import {
 import { Platform } from '~src/platforms';
 import { PlatformFactory } from '~src/platforms/factory';
 import { Certificate, CertificateFactory } from '~src/tls';
-import { envConfigs, InitConfiguration, SupportedPlatforms } from '../commons';
+import { InitConfiguration, SupportedPlatforms, envConfigs } from '../commons';
 import { ICPServer } from './icp';
 import { NetProxy } from './net';
 

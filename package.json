@@ -28,6 +28,7 @@
     "lint:fix": "pnpm -r lint:fix"
   },
   "devDependencies": {
+    "@types/node": "^18.14.0",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "eslint": "^8.36.0",
