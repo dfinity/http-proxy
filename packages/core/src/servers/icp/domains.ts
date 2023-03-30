@@ -1,7 +1,7 @@
 import { Principal } from '@dfinity/principal';
 import InMemoryCache from 'node-cache';
 import dns from 'node:dns';
-import { logger } from 'src/commons';
+import { logger } from '~src/commons';
 import { CANISTER_DNS_PREFIX, hostnameCanisterIdMap } from './static';
 
 const cachedLookups = new InMemoryCache({

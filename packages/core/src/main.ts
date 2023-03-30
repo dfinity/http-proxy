@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import { envConfigs, logger, saveFile } from './commons';
 import { Gateway } from './servers';
 import { ONLINE_DESCRIPTOR } from './utils';
@@ -18,10 +17,12 @@ import { rmSync } from 'fs';
 
     logger.info('🚀 Proxying internet computer requests');
 
-    process.on('SIGTERM', async () => {
+    process.on('SIGINT', async () => {
       logger.info('⚠️ Proxy is shutting down.');
 
-      rmSync(ONLINE_DESCRIPTOR);
+      await gateway.shutdown();
+
+      rmSync(ONLINE_DESCRIPTOR, { force: true });
     });
   } catch (e) {
     logger.error(`❌ Failed to start (${String(e)})`);

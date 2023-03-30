@@ -1,21 +1,12 @@
 {
-  "name": "@dfinity/http-proxy-poc",
+  "name": "@dfinity/http-proxy",
   "version": "0.0.1",
-  "description": "Gateway server to enable trustless access to the Internet Computer.",
-  "main": "built/main.js",
-  "types": "built/main.d.ts",
+  "description": "HTTP Proxy to enable trustless access to the Internet Computer.",
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
   "license": "MIT",
   "repository": {
     "url": "git+https://github.com/dfinity/http-proxy-poc.git",
     "type": "git"
-  },
-  "scripts": {
-    "start": "node ./built/main.js",
-    "dev": "nodemon",
-    "build": "tsc",
-    "lint": "eslint --ext ts,js src",
-    "lint:fix": "eslint --ext ts,js --fix src"
   },
   "keywords": [
     "Internet Computer",
@@ -27,14 +18,16 @@
   ],
   "engines": {
     "node": ">=18",
-    "npm": "~9"
+    "pnpm": "~8",
+    "npm": "please-use-pnpm",
+    "yarn": "please-use-pnpm"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix"
   },
   "devDependencies": {
-    "@types/dns2": "^2.0.2",
-    "@types/module-alias": "^2.0.1",
-    "@types/node": "^18.14.0",
-    "@types/node-forge": "^1.3.1",
-    "@types/pako": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "eslint": "^8.36.0",
@@ -42,24 +35,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.4",
+    "tsc-alias": "^1.8.5",
     "typescript": "^4.9.5"
-  },
-  "dependencies": {
-    "@dfinity/agent": "^0.15.4",
-    "@dfinity/candid": "^0.15.4",
-    "@dfinity/principal": "^0.15.4",
-    "@dfinity/response-verification": "^0.1.0",
-    "dns2": "^2.1.0",
-    "find-process": "^1.4.7",
-    "http-proxy": "^1.18.1",
-    "module-alias": "^2.2.2",
-    "node-cache": "^5.1.2",
-    "node-forge": "^1.3.1",
-    "pako": "^2.1.0",
-    "pino": "^8.11.0",
-    "pino-pretty": "^9.4.0"
-  },
-  "_moduleAliases": {
-    "src": "built"
   }
 }

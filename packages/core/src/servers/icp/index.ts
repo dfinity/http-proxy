@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import https from 'https';
-import { CanisterNotFoundError } from 'src/errors';
+import { CanisterNotFoundError } from '~src/errors';
 import { SecureContext, createSecureContext } from 'tls';
 import { lookupIcDomain } from './domains';
 import { HTTPHeaders, ICPServerOpts } from './typings';

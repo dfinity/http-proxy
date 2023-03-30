@@ -2,7 +2,7 @@
   "watch": ["src"],
   "ignore": ["src/**/*.spec.ts"],
   "ext": "ts,json",
-  "exec": "npm run build && npm run start",
+  "exec": "pnpm build && pnpm start",
   "legacyWatch": true,
   "delay": 1000
 }
