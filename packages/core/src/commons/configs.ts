@@ -22,8 +22,8 @@ const envConfigs: InitConfiguration = {
       hostPrefix: 'host',
     },
     rootca: {
-      commonName: 'Internet Computer Root Authority',
-      organizationName: 'Internet Computer',
+      commonName: 'IC HTTP Proxy Root Authority',
+      organizationName: 'IC HTTP Proxy',
       organizationUnit: 'IC',
     },
   },

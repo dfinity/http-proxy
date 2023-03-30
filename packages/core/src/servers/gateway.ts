@@ -1,16 +1,16 @@
-import { envConfigs, InitConfiguration, SupportedPlatforms } from '../commons';
+import { BackgroundProcess } from '~src/background';
+import { BackgroundEventTypes } from '~src/background/typings';
 import {
   MissingCertificateError,
   MissingRequirementsError,
   UnsupportedPlatformError,
-} from 'src/errors';
-import { Platform } from 'src/platforms';
-import { Certificate, CertificateFactory } from 'src/tls';
+} from '~src/errors';
+import { Platform } from '~src/platforms';
+import { PlatformFactory } from '~src/platforms/factory';
+import { Certificate, CertificateFactory } from '~src/tls';
+import { envConfigs, InitConfiguration, SupportedPlatforms } from '../commons';
 import { ICPServer } from './icp';
 import { NetProxy } from './net';
-import { PlatformFactory } from 'src/platforms/factory';
-import { BackgroundProcess } from 'src/background';
-import { BackgroundEventTypes } from 'src/background/typings';
 
 export class Gateway {
   private icpServer!: ICPServer;
