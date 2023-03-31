@@ -1,14 +1,4 @@
-export interface CertificateConfiguration {
-  storage: {
-    hostPrefix: string;
-    folder: string;
-  };
-  rootca: {
-    commonName: string;
-    organizationName: string;
-    organizationUnit: string;
-  };
-}
+import { CertificateConfiguration } from '@dfinity/http-proxy-core';
 
 export interface ICPServerConfiguration {
   host: string;
@@ -22,8 +12,6 @@ export interface NetServerConfiguration {
 
 export interface EnvironmentConfiguration {
   platform: string;
-  rootPath: string;
-  dataPath: string;
   certificate: CertificateConfiguration;
   netServer: NetServerConfiguration;
   icpServer: ICPServerConfiguration;

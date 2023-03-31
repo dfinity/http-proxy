@@ -2,6 +2,7 @@ import {
   SupportedPlatforms,
   UnsupportedPlatformError,
   execAsync,
+  nodeStartCommand,
 } from '@dfinity/http-proxy-core';
 import { DAEMON_ENTRYPOINT_FILENAME } from '@dfinity/http-proxy-daemon';
 import { dirname, resolve } from 'path';
@@ -23,20 +24,13 @@ const spawnDaemonProcessMacOSX = async (
   daemonPath: string,
   logsPath: string
 ): Promise<void> => {
-  const execCommand = [
-    `node`,
-    ...process.execArgv,
-    daemonPath,
-    `&>${logsPath}`,
-    `&`,
-  ].join(' ');
-
+  const command = nodeStartCommand(daemonPath, logsPath);
   const promptMessage =
     'IC HTTP Proxy needs your permission to create a secure environment';
   const runCommand = [
     'osascript',
     '-e',
-    `'do shell script "${execCommand}" with prompt "${promptMessage}" with administrator privileges'`,
+    `'do shell script "${command}" with prompt "${promptMessage}" with administrator privileges'`,
   ].join(' ');
 
   await execAsync(runCommand);
@@ -46,14 +40,7 @@ const spawnDaemonProcessWindows = async (
   daemonPath: string,
   logsPath: string
 ): Promise<void> => {
-  const command = [
-    `node`,
-    ...process.execArgv,
-    daemonPath,
-    `>>`,
-    logsPath,
-  ].join(' ');
-
+  const command = nodeStartCommand(daemonPath, logsPath);
   const spawnCommand = `powershell -command "start-process -windowstyle hidden cmd -verb runas -argumentlist '/c ${command}'"`;
 
   await execAsync(spawnCommand);

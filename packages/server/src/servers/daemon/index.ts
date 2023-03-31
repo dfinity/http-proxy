@@ -1,4 +1,9 @@
-import { IPCClient, ResultMessage, wait } from '@dfinity/http-proxy-core';
+import {
+  IPCClient,
+  ResultMessage,
+  coreConfigs,
+  wait,
+} from '@dfinity/http-proxy-core';
 import { EnableProxyMessage, MessageType } from '@dfinity/http-proxy-daemon';
 import { environment } from '~src/commons';
 import { MissingRequirementsError } from '~src/errors';
@@ -18,7 +23,7 @@ export class DaemonProcess {
       return;
     }
 
-    await spawnDaemonProcess(environment.platform, '/tmp/ic-http-daemon.logs');
+    await spawnDaemonProcess(environment.platform, coreConfigs.logs.daemon);
 
     await this.waitUntilActive();
   }

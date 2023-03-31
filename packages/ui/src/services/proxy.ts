@@ -1,4 +1,4 @@
-import { IPCClient } from '@dfinity/http-proxy-core';
+import { IPCClient, coreConfigs } from '@dfinity/http-proxy-core';
 import {
   IsRunningMessageResponse,
   MessageType,
@@ -24,7 +24,7 @@ export class ProxyService {
   }
 
   public async startProxyServers(entrypoint: string): Promise<boolean> {
-    await nodeStart(entrypoint);
+    await nodeStart(entrypoint, coreConfigs.logs.proxy);
 
     return true;
   }

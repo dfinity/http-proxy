@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { existsSync, mkdirSync, readFile, writeFile } from 'fs';
+import os from 'os';
 import { dirname } from 'path';
 import { SupportedPlatforms } from '~src/main';
 
@@ -84,4 +85,20 @@ export const assertPresent = <T>(
   }
 
   return value;
+};
+
+export const nodeStartCommand = (
+  entrypoint: string,
+  logsPath: string
+): string => {
+  const platform = os.platform();
+  const execArgv: string[] = Array.isArray(process.execArgv)
+    ? process.execArgv
+    : [];
+
+  if (platform === SupportedPlatforms.Windows) {
+    return [`node`, ...execArgv, entrypoint, `>>`, logsPath].join(' ');
+  }
+
+  return [`node`, ...execArgv, entrypoint, `&>${logsPath}`, `&`].join(' ');
 };

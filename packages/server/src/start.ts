@@ -7,8 +7,8 @@ import {
   isSupportedPlatform,
   logger,
 } from '@dfinity/http-proxy-core';
-import { ProxyServers } from './servers';
 import { environment } from '~src/commons';
+import { ProxyServers } from './servers';
 
 (async (): Promise<void> => {
   let servers: ProxyServers | null = null;

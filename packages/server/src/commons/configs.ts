@@ -1,13 +1,8 @@
-import { dirname, resolve } from 'node:path';
 import os from 'os';
 import { EnvironmentConfiguration } from './typings';
 
-const rootPath = dirname(require.main?.filename ?? process.cwd());
-
 const environment: EnvironmentConfiguration = {
   platform: os.platform(),
-  rootPath: rootPath,
-  dataPath: resolve(rootPath, '..', 'data'),
   certificate: {
     storage: {
       folder: 'certs',

@@ -11,7 +11,7 @@
     "type": "git"
   },
   "scripts": {
-    "start": "node ./built/main.js",
+    "start": "node ./built/start.js",
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext ts,js src",

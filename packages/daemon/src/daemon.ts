@@ -82,6 +82,8 @@ export class Daemon {
     logger.info('Shutting down');
 
     this.server?.shutdown();
+
+    process.exit(0);
   }
 
   private async registerProxyShutdownListener(
