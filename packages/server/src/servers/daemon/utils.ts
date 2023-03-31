@@ -40,8 +40,10 @@ const spawnDaemonProcessWindows = async (
   daemonPath: string,
   logsPath: string
 ): Promise<void> => {
-  const command = nodeStartCommand(daemonPath, logsPath);
-  const spawnCommand = `powershell -command "start-process -windowstyle hidden cmd -verb runas -argumentlist '/c ${command}'"`;
+  const command = nodeStartCommand(daemonPath, logsPath, '$env:NODE_EXEC_PATH');
+  const startProcessCommand = `$env:NODE_EXEC_PATH='"${process.execPath}"'; start-process -windowstyle hidden cmd -verb runas -argumentlist "/c ${command}"`;
+  const encodedCommand = Buffer.from(startProcessCommand, 'utf16le').toString('base64');
+  const spawnCommand = `powershell -EncodedCommand ${encodedCommand}`;
 
   await execAsync(spawnCommand);
 };

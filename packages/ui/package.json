@@ -7,7 +7,7 @@
     "start": "electron .",
     "dev": "nodemon",
     "build": "tsc && tsc-alias && pnpm copy-assets",
-    "copy-assets": "mkdir -p ./built/assets && cp -R ./src/assets ./built",
+    "copy-assets": "mkdirp ./built/assets && copyfiles -f ./src/assets/* ./built/assets",
     "lint": "eslint --ext ts,js src",
     "lint:fix": "eslint --ext ts,js --fix src",
     "app:dir": "electron-builder --dir",
@@ -42,8 +42,10 @@
     "@dfinity/http-proxy-server": "workspace:*"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "electron": "23.2.1",
     "electron-builder": "23.6.0",
-    "electron": "23.2.1"
+    "mkdirp": "^2.1.6"
   },
   "build": {
     "appId": "com.dfinity.ichttpproxy",

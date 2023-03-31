@@ -26,7 +26,7 @@ export class CertificateStore {
 
   public async find(id: string): Promise<Certificate | null> {
     const dtoPath = this.certificateDtoPath(id);
-    const fileData = await getFile(dtoPath, { encoding: 'utf8' });
+    const fileData = await getFile(dtoPath, { encoding: 'utf16le' });
 
     if (!fileData) {
       return null;
@@ -41,8 +41,8 @@ export class CertificateStore {
     const dtoPath = this.certificateDtoPath(certificate.id);
     const dto = certificate.toDTO();
 
-    await saveFile(certPath, certificate.pem, { encoding: 'utf8' });
-    await saveFile(dtoPath, JSON.stringify(dto), { encoding: 'utf8' });
+    await saveFile(certPath, certificate.pem, { encoding: 'utf16le' });
+    await saveFile(dtoPath, JSON.stringify(dto), { encoding: 'utf16le' });
   }
 
   public static async create(

@@ -89,7 +89,8 @@ export const assertPresent = <T>(
 
 export const nodeStartCommand = (
   entrypoint: string,
-  logsPath: string
+  logsPath: string,
+  nodeExecPath = process.execPath
 ): string => {
   const platform = os.platform();
   const execArgv: string[] = Array.isArray(process.execArgv)
@@ -98,16 +99,16 @@ export const nodeStartCommand = (
 
   if (platform === SupportedPlatforms.Windows) {
     return [
-      process.execPath.replaceAll(' ', '\\\\ '),
+      nodeExecPath,
       ...execArgv,
-      entrypoint.replaceAll(' ', '\\\\ '),
+      entrypoint,
       `>>`,
-      logsPath.replaceAll(' ', '\\\\ '),
+      logsPath,
     ].join(' ');
   }
 
   return [
-    process.execPath.replaceAll(' ', '\\\\ '),
+    nodeExecPath.replaceAll(' ', '\\\\ '),
     ...execArgv,
     entrypoint.replaceAll(' ', '\\\\ '),
     `&>${logsPath.replaceAll(' ', '\\\\ ')}`,
