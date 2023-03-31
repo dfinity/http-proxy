@@ -9,7 +9,10 @@
     "build": "tsc && tsc-alias && pnpm copy-assets",
     "copy-assets": "mkdir -p ./built/assets && cp -R ./src/assets ./built",
     "lint": "eslint --ext ts,js src",
-    "lint:fix": "eslint --ext ts,js --fix src"
+    "lint:fix": "eslint --ext ts,js --fix src",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
     "type": "git",
@@ -35,8 +38,23 @@
   },
   "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
   "dependencies": {
-    "electron": "^23.2.1",
     "@dfinity/http-proxy-core": "workspace:*",
     "@dfinity/http-proxy-server": "workspace:*"
+  },
+  "devDependencies": {
+    "electron-builder": "23.6.0",
+    "electron": "23.2.1"
+  },
+  "build": {
+    "appId": "com.dfinity.ichttpproxy",
+    "productName": "IC HTTP Proxy",
+    "nodeVersion": "current",
+    "directories": {
+      "output": "pkg"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "icon": "./src/assets/logo-color@128x128.icns"
+    }
   }
 }

@@ -23,6 +23,7 @@
     "yarn": "please-use-pnpm"
   },
   "scripts": {
+    "clean": "find . -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \\;",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint:fix"

@@ -66,7 +66,7 @@ export const wait = (numberMs = 100): Promise<void> => {
 
 export const execAsync = async (command: string): Promise<string> => {
   return new Promise<string>((ok, err) => {
-    exec(command, (error, stdout) => {
+    exec(command, { env: process.env }, (error, stdout) => {
       if (error) {
         return err(error);
       }
@@ -97,8 +97,20 @@ export const nodeStartCommand = (
     : [];
 
   if (platform === SupportedPlatforms.Windows) {
-    return [`node`, ...execArgv, entrypoint, `>>`, logsPath].join(' ');
+    return [
+      process.execPath.replaceAll(' ', '\\\\ '),
+      ...execArgv,
+      entrypoint.replaceAll(' ', '\\\\ '),
+      `>>`,
+      logsPath.replaceAll(' ', '\\\\ '),
+    ].join(' ');
   }
 
-  return [`node`, ...execArgv, entrypoint, `&>${logsPath}`, `&`].join(' ');
+  return [
+    process.execPath.replaceAll(' ', '\\\\ '),
+    ...execArgv,
+    entrypoint.replaceAll(' ', '\\\\ '),
+    `&>${logsPath.replaceAll(' ', '\\\\ ')}`,
+    `&`,
+  ].join(' ');
 };

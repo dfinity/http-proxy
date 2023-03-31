@@ -1,10 +1,10 @@
-import { IPCClient, coreConfigs } from '@dfinity/http-proxy-core';
+import { IPCClient, coreConfigs, logger } from '@dfinity/http-proxy-core';
 import {
   IsRunningMessageResponse,
   MessageType,
-  StopMessageResponse,
 } from '@dfinity/http-proxy-server';
-import { nodeStart } from '~src/commons/utils';
+import { fork } from 'child_process';
+import { appendFile } from 'fs';
 
 export class ProxyService {
   public constructor(private readonly ipcClient: IPCClient) {}
@@ -16,16 +16,32 @@ export class ProxyService {
       .catch(() => false);
   }
 
-  public async stopServers(): Promise<boolean> {
-    return this.ipcClient
-      .sendMessage<StopMessageResponse>({ type: MessageType.Stop })
-      .then((result) => (result.processed && result.data?.stopped) ?? false)
+  public async stopServers(): Promise<void> {
+    this.ipcClient
+      .sendMessage<void>({ type: MessageType.Stop })
       .catch(() => false);
   }
 
-  public async startProxyServers(entrypoint: string): Promise<boolean> {
-    await nodeStart(entrypoint, coreConfigs.logs.proxy);
+  public async startProxyServers(entrypoint: string): Promise<void> {
+    const proxyProcess = fork(entrypoint, undefined, {
+      stdio: 'pipe',
+      env: process.env,
+    });
 
-    return true;
+    proxyProcess.stderr?.on('data', (data) => {
+      appendFile(coreConfigs.logs.proxy, data.toString(), (e) => {
+        if (e) {
+          logger.error(`Failed to append proxy logs (String(e))`);
+        }
+      });
+    });
+
+    proxyProcess.stdout?.on('data', (data) => {
+      appendFile(coreConfigs.logs.proxy, data.toString(), (e) => {
+        if (e) {
+          logger.error(`Failed to append proxy logs (String(e))`);
+        }
+      });
+    });
   }
 }
