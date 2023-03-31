@@ -9,8 +9,8 @@ const environment: EnvironmentConfiguration = {
       hostPrefix: 'host',
     },
     rootca: {
-      commonName: 'IC HTTP Proxy Root Authority',
-      organizationName: 'IC HTTP Proxy',
+      commonName: 'IC Proxy Root Authority',
+      organizationName: 'IC Proxy',
       organizationUnit: 'IC',
     },
   },

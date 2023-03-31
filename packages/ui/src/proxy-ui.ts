@@ -107,7 +107,7 @@ export class ProxyUI {
   }
 
   async onQuit(opts: ElectronClickFnOptions): Promise<void> {
-    this.shouldResolveStatuses = true;
+    this.shouldResolveStatuses = false;
     opts.menuItem.enabled = false;
 
     const isProxyProcessRunning = await this.proxyService.isEnabled();
