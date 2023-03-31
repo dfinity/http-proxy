@@ -1,7 +1,7 @@
 {
-  "name": "@dfinity/http-proxy-core",
+  "name": "@dfinity/http-proxy-daemon",
   "version": "0.0.1",
-  "description": "Gateway server to enable trustless access to the Internet Computer.",
+  "description": "Daemon process to enable trustless access to the Internet Computer.",
   "main": "built/main.js",
   "types": "built/main.d.ts",
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
@@ -11,6 +11,7 @@
     "type": "git"
   },
   "scripts": {
+    "start": "node ./built/start.js",
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext ts,js src",
@@ -35,6 +36,7 @@
     "@types/pako": "^2.0.0"
   },
   "dependencies": {
+    "@dfinity/http-proxy-core": "workspace:*",
     "find-process": "^1.4.7",
     "http-proxy": "^1.18.1",
     "node-cache": "^5.1.2",

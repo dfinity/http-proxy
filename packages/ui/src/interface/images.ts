@@ -25,4 +25,16 @@ export class Images {
       path.join(__dirname, '..', 'assets', 'exit-dark@128x128.png')
     );
   }
+
+  static get enabled(): Electron.NativeImage {
+    return nativeImage.createFromPath(
+      path.join(__dirname, '..', 'assets', 'enabled@64x64.png')
+    );
+  }
+
+  static get disabled(): Electron.NativeImage {
+    return nativeImage.createFromPath(
+      path.join(__dirname, '..', 'assets', 'disabled@64x64.png')
+    );
+  }
 }

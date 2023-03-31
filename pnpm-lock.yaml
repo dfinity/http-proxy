@@ -37,12 +37,83 @@ importers:
 
   packages/core:
     dependencies:
+      find-process:
+        specifier: ^1.4.7
+        version: 1.4.7
+      http-proxy:
+        specifier: ^1.18.1
+        version: 1.18.1
+      node-cache:
+        specifier: ^5.1.2
+        version: 5.1.2
+      node-forge:
+        specifier: ^1.3.1
+        version: 1.3.1
+      pako:
+        specifier: ^2.1.0
+        version: 2.1.0
+      pino:
+        specifier: ^8.11.0
+        version: 8.11.0
+      pino-pretty:
+        specifier: ^9.4.0
+        version: 9.4.0
+    devDependencies:
+      '@types/node-forge':
+        specifier: ^1.3.1
+        version: 1.3.1
+      '@types/pako':
+        specifier: ^2.0.0
+        version: 2.0.0
+
+  packages/daemon:
+    dependencies:
+      '@dfinity/http-proxy-core':
+        specifier: workspace:*
+        version: link:../core
+      find-process:
+        specifier: ^1.4.7
+        version: 1.4.7
+      http-proxy:
+        specifier: ^1.18.1
+        version: 1.18.1
+      node-cache:
+        specifier: ^5.1.2
+        version: 5.1.2
+      node-forge:
+        specifier: ^1.3.1
+        version: 1.3.1
+      pako:
+        specifier: ^2.1.0
+        version: 2.1.0
+      pino:
+        specifier: ^8.11.0
+        version: 8.11.0
+      pino-pretty:
+        specifier: ^9.4.0
+        version: 9.4.0
+    devDependencies:
+      '@types/node-forge':
+        specifier: ^1.3.1
+        version: 1.3.1
+      '@types/pako':
+        specifier: ^2.0.0
+        version: 2.0.0
+
+  packages/server:
+    dependencies:
       '@dfinity/agent':
         specifier: ^0.15.4
         version: 0.15.4(@dfinity/candid@0.15.4)(@dfinity/principal@0.15.4)(@types/node@18.14.0)(typescript@4.9.5)
       '@dfinity/candid':
         specifier: ^0.15.4
         version: 0.15.4(@types/node@18.14.0)(typescript@4.9.5)
+      '@dfinity/http-proxy-core':
+        specifier: workspace:*
+        version: link:../core
+      '@dfinity/http-proxy-daemon':
+        specifier: workspace:*
+        version: link:../daemon
       '@dfinity/principal':
         specifier: ^0.15.4
         version: 0.15.4(@types/node@18.14.0)(typescript@4.9.5)
@@ -80,6 +151,12 @@ importers:
 
   packages/ui:
     dependencies:
+      '@dfinity/http-proxy-core':
+        specifier: workspace:*
+        version: link:../core
+      '@dfinity/http-proxy-server':
+        specifier: workspace:*
+        version: link:../server
       electron:
         specifier: ^23.2.1
         version: 23.2.1

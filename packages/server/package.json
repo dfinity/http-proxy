@@ -1,5 +1,5 @@
 {
-  "name": "@dfinity/http-proxy-core",
+  "name": "@dfinity/http-proxy-server",
   "version": "0.0.1",
   "description": "Gateway server to enable trustless access to the Internet Computer.",
   "main": "built/main.js",
@@ -11,6 +11,7 @@
     "type": "git"
   },
   "scripts": {
+    "start": "node ./built/main.js",
     "dev": "nodemon",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext ts,js src",
@@ -35,6 +36,12 @@
     "@types/pako": "^2.0.0"
   },
   "dependencies": {
+    "@dfinity/http-proxy-core": "workspace:*",
+    "@dfinity/http-proxy-daemon": "workspace:*",
+    "@dfinity/agent": "^0.15.4",
+    "@dfinity/candid": "^0.15.4",
+    "@dfinity/principal": "^0.15.4",
+    "@dfinity/response-verification": "^0.1.0",
     "find-process": "^1.4.7",
     "http-proxy": "^1.18.1",
     "node-cache": "^5.1.2",

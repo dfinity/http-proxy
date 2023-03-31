@@ -2,7 +2,8 @@ import { Images } from '~src/interface/images';
 import Electron, { BrowserWindow, Menu, MenuItem, WebContents } from 'electron';
 
 export enum ProxyMenuItem {
-  Status = 'status',
+  EnabledStatus = 'enabled-status',
+  DisabledStatus = 'disabled-status',
   Start = 'start',
   Stop = 'stop',
   Quit = 'quit',
@@ -56,9 +57,18 @@ export class ProxyMenu {
   static default(): ElectronMenuItem[] {
     return [
       {
-        id: ProxyMenuItem.Status,
-        label: 'status unknown',
+        id: ProxyMenuItem.EnabledStatus,
+        label: 'Proxy is running',
         enabled: false,
+        visible: false,
+        icon: Images.enabled.resize({ width: 8, height: 8 }),
+      },
+      {
+        id: ProxyMenuItem.DisabledStatus,
+        label: 'Proxy is stopped',
+        enabled: false,
+        visible: false,
+        icon: Images.disabled.resize({ width: 8, height: 8 }),
       },
       { type: 'separator' },
       {

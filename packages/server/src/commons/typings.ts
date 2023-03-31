@@ -1,8 +1,3 @@
-export enum SupportedPlatforms {
-  Windows = 'win32',
-  MacOSX = 'darwin',
-}
-
 export interface CertificateConfiguration {
   storage: {
     hostPrefix: string;
@@ -15,17 +10,21 @@ export interface CertificateConfiguration {
   };
 }
 
-export interface IpcChannels {
-  daemon: string;
-  proxy: string;
+export interface ICPServerConfiguration {
+  host: string;
+  port: number;
 }
 
-export interface CoreConfiguration {
+export interface NetServerConfiguration {
+  host: string;
+  port: number;
+}
+
+export interface EnvironmentConfiguration {
+  platform: string;
   rootPath: string;
   dataPath: string;
-  platform: string;
-  windows: boolean;
-  macosx: boolean;
-  ipcChannels: IpcChannels;
   certificate: CertificateConfiguration;
+  netServer: NetServerConfiguration;
+  icpServer: ICPServerConfiguration;
 }

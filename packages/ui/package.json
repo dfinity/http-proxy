@@ -4,7 +4,8 @@
   "description": "Desktop interface to facilitate user interaction with the HTTP Proxy server.",
   "main": "built/main.js",
   "scripts": {
-    "dev": "electron .",
+    "start": "electron .",
+    "dev": "nodemon",
     "build": "tsc && tsc-alias && pnpm copy-assets",
     "copy-assets": "mkdir -p ./built/assets && cp -R ./src/assets ./built",
     "lint": "eslint --ext ts,js src",
@@ -34,6 +35,8 @@
   },
   "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
   "dependencies": {
-    "electron": "^23.2.1"
+    "electron": "^23.2.1",
+    "@dfinity/http-proxy-core": "workspace:*",
+    "@dfinity/http-proxy-server": "workspace:*"
   }
 }

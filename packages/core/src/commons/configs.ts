@@ -1,21 +1,21 @@
 import os from 'node:os';
-import { InitConfiguration, SupportedPlatforms } from './typings';
 import { dirname, resolve } from 'node:path';
+import { CoreConfiguration, SupportedPlatforms } from './typings';
 
 const platform = os.platform();
 
-const isTaskManager = !!process.env.TASK_MANAGER;
-const rootPath = !isTaskManager
-  ? dirname(require.main?.filename ?? process.cwd())
-  : resolve(dirname(require.main?.filename ?? process.cwd()), '..');
+const rootPath = dirname(require.main?.filename ?? process.cwd());
 
-const envConfigs: InitConfiguration = {
-  isTaskManager: isTaskManager,
+const coreConfigs: CoreConfiguration = {
   rootPath: dirname(require.main?.filename ?? process.cwd()),
   dataPath: resolve(rootPath, '..', 'data'),
   platform,
   macosx: platform === SupportedPlatforms.MacOSX,
   windows: platform === SupportedPlatforms.Windows,
+  ipcChannels: {
+    daemon: '/tmp/ic-http-daemon.sock',
+    proxy: '/tmp/ic-http-proxy.sock',
+  },
   certificate: {
     storage: {
       folder: 'certs',
@@ -27,18 +27,6 @@ const envConfigs: InitConfiguration = {
       organizationUnit: 'IC',
     },
   },
-  netServer: {
-    host: '127.0.0.1',
-    port: 4050,
-  },
-  icpServer: {
-    host: '127.0.0.1',
-    port: 4051,
-  },
-  backgroundServer: {
-    host: '127.0.0.1',
-    port: 4052,
-  },
 };
 
-export { envConfigs };
+export { coreConfigs };
