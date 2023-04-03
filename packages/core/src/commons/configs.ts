@@ -1,44 +1,43 @@
+import { existsSync, mkdirSync } from 'node:fs';
 import os from 'node:os';
-import { InitConfiguration, SupportedPlatforms } from './typings';
-import { dirname, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
+import { CoreConfiguration, SupportedPlatforms } from './typings';
 
 const platform = os.platform();
 
-const isTaskManager = !!process.env.TASK_MANAGER;
-const rootPath = !isTaskManager
-  ? dirname(require.main?.filename ?? process.cwd())
-  : resolve(dirname(require.main?.filename ?? process.cwd()), '..');
+if (!process.env.HOME && !process.env.APPDATA) {
+  throw new Error('Missing user data folder');
+}
 
-const envConfigs: InitConfiguration = {
-  isTaskManager: isTaskManager,
-  rootPath: dirname(require.main?.filename ?? process.cwd()),
-  dataPath: resolve(rootPath, '..', 'data'),
+const platformDataFolder =
+  process.env.APPDATA ||
+  (process.platform === 'darwin'
+    ? resolve(String(process.env.HOME), 'Library', 'Preferences')
+    : resolve(String(process.env.HOME), '.local', 'share'));
+
+const dataPath = resolve(platformDataFolder, 'dfinity', 'ichttpproxy');
+
+if (!existsSync(dataPath)) {
+  mkdirSync(dataPath, { recursive: true });
+}
+
+const isMaxOSX = platform === SupportedPlatforms.MacOSX;
+const isWindows = platform === SupportedPlatforms.Windows;
+
+const coreConfigs: CoreConfiguration = {
+  dataPath,
   platform,
-  macosx: platform === SupportedPlatforms.MacOSX,
-  windows: platform === SupportedPlatforms.Windows,
-  certificate: {
-    storage: {
-      folder: 'certs',
-      hostPrefix: 'host',
-    },
-    rootca: {
-      commonName: 'IC HTTP Proxy Root Authority',
-      organizationName: 'IC HTTP Proxy',
-      organizationUnit: 'IC',
-    },
-  },
-  netServer: {
-    host: '127.0.0.1',
-    port: 4050,
-  },
-  icpServer: {
-    host: '127.0.0.1',
-    port: 4051,
-  },
-  backgroundServer: {
-    host: '127.0.0.1',
-    port: 4052,
+  macosx: isMaxOSX,
+  windows: isWindows,
+  encoding: isWindows ? 'utf16le' : 'utf8',
+  ipcChannels: {
+    daemon: isWindows
+      ? join('\\\\.\\pipe\\', 'daemon_pipe')
+      : '/tmp/ic-http-daemon.sock',
+    proxy: isWindows
+      ? join('\\\\.\\pipe\\', 'proxy_pipe')
+      : '/tmp/ic-http-proxy.sock',
   },
 };
 
-export { envConfigs };
+export { coreConfigs };

@@ -1,10 +1,9 @@
-import { CreateCertificateOpts } from './typings';
-import { Certificate } from './certificate';
-import { generateCertificate, generateKeyPair } from './utils';
-import { CertificateConfiguration } from '../commons';
 import { pki } from 'node-forge';
 import { UnsupportedCertificateTypeError } from '../errors';
+import { Certificate } from './certificate';
 import { CertificateStore } from './store';
+import { CertificateConfiguration, CreateCertificateOpts } from './typings';
+import { generateCertificate, generateKeyPair } from './utils';
 
 export class CertificateFactory {
   private readonly issuer: pki.CertificateField[];

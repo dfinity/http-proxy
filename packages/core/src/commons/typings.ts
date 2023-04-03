@@ -3,39 +3,16 @@ export enum SupportedPlatforms {
   MacOSX = 'darwin',
 }
 
-export interface CertificateConfiguration {
-  storage: {
-    hostPrefix: string;
-    folder: string;
-  };
-  rootca: {
-    commonName: string;
-    organizationName: string;
-    organizationUnit: string;
-  };
+export interface IpcChannels {
+  daemon: string;
+  proxy: string;
 }
 
-export interface ICPServerConfiguration {
-  host: string;
-  port: number;
-}
-
-export interface NetServerConfiguration {
-  host: string;
-  port: number;
-}
-
-export type BackgrroundServerConfiguration = NetServerConfiguration;
-
-export interface InitConfiguration {
-  isTaskManager: boolean;
-  rootPath: string;
+export interface CoreConfiguration {
   dataPath: string;
   platform: string;
   windows: boolean;
   macosx: boolean;
-  certificate: CertificateConfiguration;
-  netServer: NetServerConfiguration;
-  icpServer: ICPServerConfiguration;
-  backgroundServer: BackgrroundServerConfiguration;
+  ipcChannels: IpcChannels;
+  encoding: BufferEncoding;
 }

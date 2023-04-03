@@ -1,0 +1,8 @@
+{
+  "watch": ["src"],
+  "ignore": ["src/**/*.spec.ts"],
+  "ext": "ts,json",
+  "exec": "yarn build && yarn start",
+  "legacyWatch": true,
+  "delay": 1000
+}

@@ -4,6 +4,13 @@
   "description": "HTTP Proxy to enable trustless access to the Internet Computer.",
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
   "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/daemon",
+    "packages/server",
+    "packages/ui"
+  ],
   "repository": {
     "url": "git+https://github.com/dfinity/http-proxy-poc.git",
     "type": "git"
@@ -18,14 +25,17 @@
   ],
   "engines": {
     "node": ">=18",
-    "pnpm": "~8",
-    "npm": "please-use-pnpm",
-    "yarn": "please-use-pnpm"
+    "npm": "please-use-yarn",
+    "pnpm": "please-use-yarn",
+    "yarn": "~3"
   },
   "scripts": {
-    "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "lint:fix": "pnpm -r lint:fix"
+    "clean": "find . -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \\;",
+    "build": "yarn workspaces foreach --verbose run build",
+    "start": "yarn workspace @dfinity/http-proxy-ui run start",
+    "pkg": "yarn workspaces foreach --verbose run pkg",
+    "lint": "yarn workspaces foreach --verbose --parallel run lint",
+    "lint:fix": "yarn workspaces foreach --verbose --parallel run lint:fix"
   },
   "devDependencies": {
     "@types/node": "^18.14.0",
