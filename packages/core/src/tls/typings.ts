@@ -12,6 +12,18 @@ export interface CertificateOpts {
   pem: string;
 }
 
+export interface CertificateConfiguration {
+  storage: {
+    hostPrefix: string;
+    folder: string;
+  };
+  rootca: {
+    commonName: string;
+    organizationName: string;
+    organizationUnit: string;
+  };
+}
+
 export type CreateCertificateOpts =
   | {
       type: 'ca';
