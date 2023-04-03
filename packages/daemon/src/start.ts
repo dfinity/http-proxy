@@ -1,8 +1,8 @@
 // Initializes the logger with the correct context
-import { initLogger } from '@dfinity/http-proxy-core';
-initLogger('IC HTTP Proxy Daemon');
+import { initLogger, coreConfigs } from '@dfinity/http-proxy-core';
+initLogger('IC HTTP Proxy Daemon', 'daemon', coreConfigs.dataPath);
 
-import { coreConfigs, logger } from '@dfinity/http-proxy-core';
+import { logger } from '@dfinity/http-proxy-core';
 import { Daemon } from './daemon';
 
 (async (): Promise<void> => {
@@ -14,10 +14,10 @@ import { Daemon } from './daemon';
 
     await daemon.start();
 
-    logger.info('🚀 Waiting for tasks');
+    logger.info('Waiting for tasks');
 
     process.on('SIGINT', () => daemon.shutdown());
   } catch (e) {
-    logger.error(`❌ Failed to start (${String(e)})`);
+    logger.error(`Failed to start (${String(e)})`);
   }
 })();

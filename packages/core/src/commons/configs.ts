@@ -30,13 +30,12 @@ const coreConfigs: CoreConfiguration = {
   macosx: isMaxOSX,
   windows: isWindows,
   ipcChannels: {
-    daemon: isWindows ? join('\\\\.\\pipe\\', 'daemon_pipe') : '/tmp/ic-http-daemon.sock',
-    proxy: isWindows ? join('\\\\.\\pipe\\', 'proxy_pipe') : '/tmp/ic-http-proxy.sock',
-  },
-  logs: {
-    proxy: resolve(dataPath, 'proxy.logs'),
-    daemon: resolve(dataPath, 'daemon.logs'),
-    ui: resolve(dataPath, 'ui.logs'),
+    daemon: isWindows
+      ? join('\\\\.\\pipe\\', 'daemon_pipe')
+      : '/tmp/ic-http-daemon.sock',
+    proxy: isWindows
+      ? join('\\\\.\\pipe\\', 'proxy_pipe')
+      : '/tmp/ic-http-proxy.sock',
   },
 };
 

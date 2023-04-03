@@ -6,13 +6,11 @@
   "scripts": {
     "start": "electron .",
     "dev": "nodemon",
-    "build": "tsc && tsc-alias && pnpm copy-assets",
+    "build": "tsc && tsc-alias && yarn copy-assets",
     "copy-assets": "mkdirp ./built/assets && copyfiles -f ./src/assets/* ./built/assets",
     "lint": "eslint --ext ts,js src",
     "lint:fix": "eslint --ext ts,js --fix src",
-    "app:dir": "electron-builder --dir",
-    "app:dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "pkg": "electron-builder"
   },
   "repository": {
     "type": "git",
@@ -29,28 +27,41 @@
   "license": "MIT",
   "engines": {
     "node": ">=18",
-    "pnpm": "~8",
-    "npm": "please-use-pnpm",
-    "yarn": "please-use-pnpm"
+    "npm": "please-use-yarn",
+    "pnpm": "please-use-yarn",
+    "yarn": "~3"
   },
   "bugs": {
     "url": "https://github.com/dfinity/http-proxy-poc/issues"
   },
   "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
   "dependencies": {
-    "@dfinity/http-proxy-core": "workspace:*",
-    "@dfinity/http-proxy-server": "workspace:*"
+    "@dfinity/http-proxy-core": "0.0.1",
+    "@dfinity/http-proxy-server": "0.0.1"
   },
   "devDependencies": {
+    "@types/node": "^18.14.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
     "copyfiles": "^2.4.1",
     "electron": "23.2.1",
-    "electron-builder": "23.6.0",
-    "mkdirp": "^2.1.6"
+    "electron-builder": "^23.6.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "mkdirp": "^2.1.6",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.4",
+    "tsc-alias": "^1.8.5",
+    "typescript": "^4.9.5"
   },
   "build": {
     "appId": "com.dfinity.ichttpproxy",
     "productName": "IC HTTP Proxy",
     "nodeVersion": "current",
+    "asarUnpack": [
+      "node_modules/@dfinity/http-proxy-daemon/bin/*"
+    ],
     "directories": {
       "output": "pkg"
     },
@@ -60,7 +71,13 @@
     },
     "win": {
       "target": "portable",
-      "icon": "./src/assets/logo-color@128x128.ico"
+      "icon": "./src/assets/logo-color@128x128.ico",
+      "files": [
+        "!.git/*",
+        "!tsconfig.json",
+        "!nodemon.json",
+        "!.eslintrc.js"
+      ]
     }
   }
 }

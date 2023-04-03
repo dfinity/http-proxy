@@ -7,6 +7,8 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 .DS_Store
+.pnpm_store
+.yarn
 
 # Dependency directories
 node_modules

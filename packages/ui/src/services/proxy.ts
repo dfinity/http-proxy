@@ -1,10 +1,9 @@
-import { IPCClient, coreConfigs, logger } from '@dfinity/http-proxy-core';
+import { IPCClient } from '@dfinity/http-proxy-core';
 import {
   IsRunningMessageResponse,
   MessageType,
 } from '@dfinity/http-proxy-server';
 import { fork } from 'child_process';
-import { appendFile } from 'fs';
 
 export class ProxyService {
   public constructor(private readonly ipcClient: IPCClient) {}
@@ -23,25 +22,9 @@ export class ProxyService {
   }
 
   public async startProxyServers(entrypoint: string): Promise<void> {
-    const proxyProcess = fork(entrypoint, undefined, {
-      stdio: 'pipe',
+    fork(entrypoint, undefined, {
+      stdio: 'ignore',
       env: process.env,
-    });
-
-    proxyProcess.stderr?.on('data', (data) => {
-      appendFile(coreConfigs.logs.proxy, data.toString(), (e) => {
-        if (e) {
-          logger.error(`Failed to append proxy logs (String(e))`);
-        }
-      });
-    });
-
-    proxyProcess.stdout?.on('data', (data) => {
-      appendFile(coreConfigs.logs.proxy, data.toString(), (e) => {
-        if (e) {
-          logger.error(`Failed to append proxy logs (String(e))`);
-        }
-      });
     });
   }
 }

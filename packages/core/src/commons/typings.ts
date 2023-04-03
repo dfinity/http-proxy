@@ -14,9 +14,4 @@ export interface CoreConfiguration {
   windows: boolean;
   macosx: boolean;
   ipcChannels: IpcChannels;
-  logs: {
-    proxy: string;
-    daemon: string;
-    ui: string;
-  };
 }
