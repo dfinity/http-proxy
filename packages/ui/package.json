@@ -67,7 +67,13 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "icon": "./src/assets/logo-color@128x128.icns"
+      "icon": "./src/assets/logo-color@128x128.icns",
+      "files": [
+        "!.git/*",
+        "!tsconfig.json",
+        "!nodemon.json",
+        "!.eslintrc.js"
+      ]
     },
     "win": {
       "target": "portable",
