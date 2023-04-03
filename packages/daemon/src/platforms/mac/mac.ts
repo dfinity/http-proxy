@@ -17,7 +17,11 @@ export class MacPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
 
   public async attach(): Promise<void> {
-    await this.trustCertificate(true, this.configs.ca.path);
+    await this.trustCertificate(
+      true,
+      this.configs.ca.path,
+      this.configs.ca.commonName
+    );
     await this.configureWebProxy(true, {
       host: this.configs.proxy.host,
       port: this.configs.proxy.port,
@@ -25,7 +29,11 @@ export class MacPlatform implements Platform {
   }
 
   public async detach(): Promise<void> {
-    await this.trustCertificate(false, this.configs.ca.path);
+    await this.trustCertificate(
+      false,
+      this.configs.ca.path,
+      this.configs.ca.commonName
+    );
     await this.configureWebProxy(false, {
       host: this.configs.proxy.host,
       port: this.configs.proxy.port,
@@ -43,7 +51,11 @@ export class MacPlatform implements Platform {
     });
   }
 
-  private async trustCertificate(trust: boolean, path: string): Promise<void> {
+  private async trustCertificate(
+    trust: boolean,
+    path: string,
+    commonName: string
+  ): Promise<void> {
     const isTrusted = await this.isTrustedCertificate(path);
     const shouldContinue = trust ? !isTrusted : isTrusted;
     if (!shouldContinue) {
@@ -52,7 +64,7 @@ export class MacPlatform implements Platform {
 
     const trustCommand = trust
       ? `security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}`
-      : `security remove-trusted-cert -d ${path}`;
+      : `security delete-certificate -c '${commonName}'`;
 
     return new Promise<void>((ok, err) => {
       const shellScript =

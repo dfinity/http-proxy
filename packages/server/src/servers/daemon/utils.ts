@@ -1,6 +1,7 @@
 import {
   SupportedPlatforms,
   UnsupportedPlatformError,
+  coreConfigs,
   execAsync,
 } from '@dfinity/http-proxy-core';
 
@@ -23,7 +24,11 @@ export const daemonBinPath = async (platform: string): Promise<string> => {
 };
 
 const spawnDaemonProcessMacOSX = async (daemonPath: string): Promise<void> => {
-  const command = [daemonPath.replaceAll(' ', '\\\\ '), `&`].join(' ');
+  const command = [
+    daemonPath.replaceAll(' ', '\\\\ '),
+    '&>/dev/null',
+    `&`,
+  ].join(' ');
   const promptMessage =
     'IC HTTP Proxy needs your permission to create a secure environment';
   const runCommand = [
@@ -38,9 +43,10 @@ const spawnDaemonProcessMacOSX = async (daemonPath: string): Promise<void> => {
 const spawnDaemonProcessWindows = async (daemonPath: string): Promise<void> => {
   const command = [`$env:DAEMON_EXEC_PATH`].join(' ');
   const startProcessCommand = `$env:DAEMON_EXEC_PATH='"${daemonPath}"'; start-process -windowstyle hidden cmd -verb runas -argumentlist "/c ${command}"`;
-  const encodedCommand = Buffer.from(startProcessCommand, 'utf16le').toString(
-    'base64'
-  );
+  const encodedCommand = Buffer.from(
+    startProcessCommand,
+    coreConfigs.encoding
+  ).toString('base64');
   const spawnCommand = `powershell -EncodedCommand ${encodedCommand}`;
 
   await execAsync(spawnCommand);

@@ -29,6 +29,7 @@ const coreConfigs: CoreConfiguration = {
   platform,
   macosx: isMaxOSX,
   windows: isWindows,
+  encoding: isWindows ? 'utf16le' : 'utf8',
   ipcChannels: {
     daemon: isWindows
       ? join('\\\\.\\pipe\\', 'daemon_pipe')

@@ -25,8 +25,8 @@ export type ElectronClickFn = (opts: ElectronClickFnOptions) => void;
 export class ProxyMenu {
   private _menu;
 
-  public constructor(items?: ElectronMenuItem[]) {
-    const template = items ?? ProxyMenu.default();
+  public constructor(readonly images: Images, items?: ElectronMenuItem[]) {
+    const template = items ?? ProxyMenu.default(images);
     this._menu = Menu.buildFromTemplate(template);
   }
 
@@ -54,35 +54,35 @@ export class ProxyMenu {
     };
   }
 
-  static default(): ElectronMenuItem[] {
+  static default(images: Images): ElectronMenuItem[] {
     return [
       {
         id: ProxyMenuItem.EnabledStatus,
         label: 'Proxy is running',
         enabled: false,
         visible: false,
-        icon: Images.enabled.resize({ width: 8, height: 8 }),
+        icon: images.enabled.resize({ width: 8, height: 8 }),
       },
       {
         id: ProxyMenuItem.DisabledStatus,
         label: 'Proxy is stopped',
         enabled: false,
         visible: false,
-        icon: Images.disabled.resize({ width: 8, height: 8 }),
+        icon: images.disabled.resize({ width: 8, height: 8 }),
       },
       { type: 'separator' },
       {
         id: ProxyMenuItem.Start,
         label: 'start',
         type: 'normal',
-        icon: Images.play.resize({ width: 16, height: 16 }),
+        icon: images.play.resize({ width: 16, height: 16 }),
         enabled: false,
       },
       {
         id: ProxyMenuItem.Stop,
         label: 'stop',
         type: 'normal',
-        icon: Images.pause.resize({ width: 16, height: 16 }),
+        icon: images.pause.resize({ width: 16, height: 16 }),
         enabled: false,
       },
       { type: 'separator' },
@@ -90,7 +90,7 @@ export class ProxyMenu {
         id: ProxyMenuItem.Quit,
         label: 'quit',
         type: 'normal',
-        icon: Images.exit.resize({ width: 16, height: 16 }),
+        icon: images.exit.resize({ width: 16, height: 16 }),
       },
     ];
   }

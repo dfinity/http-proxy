@@ -4,7 +4,7 @@ import {
   coreConfigs,
   logger,
 } from '@dfinity/http-proxy-core';
-import { Tray, app } from 'electron';
+import { Tray, app, nativeTheme } from 'electron';
 import { proxyNodeEntrypointPath } from '~src/commons/utils';
 import {
   ElectronClickFnOptions,
@@ -19,16 +19,22 @@ export class ProxyUI {
   private tray!: Tray;
   private taskbar!: ProxyMenu;
   private shouldResolveStatuses = true;
+  private readonly images: Images;
 
   private constructor(
     private readonly configs: ProxyUIOptions,
     private readonly proxyService: ProxyService
-  ) {}
+  ) {
+    this.images = new Images(configs.darkMode);
+  }
 
   static async init(): Promise<void> {
     const proxyPath = await proxyNodeEntrypointPath();
     const ui = new ProxyUI(
-      { proxy: { entrypoint: proxyPath } },
+      {
+        proxy: { entrypoint: proxyPath },
+        darkMode: nativeTheme.shouldUseDarkColors,
+      },
       new ProxyService(new IPCClient({ path: coreConfigs.ipcChannels.proxy }))
     );
 
@@ -36,8 +42,8 @@ export class ProxyUI {
   }
 
   async render(): Promise<void> {
-    this.tray = new Tray(Images.logo.resize({ width: 18, height: 18 }));
-    this.taskbar = new ProxyMenu();
+    this.tray = new Tray(this.images.logo.resize({ width: 18, height: 18 }));
+    this.taskbar = new ProxyMenu(this.images);
 
     this.taskbar.onClick(ProxyMenuItem.Quit, this.onQuit.bind(this));
     this.taskbar.onClick(ProxyMenuItem.Start, this.onStart.bind(this));

@@ -14,4 +14,5 @@ export interface CoreConfiguration {
   windows: boolean;
   macosx: boolean;
   ipcChannels: IpcChannels;
+  encoding: BufferEncoding;
 }
