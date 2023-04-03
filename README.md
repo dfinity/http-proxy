@@ -1,4 +1,4 @@
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 ![GitHub license](https://img.shields.io/badge/support-windows,%20macosx-blue.svg?style=flat-square)
 
 # IC HTTP Proxy
@@ -37,18 +37,7 @@ An implementation of the IC HTTP Gateway Protocol that enables end-to-end secure
 
 Other platforms could also be supported if the user would add the generated root certificate to the device trusted store and add the proxy HTTP server to the active network interface configuration.
 
-## Packages
-
-This monorepo has multiple locally maintained packages in the root [package.json](package.json) configuration.
-
-| Package | Links | Description |
-|---|---|---|
-| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/core) | The `core` package contains a set o core features shared among other packages of this monorepo. |  
-| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/daemon) | A background process that can received tasks to execute against the operating system and monitor the status of the proxy server instance. |  
-| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
-| `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/ui) | Electron app responsible for the graphical interface. |
-
-## Requirements
+## Setup
 
 The package manager of this monorepo is [yarn](https://yarnpkg.com/) and the applications are built for [nodejs](https://nodejs.org/en). The usage of [nvm](https://github.com/nvm-sh/nvm) is recommended to keep the node version in sync.
 
@@ -76,3 +65,19 @@ Produces the required binaries and installation bundles for the supported platfo
 ```bash
 yarn pkg
 ```
+
+The proxy graphical interface is started and added to the operating system menubar.
+```bash
+yarn start
+```
+
+## Packages
+
+This monorepo has multiple locally maintained packages in the root [package.json](package.json) configuration.
+
+| Package | Links | Description |
+|---|---|---|
+| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/core) | The `core` package contains a set o core features shared among other packages of this monorepo. |  
+| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/daemon) | A background process that can received tasks to execute against the operating system and monitor the status of the proxy server instance. |  
+| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
+| `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/ui) | Electron app responsible for the graphical interface. |

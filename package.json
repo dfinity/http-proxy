@@ -32,6 +32,7 @@
   "scripts": {
     "clean": "find . -name 'node_modules' -type d -prune -print -exec rm -rf '{}' \\;",
     "build": "yarn workspaces foreach --verbose run build",
+    "start": "yarn workspace @dfinity/http-proxy-ui run start",
     "pkg": "yarn workspaces foreach --verbose run pkg",
     "lint": "yarn workspaces foreach --verbose --parallel run lint",
     "lint:fix": "yarn workspaces foreach --verbose --parallel run lint:fix"
