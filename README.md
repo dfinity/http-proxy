@@ -1,5 +1,6 @@
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
-![GitHub license](https://img.shields.io/badge/support-windows,%20macosx-blue.svg?style=flat-square)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
+[![GitHub license](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](#)
+[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](#)
 
 # IC HTTP Proxy
 
