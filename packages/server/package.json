@@ -5,10 +5,12 @@
   "main": "built/main.js",
   "types": "built/main.d.ts",
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/dfinity/http-proxy/tree/main/packages/server#readme",
   "repository": {
-    "url": "git+https://github.com/dfinity/http-proxy-poc.git",
-    "type": "git"
+    "url": "https://github.com/dfinity/http-proxy.git",
+    "type": "git",
+    "directory": "packages/server"
   },
   "scripts": {
     "start": "node ./built/start.js",
