@@ -4,3 +4,8 @@ export interface ProxyUIOptions {
     entrypoint: string;
   };
 }
+
+export enum ProxyStatus {
+  Enabled = 'enbaled',
+  Disabled = 'disabled',
+}

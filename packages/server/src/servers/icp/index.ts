@@ -5,6 +5,7 @@ import { SecureContext, createSecureContext } from 'tls';
 import { lookupIcDomain } from './domains';
 import { HTTPHeaders, ICPServerOpts } from './typings';
 import { convertIncomingMessage, processIcRequest } from './utils';
+import { environment } from '~src/commons';
 
 export class ICPServer {
   private httpsServer!: https.Server;
@@ -59,7 +60,20 @@ export class ICPServer {
     }
   ): Promise<void> {
     try {
-      const request = await convertIncomingMessage(incomingMessage);
+      const request = await convertIncomingMessage(
+        incomingMessage,
+        (headers) => {
+          const userAgent = headers.get(HTTPHeaders.UserAgent);
+          if (userAgent) {
+            headers.set(
+              HTTPHeaders.UserAgent,
+              `${userAgent} ${environment.userAgent}`
+            );
+          }
+
+          return headers;
+        }
+      );
       const url = new URL(request.url);
       const canister = await lookupIcDomain(url.hostname);
       if (!canister) {

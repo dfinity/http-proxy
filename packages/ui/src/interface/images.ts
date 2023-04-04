@@ -8,8 +8,16 @@ export class Images {
 
   get logo(): Electron.NativeImage {
     const image = this.isInDarkMode
-      ? 'logo-white@124x124.png'
-      : 'logo-color@124x124.png';
+      ? 'logo-dark@124x124.png'
+      : 'logo-light@124x124.png';
+
+    return nativeImage.createFromPath(join(Images.path, image));
+  }
+
+  get logoEnabled(): Electron.NativeImage {
+    const image = this.isInDarkMode
+      ? 'logo-dark-enabled@124x124.png'
+      : 'logo-light-enabled@124x124.png';
 
     return nativeImage.createFromPath(join(Images.path, image));
   }

@@ -377,17 +377,19 @@ export const parseIncomingMessageHeaders = (
 };
 
 export const convertIncomingMessage = (
-  incoming: IncomingMessage
+  incoming: IncomingMessage,
+  processHeaders?: (headers: Headers) => Headers
 ): Promise<Request> => {
-  const headers = parseIncomingMessageHeaders(incoming.headers);
+  const rawHeaders = parseIncomingMessageHeaders(incoming.headers);
   const urlPath = incoming.url ?? '';
-  const hostname = headers.get('host') ?? '';
+  const hostname = rawHeaders.get('host') ?? '';
   const url = new URL(`https://${hostname}${urlPath}`);
   const method = (incoming.method ?? HTTPMethods.GET.toString()).toLowerCase();
   const canHaveBody = ![
     HTTPMethods.GET.toString().toLowerCase(),
     HTTPMethods.HEAD.toString().toLowerCase(),
   ].includes(method);
+  const headers = processHeaders ? processHeaders(rawHeaders) : rawHeaders;
 
   return new Promise<Request>((ok) => {
     let requestBody = '';

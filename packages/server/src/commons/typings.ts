@@ -11,6 +11,7 @@ export interface NetServerConfiguration {
 }
 
 export interface EnvironmentConfiguration {
+  userAgent: string;
   platform: string;
   certificate: CertificateConfiguration;
   netServer: NetServerConfiguration;
