@@ -1,6 +1,6 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
-[![GitHub license](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/untagged-2fafce90da9a1228988f/ic-http-proxy-0.0.1-mac-arm64.dmg)
-[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/untagged-2fafce90da9a1228988f/ic-http-proxy-0.0.1-win-64.exe)
+[![GitHub license](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/untagged-28019e5d47da4e6cdfea/ic-http-proxy-0.0.1-mac-arm64.dmg)
+[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/untagged-28019e5d47da4e6cdfea/ic-http-proxy-0.0.1-win-64.exe)
 
 # IC HTTP Proxy
 > This application is a Proof of concept.
