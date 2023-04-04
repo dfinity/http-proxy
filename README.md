@@ -3,6 +3,7 @@
 [![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](#)
 
 # IC HTTP Proxy
+> This application is a Proof of concept.
 
 ## Overview
 
