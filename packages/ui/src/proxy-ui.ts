@@ -60,7 +60,7 @@ export class ProxyUI {
     this.registerInterfaceUpdater();
   }
 
-  async registerInterfaceUpdater(statusCheckIntervalMs = 1000): Promise<void> {
+  async registerInterfaceUpdater(statusCheckIntervalMs = 500): Promise<void> {
     this.unregisterInterfaceUpdater();
 
     this.updater = setTimeout(() => {
@@ -80,21 +80,6 @@ export class ProxyUI {
     try {
       const isProxyProcessRunning =
         isProxyRunning ?? (await this.proxyService.isEnabled());
-
-      if (isProxyProcessRunning && this.lastStatus !== ProxyStatus.Enabled) {
-        this.lastStatus = ProxyStatus.Enabled;
-
-        this.tray.setImage(
-          this.images.logoEnabled.resize({ width: 18, height: 18 })
-        );
-      } else if (
-        !isProxyProcessRunning &&
-        this.lastStatus !== ProxyStatus.Disabled
-      ) {
-        this.lastStatus = ProxyStatus.Disabled;
-
-        this.tray.setImage(this.images.logo.resize({ width: 18, height: 18 }));
-      }
 
       const startItem = assertPresent(
         this.taskbar.menu.getMenuItemById(ProxyMenuItem.Start)
@@ -116,6 +101,26 @@ export class ProxyUI {
       );
 
       const shouldBlockActionButtons = this.isStarting || this.isStopping;
+
+      if (
+        isProxyProcessRunning &&
+        this.lastStatus !== ProxyStatus.Enabled &&
+        !shouldBlockActionButtons
+      ) {
+        this.lastStatus = ProxyStatus.Enabled;
+
+        this.tray.setImage(
+          this.images.logoEnabled.resize({ width: 18, height: 18 })
+        );
+      } else if (
+        !isProxyProcessRunning &&
+        this.lastStatus !== ProxyStatus.Disabled &&
+        !shouldBlockActionButtons
+      ) {
+        this.lastStatus = ProxyStatus.Disabled;
+
+        this.tray.setImage(this.images.logo.resize({ width: 18, height: 18 }));
+      }
 
       if (shouldBlockActionButtons) {
         startItem.enabled = false;
