@@ -25,7 +25,7 @@ An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org
 
 * Terminates TLS connection locally with self Root Authority
 
-* IC domain detection from principals and custom domain DNS records
+* Detects IC domains from principals and custom domain DNS records
 
 * Bypasses remote gateway denylists
 
