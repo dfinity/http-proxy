@@ -125,11 +125,7 @@ export class ProxyServers {
   }
 
   private async handleStopMessage(): Promise<StopMessageResponse> {
-    // register shutdown with a delay to allow the ipc channel
-    // to still process the message
-    setTimeout(() => this.shutdown(), 1000);
-
-    return { stopped: true };
+    this.shutdown();
   }
 
   private async initServers(): Promise<void> {

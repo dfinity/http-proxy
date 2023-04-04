@@ -17,7 +17,8 @@ export class ProxyService {
 
   public async stopServers(): Promise<void> {
     this.ipcClient
-      .sendMessage<void>({ type: MessageType.Stop })
+      .sendMessage<void>({ type: MessageType.Stop, skipWait: true })
+      .then((resp) => resp.processed)
       .catch(() => false);
   }
 

@@ -7,7 +7,7 @@ export interface IPCClientOptions {
   path: string;
 }
 
-export type EventMessage = { type: string };
+export type EventMessage = { type: string; skipWait?: boolean };
 
 export type ResultMessage<T = unknown> = {
   processed: boolean;

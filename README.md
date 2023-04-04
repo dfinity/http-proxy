@@ -48,9 +48,15 @@ The package manager of this monorepo is [yarn](https://yarnpkg.com/) and the app
 The following steps can be used to setup the proxy for local development and to package it to your system architecture.
 
 This will setup yarn with the latest stable release.
-
 ```bash
-corepack enable && corepack prepare yarn@stable --activate
+corepack enable
+corepack prepare yarn@3.5.0 --activate
+```
+
+Yarn can also be enabled through `npm`.
+```
+npm install --global yarn
+yarn set version 3.5.0
 ```
 
 All dependencies can be installed with a single install command from the root of the monorepo.

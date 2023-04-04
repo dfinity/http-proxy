@@ -26,23 +26,41 @@ export class IPCServer {
     this.server.addListener('close', this.onClose.bind(this));
   }
 
+  private static writeAndCloseSocket(
+    socket: net.Socket,
+    result: ResultMessage
+  ): void {
+    socket.write(JSON.stringify(result));
+    socket.end();
+  }
+
   private async onConnection(socket: net.Socket): Promise<void> {
     socket.on('data', async (data) => {
-      const result: ResultMessage = { processed: false };
+      const result: ResultMessage = { processed: true };
 
       try {
         const event = JSON.parse(data.toString()) as EventMessage;
+        const skipWait = event?.skipWait ?? false;
+
+        if (skipWait) {
+          IPCServer.writeAndCloseSocket(socket, result);
+
+          if (event?.type && this.options.onMessage) {
+            this.options.onMessage(event);
+          }
+          return;
+        }
 
         if (event?.type && this.options.onMessage) {
           result.data = await this.options.onMessage(event);
+
+          IPCServer.writeAndCloseSocket(socket, result);
         }
-        result.processed = true;
       } catch (e) {
         result.processed = false;
         result.err = String(e);
-      } finally {
-        socket.write(JSON.stringify(result));
-        socket.end();
+
+        IPCServer.writeAndCloseSocket(socket, result);
       }
     });
 
