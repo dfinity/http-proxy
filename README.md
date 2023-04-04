@@ -7,7 +7,7 @@
 
 ## Overview
 
-An implementation of the IC HTTP Gateway Protocol that enables end-to-end secure connections with dApps being served from the internet computer.
+An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org/docs/current/references/ic-interface-spec/#http-gateway) that enables end-to-end secure connections with dApps being served from the [Internet Computer](https://internetcomputer.org/).
 
 ### Motivation and Goals
 
@@ -23,13 +23,13 @@ An implementation of the IC HTTP Gateway Protocol that enables end-to-end secure
 
 * Translates between IC API calls and HTTP Asset Requests
 
-* Terminates TLS connection with self Root Authority
+* Terminates TLS connection locally with self Root Authority
 
-* IC domain detection from principals and custom domain DNS records
+* Detects IC domains from principals and custom domain DNS records
 
 * Bypasses remote gateway denylists
 
-* Can resolve crypto domains
+* Resolves crypto domains
 
 ### Supported Platforms
 
@@ -37,7 +37,7 @@ An implementation of the IC HTTP Gateway Protocol that enables end-to-end secure
 
 * MacOSX
 
-Other platforms could also be supported if the user would add the generated root certificate to the device trusted store and add the proxy HTTP server to the active network interface configuration.
+Other platforms can also be supported by adding the generated root certificate to the device trusted store and adding the proxy HTTP server to the active network interface configuration.
 
 ## Setup
 
@@ -79,7 +79,7 @@ This monorepo has multiple locally maintained packages in the root [package.json
 
 | Package | Links | Description |
 |---|---|---|
-| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/core) | The `core` package contains a set o core features shared among other packages of this monorepo. |  
-| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/daemon) | A background process that can received tasks to execute against the operating system and monitor the status of the proxy server instance. |  
+| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/core) | The `core` package contains a set of core features shared among other packages of this monorepo. |  
+| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/daemon) | A background process that receives tasks to execute against the operating system and monitors the status of the proxy server instance. |  
 | `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
 | `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/ui) | Electron app responsible for the graphical interface. |
