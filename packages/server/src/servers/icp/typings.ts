@@ -58,6 +58,7 @@ export enum HTTPHeaders {
   ServiceWorker = 'service-worker',
   Referer = 'referer',
   ContentType = 'content-type',
+  UserAgent = 'user-agent',
 }
 
 export enum HTTPMethods {

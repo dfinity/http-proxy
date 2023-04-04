@@ -14,7 +14,7 @@ import {
   ProxyMenuItem,
 } from '~src/interface';
 import { ProxyService } from '~src/services';
-import { ProxyUIOptions } from '~src/typings';
+import { ProxyStatus, ProxyUIOptions } from '~src/typings';
 
 export class ProxyUI {
   private tray!: Tray;
@@ -24,6 +24,7 @@ export class ProxyUI {
   private isStopping = false;
   private updater: null | NodeJS.Timeout = null;
   private static readonly maxStatusChangeMs = 20000;
+  private lastStatus = ProxyStatus.Disabled;
 
   private constructor(
     private readonly configs: ProxyUIOptions,
@@ -79,6 +80,22 @@ export class ProxyUI {
     try {
       const isProxyProcessRunning =
         isProxyRunning ?? (await this.proxyService.isEnabled());
+
+      if (isProxyProcessRunning && this.lastStatus !== ProxyStatus.Enabled) {
+        this.lastStatus = ProxyStatus.Enabled;
+
+        this.tray.setImage(
+          this.images.logoEnabled.resize({ width: 18, height: 18 })
+        );
+      } else if (
+        !isProxyProcessRunning &&
+        this.lastStatus !== ProxyStatus.Disabled
+      ) {
+        this.lastStatus = ProxyStatus.Disabled;
+
+        this.tray.setImage(this.images.logo.resize({ width: 18, height: 18 }));
+      }
+
       const startItem = assertPresent(
         this.taskbar.menu.getMenuItemById(ProxyMenuItem.Start)
       );

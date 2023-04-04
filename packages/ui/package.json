@@ -68,7 +68,7 @@
     },
     "mac": {
       "category": "public.app-category.utilities",
-      "icon": "./src/assets/logo-color@128x128.icns",
+      "icon": "./src/assets/logo@128x128.icns",
       "files": [
         "!bin/http-proxy-daemon-win.exe",
         "!.git/*",
@@ -79,7 +79,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "./src/assets/logo-color@128x128.ico",
+      "icon": "./src/assets/logo@128x128.ico",
       "files": [
         "!bin/http-proxy-daemon-macos",
         "!.git/*",

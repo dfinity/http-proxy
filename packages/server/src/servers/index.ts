@@ -10,6 +10,7 @@ import { MissingCertificateError, MissingRequirementsError } from '~src/errors';
 import { DaemonProcess } from '~src/servers/daemon';
 import {
   IsRunningMessageResponse,
+  IsStartedMessageResponse,
   MessageResponse,
   MessageType,
   ProxyServersOptions,
@@ -25,6 +26,7 @@ export class ProxyServers {
   private netServer!: NetProxy;
   private ipcServer!: IPCServer;
   private isEnabled = false;
+  private shuttingDown = false;
 
   private certificates: {
     ca?: Certificate;
@@ -74,6 +76,8 @@ export class ProxyServers {
   }
 
   public shutdown(): void {
+    this.shuttingDown = true;
+
     logger.info('Proxy is shutting down.');
 
     this.netServer.shutdown();
@@ -82,8 +86,6 @@ export class ProxyServers {
     this.daemon.shutdown();
 
     this.isEnabled = false;
-
-    process.exit(0);
   }
 
   private async setupRequirements(): Promise<boolean> {
@@ -128,6 +130,10 @@ export class ProxyServers {
     this.shutdown();
   }
 
+  private async handleIsStartedMessage(): Promise<IsStartedMessageResponse> {
+    return { isShuttingDown: this.shuttingDown };
+  }
+
   private async initServers(): Promise<void> {
     this.ipcServer = await IPCServer.create({
       path: this.configs.ipcChannels.proxy,
@@ -137,6 +143,8 @@ export class ProxyServers {
             return await this.handleIsRunningMessage();
           case MessageType.Stop:
             return await this.handleStopMessage();
+          case MessageType.IsStarted:
+            return await this.handleIsStartedMessage();
         }
       },
     });
