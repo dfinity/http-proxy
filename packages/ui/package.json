@@ -78,7 +78,7 @@
       ]
     },
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "./src/assets/logo-color@128x128.ico",
       "files": [
         "!bin/http-proxy-daemon-macos",
