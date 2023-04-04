@@ -14,7 +14,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dfinity/http-proxy-poc.git"
+    "url": "https://github.com/dfinity/http-proxy.git",
+    "directory": "packages/ui"
   },
   "keywords": [
     "ic",
@@ -24,7 +25,7 @@
     "dfinity"
   ],
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=18",
     "npm": "please-use-yarn",
@@ -32,9 +33,9 @@
     "yarn": "~3"
   },
   "bugs": {
-    "url": "https://github.com/dfinity/http-proxy-poc/issues"
+    "url": "https://github.com/dfinity/http-proxy/issues"
   },
-  "homepage": "https://github.com/dfinity/http-proxy-poc#readme",
+  "homepage": "https://github.com/dfinity/http-proxy/tree/main/packages/ui#readme",
   "dependencies": {
     "@dfinity/http-proxy-core": "0.0.1",
     "@dfinity/http-proxy-server": "0.0.1"

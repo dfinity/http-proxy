@@ -79,7 +79,7 @@ This monorepo has multiple locally maintained packages in the root [package.json
 
 | Package | Links | Description |
 |---|---|---|
-| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/core) | The `core` package contains a set o core features shared among other packages of this monorepo. |  
-| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/daemon) | A background process that can received tasks to execute against the operating system and monitor the status of the proxy server instance. |  
-| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
-| `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy-poc/tree/main/packages/ui) | Electron app responsible for the graphical interface. |
+| `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/core) | The `core` package contains a set o core features shared among other packages of this monorepo. |  
+| `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/daemon) | A background process that can received tasks to execute against the operating system and monitor the status of the proxy server instance. |  
+| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
+| `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/ui) | Electron app responsible for the graphical interface. |

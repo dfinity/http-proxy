@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "HTTP Proxy to enable trustless access to the Internet Computer.",
   "author": "Kepler Vital <kepler.vital@dfinity.org>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "private": true,
   "workspaces": [
     "packages/core",
@@ -11,8 +11,9 @@
     "packages/server",
     "packages/ui"
   ],
+  "homepage": "https://github.com/dfinity/http-proxy#readme",
   "repository": {
-    "url": "git+https://github.com/dfinity/http-proxy-poc.git",
+    "url": "https://github.com/dfinity/http-proxy.git",
     "type": "git"
   },
   "keywords": [
