@@ -49,4 +49,10 @@ export class Images {
 
     return nativeImage.createFromPath(join(Images.path, image));
   }
+
+  get pending(): Electron.NativeImage {
+    const image = 'pending@64x64.png';
+
+    return nativeImage.createFromPath(join(Images.path, image));
+  }
 }

@@ -15,9 +15,7 @@ export interface IsRunningMessageResponse {
   running: boolean;
 }
 
-export interface StopMessageResponse {
-  stopped: boolean;
-}
+export type StopMessageResponse = void;
 
 export type MessageResponse =
   | void
