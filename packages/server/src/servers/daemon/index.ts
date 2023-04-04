@@ -24,9 +24,11 @@ export class DaemonProcess {
   }
 
   public shutdown(): void {
-    this.ipcClient.sendMessage({ type: MessageType.DisableProxy }).catch(() => {
-      // do nothing if the daemon is already shutdown
-    });
+    this.ipcClient
+      .sendMessage({ type: MessageType.DisableProxy, skipWait: true })
+      .catch(() => {
+        // do nothing if the daemon is already shutdown
+      });
   }
 
   public async enableProxy(opts: EnableProxyOptions): Promise<ResultMessage> {
