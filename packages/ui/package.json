@@ -69,6 +69,12 @@
     "mac": {
       "category": "public.app-category.utilities",
       "icon": "./src/assets/logo@128x128.icns",
+      "target": {
+        "target": "dmg",
+        "arch": [
+          "universal"
+        ]
+      },
       "files": [
         "!bin/http-proxy-daemon-win.exe",
         "!.git/*",
