@@ -1,6 +1,6 @@
 import { Principal } from '@dfinity/principal';
 import InMemoryCache from 'node-cache';
-import dns from 'node:dns';
+import { Resolver } from 'node:dns';
 import { CANISTER_DNS_PREFIX, hostnameCanisterIdMap } from './static';
 import { logger } from '@dfinity/http-proxy-core';
 
@@ -8,6 +8,9 @@ const cachedLookups = new InMemoryCache({
   stdTTL: 60 * 5, // 5 minutes
   maxKeys: 1000,
 });
+
+const dnsResolverTimeoutMs = 5000;
+const dnsResolveReries = 3;
 
 const inFlightLookups: Map<string, Promise<Principal | null>> = new Map();
 
@@ -113,22 +116,30 @@ export const maybeResolveCanisterFromDns = async (
   hostname: string
 ): Promise<Principal | null> => {
   return new Promise<Principal | null>((ok, reject) => {
-    dns.resolveTxt(`${CANISTER_DNS_PREFIX}.${hostname}`, (err, addresses) => {
-      // those codes are expected if the subdomain is not set
-      if (err && ['ENOTFOUND', 'ENODATA'].includes(err.code ?? '')) {
-        return ok(null);
-      } else if (err) {
-        return reject(err);
-      }
-
-      const [result] = addresses ?? [];
-      const [canisterId] = result ?? [];
-
-      try {
-        ok(Principal.fromText(canisterId));
-      } catch (e) {
-        ok(null);
-      }
+    const dnsResolver = new Resolver({
+      timeout: dnsResolverTimeoutMs,
+      tries: dnsResolveReries,
     });
+
+    dnsResolver.resolveTxt(
+      `${CANISTER_DNS_PREFIX}.${hostname}`,
+      (err, addresses) => {
+        // those codes are expected if the subdomain is not set
+        if (err && ['ENOTFOUND', 'ENODATA'].includes(err.code ?? '')) {
+          return ok(null);
+        } else if (err) {
+          return reject(err);
+        }
+
+        const [result] = addresses ?? [];
+        const [canisterId] = result ?? [];
+
+        try {
+          ok(Principal.fromText(canisterId));
+        } catch (e) {
+          ok(null);
+        }
+      }
+    );
   });
 };

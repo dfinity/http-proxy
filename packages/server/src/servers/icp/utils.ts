@@ -177,14 +177,16 @@ const SW_UNINSTALL_SCRIPT = `
 // Uninstalling the IC service worker in favor of the proxy.
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => {
-  // uninstall itself & then reload page
+  // uninstall itself & reload page
   self.registration
     .unregister()
     .then(function () {
       return self.clients.matchAll();
     })
     .then(function (clients) {
-      clients.forEach((client) => client.navigate(client.url));
+      clients.forEach((client) => {
+        client.navigate(client.url);
+      });
     });
 });
 `;
@@ -225,12 +227,27 @@ export const maybeUninstallHTTPGatewayServiceWorker = (
   const serviceWorkerUpdateRequest = !!request.headers.get(
     HTTPHeaders.ServiceWorker
   );
+
   if (!serviceWorkerUpdateRequest) {
     return null;
   }
 
+  const contentType =
+    icResponse.headers.get(HTTPHeaders.ContentType)?.trim() ?? '';
+  const hasOnChainSW =
+    icResponse.status >= 200 &&
+    icResponse.status <= 299 &&
+    [
+      'text/javascript',
+      'application/javascript',
+      'application/x-javascript',
+    ].includes(contentType) &&
+    !new TextDecoder()
+      .decode(icResponse.body)
+      .includes('registration.unregister()');
+
   // if the ic response contains a service worker we ignore the uninstall script
-  if (icResponse.status <= 400) {
+  if (hasOnChainSW) {
     return null;
   }
 

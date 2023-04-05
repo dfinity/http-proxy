@@ -101,6 +101,7 @@ export class ICPServer {
       const responseBody = `Proxy failed to handle internet computer request ${e}`;
       const bodyLength = Buffer.byteLength(responseBody);
 
+      logger.error(responseBody);
       res.writeHead(500, {
         'Content-Type': 'text/plain',
         [HTTPHeaders.ContentLength]: bodyLength,
