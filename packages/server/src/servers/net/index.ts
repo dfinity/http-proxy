@@ -103,15 +103,11 @@ export class NetProxy {
 
         const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
         if (icRequest) {
-          await this.handleInternetComputerConnection(
-            connectionInfo,
-            socket,
-            data
-          );
+          this.handleInternetComputerConnection(connectionInfo, socket, data);
           return;
         }
 
-        await this.connectionPassthrough(
+        this.connectionPassthrough(
           {
             host: connectionInfo.host,
             port: connectionInfo.port,
@@ -136,11 +132,11 @@ export class NetProxy {
     });
   }
 
-  private async handleInternetComputerConnection(
+  private handleInternetComputerConnection(
     connection: ConnectionInfo,
     clientSocket: net.Socket,
     data: Buffer
-  ): Promise<void> {
+  ): void {
     if (!connection.secure) {
       const body = 'Page moved permanently';
 
@@ -157,7 +153,7 @@ export class NetProxy {
       return;
     }
 
-    await this.connectionPassthrough(
+    this.connectionPassthrough(
       {
         host: this.opts.icpServer.host,
         port: this.opts.icpServer.port,
@@ -168,12 +164,12 @@ export class NetProxy {
     );
   }
 
-  private async connectionPassthrough(
+  private connectionPassthrough(
     originServer: ServerInfo,
     connection: ConnectionInfo,
     clientSocket: net.Socket,
     data: Buffer
-  ): Promise<void> {
+  ): void {
     const serverSocket = net.connect(
       {
         host: originServer.host,
