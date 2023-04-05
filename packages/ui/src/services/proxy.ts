@@ -5,6 +5,7 @@ import {
   MessageType,
 } from '@dfinity/http-proxy-server';
 import { fork } from 'child_process';
+import { waitProcessing } from '~src/commons/utils';
 
 export class ProxyService {
   public constructor(private readonly ipcClient: IPCClient) {}
@@ -36,17 +37,24 @@ export class ProxyService {
     return false;
   }
 
-  public async stopServers(): Promise<void> {
-    this.ipcClient
+  public async stopServers(): Promise<boolean> {
+    return this.ipcClient
       .sendMessage<void>({ type: MessageType.Stop, skipWait: true })
       .then((resp) => resp.processed)
       .catch(() => false);
   }
 
-  public async startProxyServers(entrypoint: string): Promise<void> {
+  public async enable(): Promise<boolean> {
+    return this.ipcClient
+      .sendMessage<void>({ type: MessageType.Enable })
+      .then((resp) => resp.processed)
+      .catch(() => false);
+  }
+
+  public async startProxyServers(entrypoint: string): Promise<boolean> {
     const isStarted = await this.isStarted();
     if (isStarted) {
-      return;
+      return isStarted;
     }
 
     fork(entrypoint, undefined, {
@@ -54,5 +62,11 @@ export class ProxyService {
       env: process.env,
       detached: true,
     });
+
+    const successfullyProcessed = await waitProcessing(
+      async () => await this.isStarted()
+    );
+
+    return successfullyProcessed ? true : false;
   }
 }

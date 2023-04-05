@@ -9,6 +9,7 @@ export interface ProxyServersOptions {
   netServer: NetServerConfiguration;
   icpServer: ICPServerConfiguration;
   ipcChannels: IpcChannels;
+  autoEnable?: boolean;
 }
 
 export interface IsRunningMessageResponse {
@@ -33,5 +34,7 @@ export enum MessageType {
   // Proxy is attached to the system
   IsRunning = 'is-running',
   // Shutdown proxy
-  Stop = 'Stop',
+  Stop = 'stop',
+  // Should enable proxy
+  Enable = 'enable',
 }

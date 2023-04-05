@@ -27,6 +27,7 @@ export class ProxyServers {
   private ipcServer!: IPCServer;
   private isEnabled = false;
   private shuttingDown = false;
+  private inflighMessages = new Map<string, Promise<unknown>>();
 
   private certificates: {
     ca?: Certificate;
@@ -43,6 +44,16 @@ export class ProxyServers {
     await this.ipcServer.start();
     await this.icpServer.start();
     await this.netServer.start();
+
+    if (this.configs?.autoEnable) {
+      await this.enableSecureEnvironment();
+    }
+  }
+
+  private async enableSecureEnvironment(): Promise<void> {
+    if (this.isEnabled) {
+      return;
+    }
 
     // the daemon process is started with admin privileges to
     // update the required system configurations such as adding/removing
@@ -75,17 +86,21 @@ export class ProxyServers {
     this.isEnabled = true;
   }
 
-  public shutdown(): void {
+  public async shutdown(): Promise<void> {
     this.shuttingDown = true;
 
     logger.info('Proxy is shutting down.');
 
-    this.netServer.shutdown();
-    this.icpServer.shutdown();
-    this.ipcServer.shutdown();
-    this.daemon.shutdown();
+    await this.daemon.shutdown();
+    await this.netServer.shutdown();
+    await this.icpServer.shutdown();
+    await this.ipcServer.shutdown();
 
     this.isEnabled = false;
+
+    logger.info('Proxy has exited.');
+
+    process.exit(0);
   }
 
   private async setupRequirements(): Promise<boolean> {
@@ -127,11 +142,25 @@ export class ProxyServers {
   }
 
   private async handleStopMessage(): Promise<StopMessageResponse> {
-    this.shutdown();
+    await this.shutdown();
   }
 
   private async handleIsStartedMessage(): Promise<IsStartedMessageResponse> {
     return { isShuttingDown: this.shuttingDown };
+  }
+
+  private async handleEnableMessage(): Promise<void> {
+    const inflight = this.inflighMessages.get(MessageType.Enable);
+    if (inflight) {
+      return inflight as Promise<void>;
+    }
+
+    const processing = this.enableSecureEnvironment();
+    this.inflighMessages.set(MessageType.Enable, processing);
+
+    await processing.finally(() => {
+      this.inflighMessages.delete(MessageType.Enable);
+    });
   }
 
   private async initServers(): Promise<void> {
@@ -145,6 +174,8 @@ export class ProxyServers {
             return await this.handleStopMessage();
           case MessageType.IsStarted:
             return await this.handleIsStartedMessage();
+          case MessageType.Enable:
+            return await this.handleEnableMessage();
         }
       },
     });
