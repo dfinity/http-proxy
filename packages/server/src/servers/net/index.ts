@@ -92,33 +92,39 @@ export class NetProxy {
     });
 
     socket.once('data', async (data) => {
-      const socketData = data.toString();
-      const connectionInfo = this.getConnectionInfo(socketData);
-      info = connectionInfo;
+      try {
+        const socketData = data.toString();
+        const connectionInfo = this.getConnectionInfo(socketData);
+        info = connectionInfo;
 
-      logger.info(
-        `Proxying request for ${connectionInfo.host}:${connectionInfo.port}`
-      );
+        logger.info(
+          `Proxying request for ${connectionInfo.host}:${connectionInfo.port}`
+        );
 
-      const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
-      if (icRequest) {
-        await this.handleInternetComputerConnection(
+        const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
+        if (icRequest) {
+          await this.handleInternetComputerConnection(
+            connectionInfo,
+            socket,
+            data
+          );
+          return;
+        }
+
+        await this.connectionPassthrough(
+          {
+            host: connectionInfo.host,
+            port: connectionInfo.port,
+          },
           connectionInfo,
           socket,
           data
         );
-        return;
-      }
+      } catch (e) {
+        logger.error(`Failed to proxy request ${String(e)}`);
 
-      await this.connectionPassthrough(
-        {
-          host: connectionInfo.host,
-          port: connectionInfo.port,
-        },
-        connectionInfo,
-        socket,
-        data
-      );
+        socket.end();
+      }
     });
 
     socket.on('error', (err) => {
