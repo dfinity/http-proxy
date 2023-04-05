@@ -8,6 +8,9 @@ import { ProxyUI } from '~src/proxy-ui';
 app.whenReady().then(() => {
   logger.info('Preparing interface');
 
+  // this app should only be available in the menubar
+  app.dock?.hide();
+
   ProxyUI.init()
     .then(() => {
       logger.info('Interface is ready');
