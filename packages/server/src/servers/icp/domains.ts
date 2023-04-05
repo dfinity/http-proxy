@@ -23,7 +23,11 @@ export const lookupIcDomain = async (
     return cachedLookup !== null ? Principal.fromText(cachedLookup) : null;
   }
 
-  const lookup = await maybeResolveIcDomain(hostname);
+  const lookup = await maybeResolveIcDomain(hostname).catch((e) => {
+    logger.error(`Failed to resolve ic domain(${e})`);
+
+    return null;
+  });
   try {
     cachedLookups.set(hostname, lookup !== null ? lookup.toText() : null);
   } catch (e) {
@@ -66,8 +70,9 @@ export const maybeResolveIcDomain = async (
   });
 
   inFlightLookups.set(hostname, inflightLookup);
-  const lookupResult = await inflightLookup;
-  inFlightLookups.delete(hostname);
+  const lookupResult = await inflightLookup.finally(() => {
+    inFlightLookups.delete(hostname);
+  });
 
   return lookupResult;
 };
