@@ -1,4 +1,4 @@
-import { getFile, saveFile } from '@dfinity/http-proxy-core';
+import { getFile, logger, saveFile } from '@dfinity/http-proxy-core';
 import { exec } from 'child_process';
 import { resolve } from 'path';
 import { Platform } from '../typings';
@@ -17,6 +17,13 @@ export class MacPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
 
   public async attach(): Promise<void> {
+    logger.info(
+      `attaching proxy to system with: ` +
+        `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
+        `capath(${this.configs.ca.path}), ` +
+        `caname(${this.configs.ca.commonName})`
+    );
+
     await this.trustCertificate(
       true,
       this.configs.ca.path,
@@ -29,6 +36,13 @@ export class MacPlatform implements Platform {
   }
 
   public async detach(): Promise<void> {
+    logger.info(
+      `detaching proxy from system with: ` +
+        `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
+        `capath(${this.configs.ca.path}), ` +
+        `caname(${this.configs.ca.commonName})`
+    );
+
     await this.trustCertificate(
       false,
       this.configs.ca.path,
@@ -40,28 +54,11 @@ export class MacPlatform implements Platform {
     });
   }
 
-  private async isTrustedCertificate(path: string): Promise<boolean> {
-    return new Promise<boolean>((ok) => {
-      exec(
-        `security verify-cert -k /Library/Keychains/System.keychain -c ${path}`,
-        (error) => {
-          ok(error ? false : true);
-        }
-      );
-    });
-  }
-
   private async trustCertificate(
     trust: boolean,
     path: string,
     commonName: string
   ): Promise<void> {
-    const isTrusted = await this.isTrustedCertificate(path);
-    const shouldContinue = trust ? !isTrusted : isTrusted;
-    if (!shouldContinue) {
-      return;
-    }
-
     const trustCommand = trust
       ? `security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}`
       : `security delete-certificate -c '${commonName}'`;

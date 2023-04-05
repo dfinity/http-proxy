@@ -70,6 +70,8 @@ export class Daemon {
     await this.platform?.detach();
 
     this.isProxyRunning = false;
+
+    this.shutdown();
   }
 
   public async start(): Promise<void> {
