@@ -25,9 +25,10 @@ import { ProxyServers } from './servers';
       icpServer: environment.icpServer,
       netServer: environment.netServer,
       ipcChannels: coreConfigs.ipcChannels,
+      autoEnable: process.argv.includes('--enable'),
     });
 
-    process.on('SIGINT', () => servers?.shutdown());
+    process.on('SIGINT', async () => await servers?.shutdown());
 
     // start proxy servers
     await servers.start();

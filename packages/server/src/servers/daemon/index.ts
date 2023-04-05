@@ -1,4 +1,4 @@
-import { IPCClient, ResultMessage, wait } from '@dfinity/http-proxy-core';
+import { IPCClient, ResultMessage, logger, wait } from '@dfinity/http-proxy-core';
 import { EnableProxyMessage, MessageType } from '@dfinity/http-proxy-daemon';
 import { environment } from '~src/commons';
 import { MissingRequirementsError } from '~src/errors';
@@ -10,9 +10,12 @@ import {
 } from '~src/servers/daemon/utils';
 
 export class DaemonProcess {
+  private hasStarted = false;
+
   public constructor(private readonly ipcClient: IPCClient) {}
 
   public async start(): Promise<void> {
+    this.hasStarted = true;
     const isAlreadyRunning = await this.isRunning();
     if (isAlreadyRunning) {
       return;
@@ -23,9 +26,14 @@ export class DaemonProcess {
     await this.waitUntilActive();
   }
 
-  public shutdown(): void {
-    this.ipcClient
-      .sendMessage({ type: MessageType.DisableProxy, skipWait: true })
+  public async shutdown(): Promise<void> {
+    if (!this.hasStarted) {
+      return;
+    }
+
+    logger.info('Shutting down daemon.');
+    await this.ipcClient
+      .sendMessage<void>({ type: MessageType.DisableProxy, skipWait: true })
       .catch(() => {
         // do nothing if the daemon is already shutdown
       });

@@ -105,8 +105,12 @@ export class IPCServer {
     });
   }
 
-  public shutdown(): void {
-    this.server.close();
+  public async shutdown(): Promise<void> {
+    logger.info('Shutting down ipc server.');
+
+    return new Promise<void>((ok) => {
+      this.server.close(() => ok());
+    });
   }
 
   private async onClose(): Promise<void> {

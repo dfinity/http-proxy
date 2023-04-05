@@ -3,10 +3,9 @@ import {
   assertPresent,
   coreConfigs,
   logger,
-  wait,
 } from '@dfinity/http-proxy-core';
 import { Tray, app, nativeTheme } from 'electron';
-import { proxyNodeEntrypointPath } from '~src/commons/utils';
+import { proxyNodeEntrypointPath, waitProcessing } from '~src/commons/utils';
 import {
   ElectronClickFnOptions,
   Images,
@@ -153,23 +152,15 @@ export class ProxyUI {
     try {
       this.isStarting = true;
       await this.updateInterface(isProxyProcessRunning);
-
-      await this.proxyService.startProxyServers(this.configs.proxy.entrypoint);
-
-      let timeSpent = 0;
-      const checkInterval = 250;
-      do {
-        await wait(checkInterval);
-        timeSpent += checkInterval;
-
-        isProxyProcessRunning = await this.proxyService.isEnabled();
-      } while (!isProxyProcessRunning && timeSpent < ProxyUI.maxStatusChangeMs);
-
-      await this.updateInterface(isProxyProcessRunning);
-
-      if (!isProxyProcessRunning) {
-        logger.error(`Proxy start event timeout`);
+      const isStarted = await this.proxyService.startProxyServers(
+        this.configs.proxy.entrypoint
+      );
+      if (!isStarted) {
+        throw new Error(`timeout`);
       }
+
+      isProxyProcessRunning = await this.proxyService.enable();
+      await this.updateInterface(isProxyProcessRunning);
     } catch (e) {
       logger.error(`Failed to start proxy(${String(e)})`);
     } finally {
@@ -188,18 +179,11 @@ export class ProxyUI {
     try {
       this.isStopping = true;
       await this.updateInterface(isProxyProcessRunning);
-
       await this.proxyService.stopServers();
-
-      let timeSpent = 0;
-      const checkInterval = 250;
-      do {
-        await wait(checkInterval);
-        timeSpent += checkInterval;
-
-        isProxyProcessRunning = await this.proxyService.isEnabled();
-      } while (isProxyProcessRunning && timeSpent < ProxyUI.maxStatusChangeMs);
-
+      const executedSuccessfully = await waitProcessing(
+        async () => !(await this.proxyService.isEnabled())
+      );
+      isProxyProcessRunning = executedSuccessfully ? false : true;
       await this.updateInterface(isProxyProcessRunning);
 
       if (isProxyProcessRunning) {
@@ -218,8 +202,8 @@ export class ProxyUI {
     this.unregisterInterfaceUpdater();
     opts.menuItem.enabled = false;
 
-    const isProxyProcessRunning = await this.proxyService.isEnabled();
-    if (isProxyProcessRunning) {
+    const isProxyStarted = await this.proxyService.isStarted();
+    if (isProxyStarted) {
       await this.proxyService.stopServers();
     }
 

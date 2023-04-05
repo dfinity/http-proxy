@@ -78,10 +78,12 @@ export class Daemon {
     this.registerProxyShutdownListener();
   }
 
-  public shutdown(): void {
+  public async shutdown(): Promise<void> {
     logger.info('Shutting down');
 
-    this.server?.shutdown();
+    await this.server?.shutdown();
+
+    logger.info('Exited.');
 
     process.exit(0);
   }

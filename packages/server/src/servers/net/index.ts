@@ -10,6 +10,8 @@ export enum DefaultPorts {
 }
 
 export class NetProxy {
+  private connections = new Set<net.Socket>();
+
   private constructor(
     private readonly server: net.Server,
     private readonly opts: NetProxyOpts
@@ -27,8 +29,14 @@ export class NetProxy {
     this.server.on('close', this.onClose.bind(this));
   }
 
-  public shutdown(): void {
-    this.server.close();
+  public async shutdown(): Promise<void> {
+    logger.info('Shutting down net server.');
+    return new Promise<void>((ok) => {
+      this.server.close(() => ok());
+      this.connections.forEach((socket) => {
+        socket.destroy();
+      });
+    });
   }
 
   public async start(): Promise<void> {
@@ -75,6 +83,13 @@ export class NetProxy {
 
   private async onConnection(socket: net.Socket): Promise<void> {
     let info: ConnectionInfo | undefined;
+
+    this.connections.add(socket);
+
+    socket.on('close', () => {
+      socket?.destroy();
+      this.connections.delete(socket);
+    });
 
     socket.once('data', async (data) => {
       const socketData = data.toString();

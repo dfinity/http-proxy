@@ -6,6 +6,7 @@ import { lookupIcDomain } from './domains';
 import { HTTPHeaders, ICPServerOpts } from './typings';
 import { convertIncomingMessage, processIcRequest } from './utils';
 import { environment } from '~src/commons';
+import { logger } from '@dfinity/http-proxy-core';
 
 export class ICPServer {
   private httpsServer!: https.Server;
@@ -19,8 +20,11 @@ export class ICPServer {
     return server;
   }
 
-  public shutdown(): void {
-    this.httpsServer.close();
+  public async shutdown(): Promise<void> {
+    logger.info('Shutting down icp server.');
+    return new Promise<void>((ok) => {
+      this.httpsServer.close(() => ok());
+    });
   }
 
   public async start(): Promise<void> {

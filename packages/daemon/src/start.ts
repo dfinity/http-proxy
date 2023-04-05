@@ -16,7 +16,7 @@ import { Daemon } from './daemon';
 
     logger.info('Waiting for tasks');
 
-    process.on('SIGINT', () => daemon.shutdown());
+    process.on('SIGINT', async () => await daemon.shutdown());
   } catch (e) {
     logger.error(`Failed to start (${String(e)})`);
   }
