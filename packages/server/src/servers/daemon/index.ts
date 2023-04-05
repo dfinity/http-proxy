@@ -1,4 +1,9 @@
-import { IPCClient, ResultMessage, logger, wait } from '@dfinity/http-proxy-core';
+import {
+  IPCClient,
+  ResultMessage,
+  logger,
+  wait,
+} from '@dfinity/http-proxy-core';
 import { EnableProxyMessage, MessageType } from '@dfinity/http-proxy-daemon';
 import { environment } from '~src/commons';
 import { MissingRequirementsError } from '~src/errors';
