@@ -129,6 +129,21 @@ export class NetProxy {
           ? `Client socket error (${err})`
           : `Client socket error ${info.host}:${info.port} (${err})`
       );
+
+      if ('code' in err && err.code === 'ENOTFOUND') {
+        const body =
+          'Error: ENOTFOUND - The requested resource could not be found.';
+        socket.write(
+          'HTTP/1.1 404 Not Found\r\n\r\n' +
+            'Server: IC HTTP Proxy\r\n' +
+            'Content-Type: text/plain\r\n' +
+            'Connection: close\r\n' +
+            `Content-Length: ${Buffer.byteLength(body)}\r\n` +
+            `\r\n` +
+            body
+        );
+      }
+      socket.end();
     });
   }
 
@@ -142,7 +157,7 @@ export class NetProxy {
 
       clientSocket.write(
         'HTTP/1.1 301 Moved Permanently\r\n' +
-          'Server: IC HTTP Gateway\r\n' +
+          'Server: IC HTTP Proxy\r\n' +
           'Content-Type: text/plain\r\n' +
           'Connection: keep-alive\r\n' +
           `Content-Length: ${Buffer.byteLength(body)}\r\n` +
@@ -189,12 +204,12 @@ export class NetProxy {
         // Piping the sockets
         serverSocket.pipe(clientSocket);
         clientSocket.pipe(serverSocket);
-
-        serverSocket.on('error', (err) => {
-          logger.error(`Passthrough server socket error (${err})`);
-        });
       }
     );
+
+    serverSocket.on('error', (err) => {
+      clientSocket.emit('error', err);
+    });
   }
 
   private async shouldHandleAsICPRequest(
