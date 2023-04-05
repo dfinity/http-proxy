@@ -97,11 +97,13 @@ export class NetProxy {
         const connectionInfo = this.getConnectionInfo(socketData);
         info = connectionInfo;
 
-        logger.info(
-          `Proxying request for ${connectionInfo.host}:${connectionInfo.port}`
-        );
-
         const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
+
+        logger.info(
+          icRequest
+            ? `Proxying web3 request for ${connectionInfo.host}:${connectionInfo.port}`
+            : `Proxying web2 request for ${connectionInfo.host}:${connectionInfo.port}`
+        );
         if (icRequest) {
           this.handleInternetComputerConnection(connectionInfo, socket, data);
           return;

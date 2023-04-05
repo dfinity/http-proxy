@@ -2,12 +2,19 @@ import { exec } from 'child_process';
 import { Platform, PlatformProxyInfo } from '../typings';
 import { PlatformConfigs } from './typings';
 import { isTrustedCertificate } from './utils';
-import { execAsync } from '@dfinity/http-proxy-core';
+import { execAsync, logger } from '@dfinity/http-proxy-core';
 
 export class WindowsPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
 
   public async attach(): Promise<void> {
+    logger.info(
+      `attaching proxy to system with: ` +
+        `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
+        `capath(${this.configs.ca.path}), ` +
+        `caname(${this.configs.ca.commonName})`
+    );
+
     await this.trustCertificate(
       true,
       this.configs.ca.path,
@@ -20,6 +27,13 @@ export class WindowsPlatform implements Platform {
   }
 
   public async detach(): Promise<void> {
+    logger.info(
+      `detaching proxy from system with: ` +
+        `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
+        `capath(${this.configs.ca.path}), ` +
+        `caname(${this.configs.ca.commonName})`
+    );
+
     await this.trustCertificate(
       false,
       this.configs.ca.path,
