@@ -1,5 +1,12 @@
 import { exec } from 'child_process';
-import { existsSync, mkdirSync, readFile, writeFile } from 'fs';
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFile,
+  readdirSync,
+  writeFile,
+} from 'fs';
 import { dirname } from 'path';
 import { SupportedPlatforms } from '~src/main';
 
@@ -84,4 +91,64 @@ export const assertPresent = <T>(
   }
 
   return value;
+};
+
+export const retryClosure = async <T = unknown>(
+  asyncExecFn: () => Promise<T>,
+  doAfterFailFn?: () => Promise<void>,
+  retries = 2
+): Promise<T> => {
+  let result: T;
+  let tries = retries && retries < 0 ? 0 : retries;
+  do {
+    try {
+      result = await asyncExecFn();
+      return result;
+    } catch (e) {
+      if (tries === 0) {
+        throw e;
+      }
+
+      if (doAfterFailFn) {
+        await doAfterFailFn();
+      }
+    }
+    --tries;
+  } while (tries > 0);
+
+  throw new Error(`Retry closure failed all options`);
+};
+
+export const getFiles = (
+  directoryPath: string,
+  extensions?: string[]
+): string[] => {
+  const files: string[] = [];
+  const isDirectory =
+    pathExists(directoryPath) && lstatSync(directoryPath).isDirectory();
+  if (!isDirectory) {
+    return [];
+  }
+
+  readdirSync(directoryPath, {
+    withFileTypes: true,
+  }).forEach((file) => {
+    if (!file.isFile()) {
+      return;
+    }
+
+    const shouldFilterExtension = extensions && extensions.length > 0;
+    if (!shouldFilterExtension) {
+      files.push(file.name);
+      return;
+    }
+
+    const parts = file.name.split('.');
+    const extension = parts.length > 1 ? parts[parts.length - 1] : '';
+    if (extensions.includes(extension)) {
+      files.push(file.name);
+    }
+  });
+
+  return files;
 };

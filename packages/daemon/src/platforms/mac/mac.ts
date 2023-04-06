@@ -1,4 +1,4 @@
-import { getFile, logger, saveFile } from '@dfinity/http-proxy-core';
+import { execAsync, getFile, logger, saveFile } from '@dfinity/http-proxy-core';
 import { exec } from 'child_process';
 import { resolve } from 'path';
 import { Platform } from '../typings';
@@ -54,31 +54,45 @@ export class MacPlatform implements Platform {
     });
   }
 
+  private async isCertificatedInSystemStore(
+    commonName: string
+  ): Promise<boolean> {
+    return execAsync(`security find-certificate -c '${commonName}'`)
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  private async deleteCertificateFromStore(commonName: string): Promise<void> {
+    const isInStore = await this.isCertificatedInSystemStore(commonName);
+    if (!isInStore) {
+      return;
+    }
+
+    await execAsync(
+      'security authorizationdb write com.apple.trust-settings.admin allow' +
+        SHELL_SCRIPT_SEPARATOR +
+        `security delete-certificate -c '${commonName}'` +
+        SHELL_SCRIPT_SEPARATOR +
+        'security authorizationdb remove com.apple.trust-settings.admin'
+    );
+  }
+
   private async trustCertificate(
     trust: boolean,
     path: string,
     commonName: string
   ): Promise<void> {
-    const trustCommand = trust
-      ? `security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}`
-      : `security delete-certificate -c '${commonName}'`;
+    await this.deleteCertificateFromStore(commonName);
 
-    return new Promise<void>((ok, err) => {
-      const shellScript =
+    if (trust) {
+      await execAsync(
         'security authorizationdb write com.apple.trust-settings.admin allow' +
-        SHELL_SCRIPT_SEPARATOR +
-        trustCommand +
-        SHELL_SCRIPT_SEPARATOR +
-        'security authorizationdb remove com.apple.trust-settings.admin';
-
-      exec(`${shellScript}`, (error) => {
-        if (error) {
-          return err(error);
-        }
-
-        ok();
-      });
-    });
+          SHELL_SCRIPT_SEPARATOR +
+          `security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${path}` +
+          SHELL_SCRIPT_SEPARATOR +
+          'security authorizationdb remove com.apple.trust-settings.admin'
+      );
+    }
   }
 
   public async configureWebProxy(
