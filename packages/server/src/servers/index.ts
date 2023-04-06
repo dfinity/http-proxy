@@ -5,6 +5,7 @@ import {
   IPCClient,
   IPCServer,
   logger,
+  wait,
 } from '@dfinity/http-proxy-core';
 import { MissingCertificateError, MissingRequirementsError } from '~src/errors';
 import { DaemonProcess } from '~src/servers/daemon';
@@ -28,6 +29,7 @@ export class ProxyServers {
   private isEnabled = false;
   private shuttingDown = false;
   private inflighMessages = new Map<string, Promise<unknown>>();
+  private static rootCARenewJobIntervalMs = 1000 * 3; // 10min
 
   private certificates: {
     ca?: Certificate;
@@ -50,8 +52,32 @@ export class ProxyServers {
     }
   }
 
-  private async enableSecureEnvironment(): Promise<void> {
+  private async registerRenewRootCAJob(): Promise<void> {
+    await wait(ProxyServers.rootCARenewJobIntervalMs);
+
+    if (!this.certificates.ca?.shouldRenew) {
+      this.registerRenewRootCAJob();
+      return;
+    }
+
+    this.certificates.ca = await this.certificateFactory.create(
+      { type: 'ca' },
+      true
+    );
+
     if (this.isEnabled) {
+      await this.enableSecureEnvironment(true).catch((e) => {
+        logger.error(`failed to enable proxy with renewed root ca with(${e})`);
+
+        this.isEnabled = false;
+      });
+    }
+
+    this.registerRenewRootCAJob();
+  }
+
+  private async enableSecureEnvironment(force?: boolean): Promise<void> {
+    if (this.isEnabled && !force) {
       return;
     }
 
@@ -110,6 +136,8 @@ export class ProxyServers {
       hostname: 'localhost',
       ca: this.certificates.ca,
     });
+
+    this.registerRenewRootCAJob();
 
     return true;
   }
