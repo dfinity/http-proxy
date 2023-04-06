@@ -61,6 +61,8 @@ export class ICPServer {
 
       cb(null, ctx);
     } catch (e) {
+      logger.error(`SNICallback failed with ${e}`);
+
       cb(e as Error);
     }
   }
