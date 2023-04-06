@@ -1,8 +1,7 @@
-import { exec } from 'child_process';
+import { execAsync, logger } from '@dfinity/http-proxy-core';
 import { Platform, PlatformProxyInfo } from '../typings';
 import { PlatformConfigs } from './typings';
 import { isTrustedCertificate } from './utils';
-import { execAsync, logger } from '@dfinity/http-proxy-core';
 
 export class WindowsPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
@@ -45,30 +44,27 @@ export class WindowsPlatform implements Platform {
     });
   }
 
+  private async deleteCertificateFromStore(
+    certificateID: string
+  ): Promise<void> {
+    const isTrusted = await isTrustedCertificate(certificateID);
+    if (!isTrusted) {
+      return;
+    }
+
+    await execAsync(`certutil -delstore root "${certificateID}"`);
+  }
+
   private async trustCertificate(
     trust: boolean,
     path: string,
     certificateID: string
   ): Promise<void> {
-    const isTrusted = await isTrustedCertificate(certificateID);
-    const shouldContinue = trust ? !isTrusted : isTrusted;
-    if (!shouldContinue) {
-      return;
+    await this.deleteCertificateFromStore(certificateID);
+
+    if (trust) {
+      await execAsync(`certutil -addstore root "${path}"`);
     }
-
-    const command = trust
-      ? `certutil -addstore root "${path}"`
-      : `certutil -delstore root "${certificateID}"`;
-
-    return new Promise<void>((ok, err) => {
-      exec(`${command}`, (error) => {
-        if (error) {
-          return err(error);
-        }
-
-        ok();
-      });
-    });
   }
 
   public async configureWebProxy(
