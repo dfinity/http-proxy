@@ -27,6 +27,13 @@ export class Certificate {
     return pki.certificateFromPem(this.pem);
   }
 
+  get shouldRenew(): boolean {
+    // 10min is added as a buffer to prevent almost expired certificates from being sent back
+    const expireAt = new Date(Date.now() - 600000);
+
+    return this.info.validity.notAfter.getTime() <= expireAt.getTime();
+  }
+
   public toDTO(): CertificateDTO {
     return {
       id: this.id,
