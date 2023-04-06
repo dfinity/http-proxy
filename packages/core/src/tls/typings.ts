@@ -13,6 +13,7 @@ export interface CertificateOpts {
 }
 
 export interface CertificateConfiguration {
+  creationRetries?: number;
   storage: {
     hostPrefix: string;
     folder: string;

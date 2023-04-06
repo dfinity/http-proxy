@@ -40,21 +40,31 @@ export class ICPServer {
       },
       this.handleRequest.bind(this)
     );
+
+    this.httpsServer.on('error', (e) => {
+      logger.error(`ICP HTTPS Server failed with error(${String(e)})`);
+    });
   }
 
   private async SNICallback(
     servername: string,
     cb: (err: Error | null, ctx?: SecureContext | undefined) => void
   ): Promise<void> {
-    const domainCertificate = await this.configuration.certificate.create(
-      servername
-    );
-    const ctx = createSecureContext({
-      key: domainCertificate.keyPem,
-      cert: domainCertificate.pem,
-    });
+    try {
+      const domainCertificate = await this.configuration.certificate.create(
+        servername
+      );
+      const ctx = createSecureContext({
+        key: domainCertificate.keyPem,
+        cert: domainCertificate.pem,
+      });
 
-    cb(null, ctx);
+      cb(null, ctx);
+    } catch (e) {
+      logger.error(`SNICallback failed with ${e}`);
+
+      cb(e as Error);
+    }
   }
 
   private async handleRequest(
