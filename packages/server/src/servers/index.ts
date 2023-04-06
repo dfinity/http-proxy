@@ -29,7 +29,7 @@ export class ProxyServers {
   private isEnabled = false;
   private shuttingDown = false;
   private inflighMessages = new Map<string, Promise<unknown>>();
-  private static rootCARenewJobIntervalMs = 1000 * 3; // 10min
+  private static rootCARenewJobIntervalMs = 1000 * 60 * 30; // 30min
 
   private certificates: {
     ca?: Certificate;
