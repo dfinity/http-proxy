@@ -4,5 +4,5 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: "./tsconfig.json",
   },
-  ignorePatterns: ["node_modules/*", "built/*", "data/*", ".eslintrc.js"],
+  ignorePatterns: ["node_modules/*", "built/*", "data/*", ".eslintrc.js", "build/*"],
 };

@@ -50,17 +50,19 @@ const build = async () => {
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));
 
   // build for mac intel
-  await builder.build({
-    targets: Platform.MAC.createTarget('zip', builder.Arch.x64),
-    config: options,
-  })
-  .then(async (builtFiles) => createReleaseHashFile(builtFiles));
+  await builder
+    .build({
+      targets: Platform.MAC.createTarget('zip', builder.Arch.x64),
+      config: options,
+    })
+    .then(async (builtFiles) => createReleaseHashFile(builtFiles));
   // universal mac dmg build (non deterministic)
-  await builder.build({
-    targets: Platform.MAC.createTarget('dmg', builder.Arch.universal),
-    config: options,
-  })
-  .then(async (builtFiles) => createReleaseHashFile(builtFiles));
+  await builder
+    .build({
+      targets: Platform.MAC.createTarget('dmg', builder.Arch.universal),
+      config: options,
+    })
+    .then(async (builtFiles) => createReleaseHashFile(builtFiles));
 };
 
 module.exports = build;
