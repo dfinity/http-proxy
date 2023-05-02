@@ -1,6 +1,9 @@
 'use strict';
 
 const builder = require('electron-builder');
+const { createReleaseHashFile } = require('./utils');
+const { execSync, exec } = require('child_process');
+const { resolve } = require('path');
 const Platform = builder.Platform;
 
 // Let's get that intellisense working
@@ -20,6 +23,14 @@ const options = {
   asarUnpack: ['node_modules/@dfinity/http-proxy-daemon/bin/*'],
   directories: {
     output: 'pkg',
+  },
+  afterSign: async (context) => {
+    execSync(
+      `& "${resolve(__dirname, 'win.ps1')}" "${context.appOutDir}"`, {
+        env: process.env,
+        shell: 'powershell.exe'
+      }
+    );
   },
   win: {
     icon: './src/assets/logo@128x128.ico',
