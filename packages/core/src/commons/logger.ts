@@ -1,6 +1,6 @@
 import pino from 'pino';
 import { tmpdir } from 'os';
-import { resolve } from 'path';
+import { createStream } from 'rotating-file-stream';
 
 const defaultLogFileName = `main`;
 let logger: pino.Logger<pino.LoggerOptions>;
@@ -10,8 +10,6 @@ export const initLogger = (
   logName: string = defaultLogFileName,
   logFolder = tmpdir()
 ): void => {
-  const logPath = resolve(logFolder, `ic-http-proxy-${logName}.log`);
-
   logger = pino(
     {
       name,
@@ -21,7 +19,14 @@ export const initLogger = (
       },
     },
     pino.multistream([
-      pino.destination({ sync: false, dest: logPath }),
+      {
+        stream: createStream(`ic-http-proxy-${logName}.log`, {
+          size: '10M',
+          compress: 'gzip',
+          maxFiles: 5,
+          path: logFolder,
+        }),
+      },
       { stream: process.stdout },
     ])
   );
