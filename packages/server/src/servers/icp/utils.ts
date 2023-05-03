@@ -79,7 +79,7 @@ export const fetchAsset = async ({
       url: url.pathname + url.search,
       headers: requestHeaders,
       body: new Uint8Array(await request.arrayBuffer()),
-      certificate_version: [BigInt(certificateVersion)],
+      certificate_version: [certificateVersion],
     };
 
     let httpResponse = await actor.http_request(httpRequest);
@@ -96,23 +96,13 @@ export const fetchAsset = async ({
       httpResponse = await actor.http_request_update(httpRequest);
     }
 
-    // Redirects are blocked for query calls only: if this response has the upgrade to update call flag set,
-    // the update call is allowed to redirect. This is safe because the response (including the headers) will go through consensus.
-    if (
-      !upgradeCall &&
-      httpResponse.status_code >= 300 &&
-      httpResponse.status_code < 400
-    ) {
-      throw new NotAllowedRequestRedirectError();
-    }
-
     // if we do streaming, body contains the first chunk
     let buffer = new ArrayBuffer(0);
     buffer = concat(buffer, httpResponse.body);
     if (httpResponse.streaming_strategy.length !== 0) {
       buffer = concat(
         buffer,
-        await streamContent(agent, canister, httpResponse.streaming_strategy[0])
+        await streamContent(agent, canister, httpResponse)
       );
     }
     const responseBody = new Uint8Array(buffer);
@@ -345,18 +335,28 @@ export const fetchFromInternetComputer = async (
     );
 
     if (assetCertification.passed && assetCertification.response) {
-      responseHeaders.delete(HTTPHeaders.ContentEncoding);
-      const decodedResponseBody = decodeBody(
-        assetFetchResult.response.body,
-        assetFetchResult.response.encoding
-      );
       const certifiedResponseHeaders = fromResponseVerificationHeaders(
         assetCertification.response.headers
       );
 
       certifiedResponseHeaders.forEach((headerValue, headerKey) => {
-        responseHeaders.append(headerKey, headerValue);
+        responseHeaders.set(headerKey, headerValue);
       });
+
+      responseHeaders.delete(HTTPHeaders.ContentEncoding);
+      const decodedResponseBody = decodeBody(
+        assetFetchResult.response.body,
+        assetFetchResult.response.encoding
+      );
+
+      // Redirects are blocked for query calls that are not validating headers
+      if (
+        assetCertification.verificationVersion <= 1 &&
+        assetFetchResult.response.statusCode >= 300 &&
+        assetFetchResult.response.statusCode < 400
+      ) {
+        throw new NotAllowedRequestRedirectError();
+      }
 
       return {
         status: assetCertification.response.statusCode ?? 200,
