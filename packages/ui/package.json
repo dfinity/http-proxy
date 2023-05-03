@@ -37,8 +37,8 @@
   },
   "homepage": "https://github.com/dfinity/http-proxy/tree/main/packages/ui#readme",
   "dependencies": {
-    "@dfinity/http-proxy-core": "0.0.1",
-    "@dfinity/http-proxy-server": "0.0.1"
+    "@dfinity/http-proxy-core": "0.0.1-alpha",
+    "@dfinity/http-proxy-server": "0.0.1-alpha"
   },
   "devDependencies": {
     "@types/node": "^18.14.0",
