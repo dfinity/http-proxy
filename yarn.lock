@@ -132,6 +132,7 @@ __metadata:
     pako: ^2.1.0
     pino: ^8.11.0
     prettier: ^2.8.4
+    rotating-file-stream: ^3.1.0
     tsc-alias: ^1.8.5
     typescript: ^4.9.5
   languageName: unknown
@@ -4140,6 +4141,13 @@ __metadata:
     semver-compare: ^1.0.0
     sprintf-js: ^1.1.2
   checksum: 682e28d5491e3ae99728a35ba188f4f0ccb6347dbd492f95dc9f4bfdfe8ee63d8203ad234766ee2db88c8d7a300714304976eb095ce5c9366fe586c03a21586c
+  languageName: node
+  linkType: hard
+
+"rotating-file-stream@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "rotating-file-stream@npm:3.1.0"
+  checksum: 2f5840ae7fee1c93403e042c87f3e90c329244f73d561afb4b3290e3d580c05d971fe72c70177c38fba734172a098b460bfe91b46f77236a2ff4b7b7ed35db18
   languageName: node
   linkType: hard
 
