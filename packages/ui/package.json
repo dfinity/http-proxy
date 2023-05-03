@@ -10,7 +10,7 @@
     "copy-assets": "mkdirp ./built/assets && copyfiles -f ./src/assets/* ./built/assets",
     "lint": "eslint --ext ts,js src",
     "lint:fix": "eslint --ext ts,js --fix src",
-    "pkg": "electron-builder"
+    "pkg": "node build.js"
   },
   "repository": {
     "type": "git",
@@ -55,44 +55,5 @@
     "prettier": "^2.8.4",
     "tsc-alias": "^1.8.5",
     "typescript": "^4.9.5"
-  },
-  "build": {
-    "appId": "com.dfinity.ichttpproxy",
-    "productName": "IC HTTP Proxy",
-    "nodeVersion": "current",
-    "asarUnpack": [
-      "node_modules/@dfinity/http-proxy-daemon/bin/*"
-    ],
-    "directories": {
-      "output": "pkg"
-    },
-    "mac": {
-      "category": "public.app-category.utilities",
-      "icon": "./src/assets/logo@128x128.icns",
-      "target": {
-        "target": "dmg",
-        "arch": [
-          "universal"
-        ]
-      },
-      "files": [
-        "!bin/http-proxy-daemon-win.exe",
-        "!.git/*",
-        "!tsconfig.json",
-        "!nodemon.json",
-        "!.eslintrc.js"
-      ]
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "./src/assets/logo@128x128.ico",
-      "files": [
-        "!bin/http-proxy-daemon-macos",
-        "!.git/*",
-        "!tsconfig.json",
-        "!nodemon.json",
-        "!.eslintrc.js"
-      ]
-    }
   }
 }
