@@ -17,6 +17,8 @@ const options = {
   removePackageScripts: true,
   appId: 'com.dfinity.ichttpproxy',
   productName: 'IC HTTP Proxy',
+  executableName: 'ic-http-proxy',
+  artifactName: 'ic-http-proxy-${os}-${arch}-${version}.${ext}',
   nodeVersion: 'current',
   nodeGypRebuild: false,
   buildDependenciesFromSource: false,
