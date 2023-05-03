@@ -1,6 +1,6 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
 [![GitHub license](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/0.0.1-alpha/ic-http-proxy-0.0.1-alpha.dmg)
-[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.1-alpha/ic-http-proxy-win-64.exe)
+[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.1-alpha/ic-http-proxy-0.0.1-alpha.exe)
 
 # IC HTTP Proxy
 > This application is currently only a proof of concept implementation and should be used at your own risk.
