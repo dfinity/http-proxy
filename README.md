@@ -39,6 +39,10 @@ An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org
 
 Other platforms can also be supported by adding the generated root certificate to the device trusted store and adding the proxy HTTP server to the active network interface configuration.
 
+## Contributing
+
+No external code contributions.
+
 ## Setup
 
 The package manager of this monorepo is [yarn](https://yarnpkg.com/) and the applications are built for [nodejs](https://nodejs.org/en). The usage of [nvm](https://github.com/nvm-sh/nvm) is recommended to keep the node version in sync.
