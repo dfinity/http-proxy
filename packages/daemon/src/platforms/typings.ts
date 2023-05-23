@@ -3,6 +3,8 @@ export interface Platform {
   detach(): Promise<void>;
 }
 
+// repeated again here
+
 export interface PlatformRootCA {
   commonName: string;
   path: string;

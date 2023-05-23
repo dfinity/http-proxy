@@ -1,9 +1,5 @@
 import net from 'node:net';
-import {
-  EventMessage,
-  IPCClientOptions,
-  ResultMessage,
-} from '~src/ipc/typings';
+import { EventMessage, IPCClientOptions, ResultMessage } from './typings';
 
 export class IPCClient {
   public constructor(private readonly options: IPCClientOptions) {}

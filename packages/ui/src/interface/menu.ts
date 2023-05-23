@@ -36,6 +36,7 @@ export class ProxyMenu {
     return this._menu;
   }
 
+  // no access modifiers
   onClick(itemId: ProxyMenuItem, callback: ElectronClickFn): void {
     const item = this._menu.getMenuItemById(itemId);
     if (!item) {

@@ -7,7 +7,9 @@
 
 ## Overview
 
-An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org/docs/current/references/ic-interface-spec/#http-gateway) that enables end-to-end secure connections with dApps being served from the [Internet Computer](https://internetcomputer.org/).
+An implementation of the [IC HTTP Gateway Protocol](https://github.com/dfinity/interface-spec/blob/master/spec/http-gateway-protocol-spec.md) that enables end-to-end secure connections with dApps being served from the [Internet Computer](https://internetcomputer.org/).
+
+WATCH OUT FOR PROXY ON cURL
 
 ### Motivation and Goals
 
@@ -21,15 +23,13 @@ An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org
 
 ### Key Features
 
-* Translates between IC API calls and HTTP Asset Requests
+* Translates between IC API calls and HTTP asset requests
 
 * Terminates TLS connection locally with self Root Authority
 
 * Detects IC domains from principals and custom domain DNS records
 
-* Bypasses remote gateway denylists
-
-* Resolves crypto domains
+* Bypasses boundary node denylists
 
 ### Supported Platforms
 
@@ -37,7 +37,11 @@ An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org
 
 * MacOSX
 
-Other platforms can also be supported by adding the generated root certificate to the device trusted store and adding the proxy HTTP server to the active network interface configuration.
+Other desktop platforms can also be supported by adding the generated root certificate to the device's trusted store and adding the proxy HTTP server to the active network interface configuration.
+
+## Contributing
+
+This repository is currently not accepting external contributions, but this will change in the near future once the code base stabilizes.
 
 ## Setup
 
@@ -45,9 +49,9 @@ The package manager of this monorepo is [yarn](https://yarnpkg.com/) and the app
 
 ### Setting up dependencies
 
-The following steps can be used to setup the proxy for local development and to package it to your system architecture.
+The following steps can be used to set up the proxy for local development and package it for your system architecture.
 
-This will setup yarn with the latest stable release.
+This will set up Yarn with the latest stable release.
 ```bash
 corepack enable
 corepack prepare yarn@3.5.0 --activate
@@ -87,5 +91,5 @@ This monorepo has multiple locally maintained packages in the root [package.json
 |---|---|---|
 | `core` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/core) | The `core` package contains a set of core features shared among other packages of this monorepo. |  
 | `daemon` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/daemon) | A background process that receives tasks to execute against the operating system and monitors the status of the proxy server instance. |  
-| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway protocol, terminating TLS and resolving dApp domains. |
+| `server` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/server) | The proxy server implementation the IC HTTP Gateway Protocol, terminating TLS and resolving dApp domains. |
 | `ui` | [![README](https://img.shields.io/badge/-README-blue?style=flat-square)](https://github.com/dfinity/http-proxy/tree/main/packages/ui) | Electron app responsible for the graphical interface. |

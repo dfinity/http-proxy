@@ -84,16 +84,16 @@ export class CertificateStore {
     return files.map((file) => file.replace(/.json$/, ''));
   }
 
-  public delete(id: string): void {
+  public async delete(id: string): Promise<void> {
     CertificateStore.deleteFromCache(id);
 
     const dtoPath = this.certificateDtoPath(id);
-    if (pathExists(dtoPath)) {
+    if (await pathExists(dtoPath)) {
       rmSync(dtoPath, { force: true });
     }
 
     const certPath = this.certificatePath(id);
-    if (pathExists(certPath)) {
+    if (await pathExists(certPath)) {
       rmSync(certPath, { force: true });
     }
   }

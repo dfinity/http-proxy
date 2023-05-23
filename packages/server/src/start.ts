@@ -10,6 +10,7 @@ import {
 import { environment } from '~src/commons';
 import { ProxyServers } from './servers';
 
+// clean exit here?
 process.on('uncaughtException', (err) => {
   logger.error(`Uncaught Exception: ${String(err)}`);
   process.exit(1);

@@ -1,5 +1,7 @@
 import { PlatformRootCA } from '../typings';
 
+// these are all the same as they are for windows
+
 export interface PlatformProxyInfo {
   host: string;
   port: number;

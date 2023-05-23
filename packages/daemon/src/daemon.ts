@@ -80,16 +80,18 @@ export class Daemon {
     this.registerProxyShutdownListener();
   }
 
-  public async shutdown(): Promise<void> {
+  public async shutdown(signal = 0): Promise<void> {
     logger.info('Shutting down');
 
     await this.server?.shutdown();
 
     logger.info('Exited.');
 
-    process.exit(0);
+    process.exit(signal);
   }
 
+  // poll the main process to see if it has shutdown or died,
+  // if that happens we need to make sure the daemon also shuts down
   private async registerProxyShutdownListener(
     retries = CHECK_PROXY_RUNNING_RETRIES
   ): Promise<void> {
@@ -116,6 +118,7 @@ export class Daemon {
       );
 
       await this.platform?.detach();
+      // wait until logs are written
       setTimeout(() => this.shutdown(), 1000);
     }, CHECK_PROXY_PROCESS_MS);
   }

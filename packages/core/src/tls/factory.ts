@@ -74,6 +74,8 @@ export class CertificateFactory {
   ): Promise<Certificate> {
     const id = `root_${caId}`;
 
+    // Sometimes Windows adds BOM characters to the file's encoding
+    // if this happens, we recreate the certificate with the correct encoding
     return retryClosure<Certificate>(
       async () => {
         const current = await this.store.find(id);
@@ -128,6 +130,7 @@ export class CertificateFactory {
     const hostPrefix = `${this.configuration.storage.hostPrefix}_`;
     const hostnames = this.store
       .getIssuedCertificatesIds()
+      // reduce ??
       .filter((file) => file.startsWith(hostPrefix))
       .map((file) => file.replace(hostPrefix, ''));
 
@@ -143,6 +146,8 @@ export class CertificateFactory {
   ): Promise<Certificate> {
     const id = `${this.configuration.storage.hostPrefix}_${hostname}`;
 
+    // Sometimes Windows adds BOM characters to the file's encoding
+    // if this happens, we recreate the certificate with the correct encoding
     return retryClosure<Certificate>(
       async () => {
         const current = await this.store.find(id);

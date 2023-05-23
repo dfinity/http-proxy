@@ -1,11 +1,7 @@
-import { rmSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
 import net from 'node:net';
 import { logger, pathExists } from '~src/commons';
-import {
-  EventMessage,
-  IPCServerOptions,
-  ResultMessage,
-} from '~src/ipc/typings';
+import { EventMessage, IPCServerOptions, ResultMessage } from './typings';
 
 export class IPCServer {
   private constructor(
@@ -70,8 +66,10 @@ export class IPCServer {
   }
 
   private async handleHangingSocket(): Promise<void> {
-    if (pathExists(this.options.path)) {
-      rmSync(this.options.path, { force: true });
+    const socketPathExists = await pathExists(this.options.path);
+
+    if (socketPathExists) {
+      await rm(this.options.path, { force: true });
     }
   }
 
@@ -108,8 +106,14 @@ export class IPCServer {
   public async shutdown(): Promise<void> {
     logger.info('Shutting down ipc server.');
 
-    return new Promise<void>((ok) => {
-      this.server.close(() => ok());
+    return new Promise<void>((ok, reject) => {
+      this.server.close((err) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return ok();
+      });
     });
   }
 

@@ -4,6 +4,8 @@ import { join, resolve } from 'node:path';
 import { CoreConfiguration, SupportedPlatforms } from './typings';
 
 const platform = os.platform();
+const isMaxOSX = platform === SupportedPlatforms.MacOSX;
+const isWindows = platform === SupportedPlatforms.Windows;
 
 if (!process.env.HOME && !process.env.APPDATA) {
   throw new Error('Missing user data folder');
@@ -11,7 +13,7 @@ if (!process.env.HOME && !process.env.APPDATA) {
 
 const platformDataFolder =
   process.env.APPDATA ||
-  (process.platform === 'darwin'
+  (isMaxOSX
     ? resolve(String(process.env.HOME), 'Library', 'Preferences')
     : resolve(String(process.env.HOME), '.local', 'share'));
 
@@ -20,9 +22,6 @@ const dataPath = resolve(platformDataFolder, 'dfinity', 'ichttpproxy');
 if (!existsSync(dataPath)) {
   mkdirSync(dataPath, { recursive: true });
 }
-
-const isMaxOSX = platform === SupportedPlatforms.MacOSX;
-const isWindows = platform === SupportedPlatforms.Windows;
 
 const coreConfigs: CoreConfiguration = {
   dataPath,

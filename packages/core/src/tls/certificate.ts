@@ -53,7 +53,7 @@ export class Certificate {
     });
   }
 
-  toString(): string {
+  public toString(): string {
     return JSON.stringify({
       id: this.id,
       key: this.key,

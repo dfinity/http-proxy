@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { tmpdir } from 'os';
+import { tmpdir } from 'node:os';
 import { createStream } from 'rotating-file-stream';
 
 const defaultLogFileName = `main`;

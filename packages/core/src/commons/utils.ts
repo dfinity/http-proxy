@@ -1,13 +1,15 @@
 import { exec } from 'child_process';
+import { promisify } from 'node:util';
 import {
-  existsSync,
-  lstatSync,
-  mkdirSync,
-  readFile,
-  readdirSync,
   writeFile,
-} from 'fs';
-import { dirname } from 'path';
+  readFile,
+  access,
+  mkdir,
+  constants,
+  lstat,
+  readdir,
+} from 'node:fs/promises';
+import { dirname } from 'node:path';
 import { SupportedPlatforms } from '~src/main';
 
 export const saveFile = async (
@@ -17,44 +19,40 @@ export const saveFile = async (
 ): Promise<void> => {
   const directory = dirname(path);
   createDir(directory);
-  return new Promise<void>((ok, err) => {
-    writeFile(path, data, { encoding }, (failed) => {
-      if (failed) {
-        return err(failed);
-      }
-
-      ok();
-    });
-  });
+  return await writeFile(path, data, { encoding });
 };
 
 export const getFile = async (
   path: string,
   { encoding }: { encoding: BufferEncoding }
 ): Promise<string | null> => {
-  return new Promise<string | null>((ok, err) => {
-    if (!existsSync(path)) {
-      return ok(null);
-    }
+  const fileExists = await pathExists(path);
+  if (!fileExists) {
+    return null;
+  }
 
-    readFile(path, encoding, (failed, data) => {
-      if (failed) {
-        return err(failed);
-      }
-
-      ok(data);
-    });
-  });
+  return await readFile(path, encoding);
 };
 
-export const pathExists = (path: string): boolean => {
-  return existsSync(path);
+export const pathExists = async (path: string): Promise<boolean> => {
+  try {
+    await access(path, constants.F_OK);
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
-export const createDir = (path: string): void => {
-  const exists = pathExists(path);
+const isDirectory = async (path: string): Promise<boolean> => {
+  const stat = await lstat(path);
+
+  return stat.isDirectory();
+};
+
+export const createDir = async (path: string): Promise<void> => {
+  const exists = await pathExists(path);
   if (!exists) {
-    mkdirSync(path, { recursive: true });
+    await mkdir(path, { recursive: true });
   }
 };
 
@@ -70,16 +68,10 @@ export const wait = (numberMs = 100): Promise<void> => {
   });
 };
 
+const execPromise = promisify(exec);
 export const execAsync = async (command: string): Promise<string> => {
-  return new Promise<string>((ok, err) => {
-    exec(command, { env: process.env }, (error, stdout) => {
-      if (error) {
-        return err(error);
-      }
-
-      ok(stdout);
-    });
-  });
+  const { stdout } = await execPromise(command, { env: process.env });
+  return stdout;
 };
 
 export const assertPresent = <T>(
@@ -99,7 +91,7 @@ export const retryClosure = async <T = unknown>(
   retries = 2
 ): Promise<T> => {
   let result: T;
-  let tries = retries && retries < 0 ? 0 : retries;
+  let tries = Math.max(0, retries ?? 0);
   do {
     try {
       result = await asyncExecFn();
@@ -119,36 +111,36 @@ export const retryClosure = async <T = unknown>(
   throw new Error(`Retry closure failed all options`);
 };
 
-export const getFiles = (
+export const getFiles = async (
   directoryPath: string,
   extensions?: string[]
-): string[] => {
-  const files: string[] = [];
-  const isDirectory =
-    pathExists(directoryPath) && lstatSync(directoryPath).isDirectory();
-  if (!isDirectory) {
+): Promise<string[]> => {
+  const pathExistsAndIsDir =
+    (await pathExists(directoryPath)) && (await isDirectory(directoryPath));
+  if (!pathExistsAndIsDir) {
     return [];
   }
 
-  readdirSync(directoryPath, {
-    withFileTypes: true,
-  }).forEach((file) => {
+  const dirents = await readdir(directoryPath, { withFileTypes: true });
+  const files = dirents.reduce<string[]>((accum, file) => {
     if (!file.isFile()) {
-      return;
+      return accum;
     }
 
     const shouldFilterExtension = extensions && extensions.length > 0;
     if (!shouldFilterExtension) {
-      files.push(file.name);
-      return;
+      accum.push(file.name);
+      return accum;
     }
 
     const parts = file.name.split('.');
     const extension = parts.length > 1 ? parts[parts.length - 1] : '';
     if (extensions.includes(extension)) {
-      files.push(file.name);
+      accum.push(file.name);
     }
-  });
+
+    return accum;
+  }, []);
 
   return files;
 };
