@@ -3,7 +3,7 @@ import { EnvironmentConfiguration } from './typings';
 
 const environment: EnvironmentConfiguration = {
   platform: os.platform(),
-  userAgent: 'ICHttpProxy/0.0.1',
+  userAgent: 'ICHttpProxy/0.0.2-alpha',
   certificate: {
     storage: {
       folder: 'certs',

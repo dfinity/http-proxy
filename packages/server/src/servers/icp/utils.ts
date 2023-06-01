@@ -1,4 +1,5 @@
 import { Actor, ActorSubclass, HttpAgent, concat } from '@dfinity/agent';
+import { logger } from '@dfinity/http-proxy-core';
 import { Principal } from '@dfinity/principal';
 import {
   getMaxVerificationVersion,
@@ -6,7 +7,9 @@ import {
   verifyRequestResponsePair,
 } from '@dfinity/response-verification/nodejs/nodejs.js';
 import { IncomingMessage } from 'http';
+import fetch from 'isomorphic-fetch';
 import { inflate, ungzip } from 'pako';
+import { environment } from '~src/commons';
 import { idlFactory } from '~src/commons/http-interface/canister_http_interface';
 import {
   HttpRequest,
@@ -22,8 +25,6 @@ import {
   HTTPMethods,
   HttpResponse,
 } from './typings';
-import { logger } from '@dfinity/http-proxy-core';
-import { environment } from '~src/commons';
 
 export const maxCertTimeOffsetNs = BigInt.asUintN(64, BigInt(300_000_000_000));
 export const cacheHeaders = [HTTPHeaders.CacheControl.toString()];
@@ -34,13 +35,24 @@ export async function createAgentAndActor(
   fetchRootKey: boolean,
   userAgent: string
 ): Promise<[HttpAgent, ActorSubclass<_SERVICE>]> {
+  // agent-js currently does not allow changing the user agent of the request with the fetchOptions,
+  // with this change the initial user agent will be mantained with the addition of the ic http proxy info
+  const customFetch: typeof fetch = (
+    input: RequestInfo | URL,
+    opts?: RequestInit
+  ): Promise<Response> => {
+    if (opts) {
+      opts.headers = {
+        ...(opts.headers ?? {}),
+        [HTTPHeaders.UserAgent]: userAgent,
+      };
+    }
+
+    return fetch(input, opts);
+  };
   const agent = new HttpAgent({
     host: gatewayUrl.toString(),
-    fetchOptions: {
-      headers: {
-        [HTTPHeaders.UserAgent]: userAgent,
-      },
-    },
+    fetch: customFetch,
   });
   if (fetchRootKey) {
     await agent.fetchRootKey();
@@ -266,11 +278,13 @@ export const fetchFromInternetComputer = async (
     const minAllowedVerificationVersion = getMinVerificationVersion();
     const desiredVerificationVersion = getMaxVerificationVersion();
 
+    const agentUserAgent =
+      request.headers.get(HTTPHeaders.UserAgent) ?? environment.userAgent;
     const [agent, actor] = await createAgentAndActor(
       DEFAULT_GATEWAY,
       canister,
       shouldFetchRootKey,
-      request.headers.get(HTTPHeaders.UserAgent) ?? environment.userAgent
+      agentUserAgent
     );
     const result = await fetchAsset({
       agent,

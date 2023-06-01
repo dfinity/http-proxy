@@ -1,6 +1,6 @@
 {
   "name": "@dfinity/http-proxy-daemon",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "Daemon process to enable trustless access to the Internet Computer.",
   "main": "built/main.js",
   "types": "built/main.d.ts",

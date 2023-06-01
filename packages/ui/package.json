@@ -1,6 +1,6 @@
 {
   "name": "@dfinity/http-proxy-ui",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "description": "Desktop interface to facilitate user interaction with the HTTP Proxy server.",
   "main": "built/main.js",
   "scripts": {
