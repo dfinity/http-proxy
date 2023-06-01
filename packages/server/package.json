@@ -51,8 +51,8 @@
   "dependencies": {
     "@dfinity/agent": "^0.15.6",
     "@dfinity/candid": "^0.15.6",
-    "@dfinity/http-proxy-core": "0.0.1-alpha",
-    "@dfinity/http-proxy-daemon": "0.0.1-alpha",
+    "@dfinity/http-proxy-core": "0.0.2-alpha",
+    "@dfinity/http-proxy-daemon": "0.0.2-alpha",
     "@dfinity/principal": "^0.15.6",
     "@dfinity/response-verification": "^0.2.1",
     "http-proxy": "^1.18.1",
