@@ -23,6 +23,7 @@ import {
   HttpResponse,
 } from './typings';
 import { logger } from '@dfinity/http-proxy-core';
+import { environment } from '~src/commons';
 
 export const maxCertTimeOffsetNs = BigInt.asUintN(64, BigInt(300_000_000_000));
 export const cacheHeaders = [HTTPHeaders.CacheControl.toString()];
@@ -30,9 +31,17 @@ export const cacheHeaders = [HTTPHeaders.CacheControl.toString()];
 export async function createAgentAndActor(
   gatewayUrl: URL,
   canisterId: Principal,
-  fetchRootKey: boolean
+  fetchRootKey: boolean,
+  userAgent: string
 ): Promise<[HttpAgent, ActorSubclass<_SERVICE>]> {
-  const agent = new HttpAgent({ host: gatewayUrl.toString() });
+  const agent = new HttpAgent({
+    host: gatewayUrl.toString(),
+    fetchOptions: {
+      headers: {
+        [HTTPHeaders.UserAgent]: userAgent,
+      },
+    },
+  });
   if (fetchRootKey) {
     await agent.fetchRootKey();
   }
@@ -260,7 +269,8 @@ export const fetchFromInternetComputer = async (
     const [agent, actor] = await createAgentAndActor(
       DEFAULT_GATEWAY,
       canister,
-      shouldFetchRootKey
+      shouldFetchRootKey,
+      request.headers.get(HTTPHeaders.UserAgent) ?? environment.userAgent
     );
     const result = await fetchAsset({
       agent,
