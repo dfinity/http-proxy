@@ -20,8 +20,8 @@ export class WindowsPlatform implements Platform {
       this.configs.ca.commonName
     );
     await this.configureWebProxy(true, {
-      host: this.configs.proxy.host,
-      port: this.configs.proxy.port,
+      host: this.configs.pac.host,
+      port: this.configs.pac.port,
     });
   }
 
@@ -39,8 +39,8 @@ export class WindowsPlatform implements Platform {
       this.configs.ca.commonName
     );
     await this.configureWebProxy(false, {
-      host: this.configs.proxy.host,
-      port: this.configs.proxy.port,
+      host: this.configs.pac.host,
+      port: this.configs.pac.port,
     });
   }
 
@@ -74,8 +74,8 @@ export class WindowsPlatform implements Platform {
     return new Promise<void>(async (ok, err) => {
       try {
         const updateInternetSettingsProxy = enable
-          ? `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name ProxyServer -Value 'http://${host}:${port}'"`
-          : `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name ProxyServer -Value ''"`;
+          ? `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name AutoConfigURL -Value 'http://${host}:${port}'"`
+          : `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name AutoConfigURL -Value ''"`;
 
         const updateInternetSettingsEnabled = enable
           ? `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' ProxyEnable -value 1"`

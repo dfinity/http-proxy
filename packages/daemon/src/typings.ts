@@ -15,6 +15,10 @@ export interface EnableProxyMessage {
   type: MessageType.EnableProxy;
   host: string;
   port: number;
+  pac: {
+    host: string;
+    port: number;
+  };
   certificatePath: string;
   commonName: string;
 }

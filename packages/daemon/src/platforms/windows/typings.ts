@@ -1,4 +1,4 @@
-import { PlatformRootCA } from '../typings';
+import { PlatformPacInfo, PlatformRootCA } from '../typings';
 
 export interface PlatformProxyInfo {
   host: string;
@@ -8,6 +8,7 @@ export interface PlatformProxyInfo {
 export interface PlatformConfigs {
   ca: PlatformRootCA;
   proxy: PlatformProxyInfo;
+  pac: PlatformPacInfo;
 }
 
 export interface SystemWebProxyInfo {
