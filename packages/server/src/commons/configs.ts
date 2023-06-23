@@ -15,6 +15,10 @@ const environment: EnvironmentConfiguration = {
       organizationUnit: 'IC',
     },
   },
+  proxyConfigServer: {
+    host: '127.0.0.1',
+    port: 4049,
+  },
   netServer: {
     host: '127.0.0.1',
     port: 4050,

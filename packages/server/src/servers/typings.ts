@@ -2,10 +2,15 @@ import {
   CertificateConfiguration,
   IpcChannels,
 } from '@dfinity/http-proxy-core';
-import { ICPServerConfiguration, NetServerConfiguration } from '~src/commons';
+import {
+  ICPServerConfiguration,
+  NetServerConfiguration,
+  ProxyConfigServerConfiguration,
+} from '~src/commons';
 
 export interface ProxyServersOptions {
   certificate: CertificateConfiguration;
+  proxyConfigServer: ProxyConfigServerConfiguration;
   netServer: NetServerConfiguration;
   icpServer: ICPServerConfiguration;
   ipcChannels: IpcChannels;

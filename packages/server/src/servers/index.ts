@@ -19,6 +19,7 @@ import {
 } from '~src/servers/typings';
 import { ICPServer } from './icp';
 import { NetProxy } from './net';
+import { ProxyConfigurationServer } from '~src/servers/config';
 
 export * from './typings';
 
@@ -26,6 +27,7 @@ export class ProxyServers {
   private icpServer!: ICPServer;
   private netServer!: NetProxy;
   private ipcServer!: IPCServer;
+  private proxyConfigServer!: ProxyConfigurationServer;
   private isEnabled = false;
   private shuttingDown = false;
   private inflighMessages = new Map<string, Promise<unknown>>();
@@ -46,6 +48,7 @@ export class ProxyServers {
     await this.ipcServer.start();
     await this.icpServer.start();
     await this.netServer.start();
+    await this.proxyConfigServer.start();
 
     if (this.configs?.autoEnable) {
       await this.enableSecureEnvironment();
@@ -101,6 +104,10 @@ export class ProxyServers {
         host: this.configs.netServer.host,
         port: this.configs.netServer.port,
       },
+      pac: {
+        host: this.configs.proxyConfigServer.host,
+        port: this.configs.proxyConfigServer.port,
+      },
     });
 
     if (!enabledProxyResult.processed) {
@@ -118,6 +125,7 @@ export class ProxyServers {
     logger.info('Proxy is shutting down.');
 
     await this.daemon.shutdown();
+    await this.proxyConfigServer.shutdown();
     await this.netServer.shutdown();
     await this.icpServer.shutdown();
     await this.ipcServer.shutdown();
@@ -192,6 +200,15 @@ export class ProxyServers {
   }
 
   private async initServers(): Promise<void> {
+    this.proxyConfigServer = await ProxyConfigurationServer.create({
+      host: this.configs.proxyConfigServer.host,
+      port: this.configs.proxyConfigServer.port,
+      proxyServer: {
+        host: this.configs.netServer.host,
+        port: this.configs.netServer.port,
+      },
+    });
+
     this.ipcServer = await IPCServer.create({
       path: this.configs.ipcChannels.proxy,
       onMessage: async (event: EventMessage): Promise<MessageResponse> => {

@@ -51,6 +51,10 @@ export class DaemonProcess {
       commonName: opts.certificate.commonName,
       host: opts.proxy.host,
       port: opts.proxy.port,
+      pac: {
+        host: opts.pac.host,
+        port: opts.pac.port,
+      },
     };
 
     return this.ipcClient.sendMessage(message);
