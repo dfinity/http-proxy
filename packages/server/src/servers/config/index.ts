@@ -19,7 +19,7 @@ export class ProxyConfigurationServer {
     this.server.on('close', this.onClose.bind(this));
     this.server.on('request', (req, res) => {
       res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Type', 'application/x-ns-proxy-autoconfig');
       // use the proxy for all http and https requests,
       // if the proxy server goes down fallback to a direct connection
       res.end(

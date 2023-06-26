@@ -74,7 +74,7 @@ export class WindowsPlatform implements Platform {
     return new Promise<void>(async (ok, err) => {
       try {
         const updateInternetSettingsProxy = enable
-          ? `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name AutoConfigURL -Value 'http://${host}:${port}'"`
+          ? `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name AutoConfigURL -Value 'http://${host}:${port}/proxy.pac'"`
           : `powershell -command "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings' -name AutoConfigURL -Value ''"`;
 
         const updateInternetSettingsEnabled = enable

@@ -137,7 +137,7 @@ export class MacPlatform implements Platform {
     // toggle web proxy for the active network interface
     if (enable) {
       commands.push(
-        `networksetup -setautoproxyurl "${networkService}" "http://${this.configs.pac.host}:${this.configs.pac.port}"`
+        `networksetup -setautoproxyurl "${networkService}" "http://${this.configs.pac.host}:${this.configs.pac.port}/proxy.pac"`
       );
     }
     commands.push(
