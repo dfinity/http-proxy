@@ -31,6 +31,7 @@ process.on('unhandledRejection', (reason) => {
     logger.info('Preparing system requirements');
     servers = await ProxyServers.create({
       certificate: environment.certificate,
+      proxyConfigServer: environment.proxyConfigServer,
       icpServer: environment.icpServer,
       netServer: environment.netServer,
       ipcChannels: coreConfigs.ipcChannels,

@@ -97,6 +97,12 @@ export class NetProxy {
         const connectionInfo = this.getConnectionInfo(socketData);
         info = connectionInfo;
 
+        // prevent loop connection passthrough to self
+        if (info.host === this.opts.host && info.port === this.opts.port) {
+          this.handleProxySameConnection(socket);
+          return;
+        }
+
         const icRequest = await this.shouldHandleAsICPRequest(connectionInfo);
 
         logger.info(
@@ -136,7 +142,7 @@ export class NetProxy {
         const body =
           'Error: ENOTFOUND - The requested resource could not be found.';
         socket.write(
-          'HTTP/1.1 404 Not Found\r\n\r\n' +
+          'HTTP/1.1 404 Not Found\r\n' +
             'Server: IC HTTP Proxy\r\n' +
             'Content-Type: text/plain\r\n' +
             'Connection: close\r\n' +
@@ -147,6 +153,23 @@ export class NetProxy {
       }
       socket.end();
     });
+  }
+
+  private handleProxySameConnection(socket: net.Socket): void {
+    const body =
+      'The IC HTTP Proxy is running and will proxy your requests to the Internet Computer.';
+
+    socket.write(
+      'HTTP/1.1 200 Ok\r\n' +
+        'Server: IC HTTP Proxy\r\n' +
+        'Content-Type: text/plain\r\n' +
+        'Connection: close\r\n' +
+        `Content-Length: ${Buffer.byteLength(body)}\r\n` +
+        `\r\n` +
+        body
+    );
+
+    socket.end();
   }
 
   private handleInternetComputerConnection(

@@ -7,4 +7,8 @@ export interface EnableProxyOptions {
     host: string;
     port: number;
   };
+  pac: {
+    host: string;
+    port: number;
+  };
 }

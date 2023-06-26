@@ -59,6 +59,7 @@ export class Daemon {
         host: message.host,
         port: message.port,
       },
+      pac: message.pac,
     });
 
     await this.platform.attach();

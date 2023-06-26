@@ -10,10 +10,13 @@ export interface NetServerConfiguration {
   port: number;
 }
 
+export type ProxyConfigServerConfiguration = NetServerConfiguration;
+
 export interface EnvironmentConfiguration {
   userAgent: string;
   platform: string;
   certificate: CertificateConfiguration;
+  proxyConfigServer: ProxyConfigServerConfiguration;
   netServer: NetServerConfiguration;
   icpServer: ICPServerConfiguration;
 }

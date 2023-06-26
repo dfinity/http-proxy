@@ -13,11 +13,13 @@ export class PlatformFactory {
         return new MacPlatform({
           ca: configs.ca,
           proxy: configs.proxy,
+          pac: configs.pac,
         });
       case SupportedPlatforms.Windows:
         return new WindowsPlatform({
           ca: configs.ca,
           proxy: configs.proxy,
+          pac: configs.pac,
         });
       default:
         throw new UnsupportedPlatformError('unknown');

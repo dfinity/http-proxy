@@ -3,7 +3,7 @@ import { EnvironmentConfiguration } from './typings';
 
 const environment: EnvironmentConfiguration = {
   platform: os.platform(),
-  userAgent: 'ICHttpProxy/0.0.2-alpha',
+  userAgent: 'ICHttpProxy/0.0.3-alpha',
   certificate: {
     storage: {
       folder: 'certs',
@@ -14,6 +14,10 @@ const environment: EnvironmentConfiguration = {
       organizationName: 'IC Proxy',
       organizationUnit: 'IC',
     },
+  },
+  proxyConfigServer: {
+    host: '127.0.0.1',
+    port: 4049,
   },
   netServer: {
     host: '127.0.0.1',

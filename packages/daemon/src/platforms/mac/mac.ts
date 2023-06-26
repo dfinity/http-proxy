@@ -2,15 +2,11 @@ import { execAsync, getFile, logger, saveFile } from '@dfinity/http-proxy-core';
 import { exec } from 'child_process';
 import { resolve } from 'path';
 import { Platform } from '../typings';
-import {
-  PlatformConfigs,
-  PlatformProxyInfo,
-  WebProxyConfiguration,
-} from './typings';
+import { PlatformConfigs, PlatformProxyInfo } from './typings';
 import {
   CURL_RC_FILE,
   SHELL_SCRIPT_SEPARATOR,
-  resolveNetworkInfo,
+  getActiveNetworkService,
 } from './utils';
 
 export class MacPlatform implements Platform {
@@ -114,9 +110,8 @@ export class MacPlatform implements Platform {
           encoding: 'utf-8',
         });
 
-        // configure proxy in all network interfaces
-        const networkInfo = await resolveNetworkInfo({ host, port });
-        await this.tooggleNetworkWebProxy(networkInfo, enable);
+        // configure proxy to the active network interface
+        await this.tooggleNetworkWebProxy(enable);
 
         ok();
       } catch (e) {
@@ -126,48 +121,28 @@ export class MacPlatform implements Platform {
     });
   }
 
-  private async tooggleNetworkWebProxy(
-    networkPorts: Map<string, WebProxyConfiguration>,
-    enable: boolean
-  ): Promise<void> {
-    const hasIncorrectStatus = Array.from(networkPorts.values()).some(
-      (proxy) => proxy.http.enabled !== enable || proxy.https.enabled !== enable
-    );
+  private async tooggleNetworkWebProxy(enable: boolean): Promise<void> {
+    const networkService = getActiveNetworkService();
 
-    if (!hasIncorrectStatus) {
-      return;
+    if (!networkService) {
+      throw new Error('no active network service found');
     }
 
+    const status = enable ? 'on' : 'off';
     const commands: string[] = [];
     // enable admin privileges
     commands.push(
       `security authorizationdb write com.apple.trust-settings.admin allow`
     );
-    // set proxy host configuration
-    for (const [port, proxyStatus] of networkPorts.entries()) {
-      if (!proxyStatus.http.enabled) {
-        commands.push(
-          `networksetup -setwebproxy "${port}" ${this.configs.proxy.host} ${this.configs.proxy.port}`
-        );
-      }
-      if (!proxyStatus.https.enabled) {
-        commands.push(
-          `networksetup -setsecurewebproxy "${port}" ${this.configs.proxy.host} ${this.configs.proxy.port}`
-        );
-      }
+    // toggle web proxy for the active network interface
+    if (enable) {
+      commands.push(
+        `networksetup -setautoproxyurl "${networkService}" "http://${this.configs.pac.host}:${this.configs.pac.port}/proxy.pac"`
+      );
     }
-    const status = enable ? 'on' : 'off';
-    // toggle web proxy for all network interfaces
-    for (const [port, proxyStatus] of networkPorts.entries()) {
-      if (proxyStatus.http.enabled !== enable) {
-        commands.push(`networksetup -setwebproxystate "${port}" ${status}`);
-      }
-      if (proxyStatus.https.enabled !== enable) {
-        commands.push(
-          `networksetup -setsecurewebproxystate "${port}" ${status}`
-        );
-      }
-    }
+    commands.push(
+      `networksetup -setautoproxystate "${networkService}" ${status}`
+    );
     // remove admin privileges
     commands.push(
       `security authorizationdb remove com.apple.trust-settings.admin`

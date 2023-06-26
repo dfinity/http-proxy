@@ -13,8 +13,11 @@ export interface PlatformProxyInfo {
   port: number;
 }
 
+export type PlatformPacInfo = PlatformProxyInfo;
+
 export interface PlatformBuildConfigs {
   platform: string;
   ca: PlatformRootCA;
   proxy: PlatformProxyInfo;
+  pac: PlatformPacInfo;
 }
