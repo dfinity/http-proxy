@@ -5,7 +5,7 @@ import {
   getMaxVerificationVersion,
   getMinVerificationVersion,
   verifyRequestResponsePair,
-} from '@dfinity/response-verification/nodejs/nodejs.js';
+} from '@dfinity/response-verification/dist/nodejs/nodejs';
 import { IncomingMessage } from 'http';
 import fetch from 'isomorphic-fetch';
 import { inflate, ungzip } from 'pako';
@@ -87,6 +87,14 @@ export const fetchAsset = async ({
         // See TT-30.
         return;
       }
+
+      if (
+        key.toLowerCase() === 'accept-encoding' &&
+        !value.includes('identity')
+      ) {
+        value = `${value}, identity`;
+      }
+
       requestHeaders.push([key, value]);
     });
 
@@ -345,6 +353,7 @@ export const fetchFromInternetComputer = async (
         headers: assetFetchResult.request.headers,
         method: assetFetchResult.request.method,
         url: assetFetchResult.request.url,
+        body: assetFetchResult.request.body,
       },
       {
         statusCode: assetFetchResult.response.statusCode,
@@ -358,7 +367,7 @@ export const fetchFromInternetComputer = async (
       minAllowedVerificationVersion
     );
 
-    if (assetCertification.passed && assetCertification.response) {
+    if (assetCertification.response) {
       const certifiedResponseHeaders = fromResponseVerificationHeaders(
         assetCertification.response.headers
       );
