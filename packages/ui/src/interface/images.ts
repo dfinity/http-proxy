@@ -6,6 +6,28 @@ export class Images {
 
   public constructor(private readonly isInDarkMode: boolean = false) {}
 
+  get tray(): string {
+    if (process.platform === 'darwin') {
+      return join(Images.path, 'tray-Template.png');
+    }
+
+    const image = this.isInDarkMode ? 'tray-dark.png' : 'tray-light.png';
+
+    return join(Images.path, image);
+  }
+
+  get trayEnabled(): string {
+    if (process.platform === 'darwin') {
+      return join(Images.path, 'tray-enabled-Template.png');
+    }
+
+    const image = this.isInDarkMode
+      ? 'tray-dark-enabled.png'
+      : 'tray-light-enabled.png';
+
+    return join(Images.path, image);
+  }
+
   get logo(): Electron.NativeImage {
     const image = this.isInDarkMode
       ? 'logo-dark@124x124.png'
