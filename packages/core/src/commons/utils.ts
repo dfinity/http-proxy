@@ -152,3 +152,24 @@ export const getFiles = (
 
   return files;
 };
+
+export const getDirectories = (directoryPath: string): string[] => {
+  const directories: string[] = [];
+  const isDirectory =
+    pathExists(directoryPath) && lstatSync(directoryPath).isDirectory();
+  if (!isDirectory) {
+    return [];
+  }
+
+  readdirSync(directoryPath, {
+    withFileTypes: true,
+  }).forEach((entry) => {
+    if (!entry.isDirectory()) {
+      return;
+    }
+
+    directories.push(entry.name);
+  });
+
+  return directories;
+};

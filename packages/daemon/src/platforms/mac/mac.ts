@@ -1,10 +1,19 @@
-import { execAsync, getFile, logger, saveFile } from '@dfinity/http-proxy-core';
+import {
+  createDir,
+  execAsync,
+  getDirectories,
+  getFile,
+  logger,
+  pathExists,
+  saveFile,
+} from '@dfinity/http-proxy-core';
 import { exec } from 'child_process';
 import { resolve } from 'path';
 import { Platform } from '../typings';
 import { PlatformConfigs, PlatformProxyInfo } from './typings';
 import {
   CURL_RC_FILE,
+  FIREFOX_PROFILES_PATH,
   SHELL_SCRIPT_SEPARATOR,
   getActiveNetworkService,
 } from './utils';
@@ -88,6 +97,41 @@ export class MacPlatform implements Platform {
           SHELL_SCRIPT_SEPARATOR +
           'security authorizationdb remove com.apple.trust-settings.admin'
       );
+
+      await this.setupFirefoxPolicies();
+    }
+  }
+
+  private async setupFirefoxPolicies(): Promise<void> {
+    const homePath = String(process.env.HOME);
+    const profilesPath = resolve(homePath, FIREFOX_PROFILES_PATH);
+
+    if (!pathExists(profilesPath)) {
+      // Firefox is not installed.
+      return;
+    }
+
+    const profiles = getDirectories(profilesPath);
+
+    for (const profileFolder of profiles) {
+      const userPreferencesPath = resolve(
+        profilesPath,
+        profileFolder,
+        'user.js'
+      );
+
+      const userPreferences =
+        (await getFile(userPreferencesPath, { encoding: 'utf8' })) ?? '';
+
+      const preferences = userPreferences
+        .split('\n')
+        .filter((line) => !line.includes('security.enterprise_roots.enabled'));
+
+      preferences.push(`user_pref("security.enterprise_roots.enabled", true);`);
+
+      await saveFile(userPreferencesPath, preferences.join('\n'), {
+        encoding: 'utf-8',
+      });
     }
   }
 
