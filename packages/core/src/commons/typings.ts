@@ -1,6 +1,7 @@
 export enum SupportedPlatforms {
   Windows = 'win32',
   MacOSX = 'darwin',
+  Linux = 'linux',
 }
 
 export interface IpcChannels {
@@ -13,6 +14,7 @@ export interface CoreConfiguration {
   platform: string;
   windows: boolean;
   macosx: boolean;
+  linux: boolean;
   ipcChannels: IpcChannels;
   encoding: BufferEncoding;
 }
