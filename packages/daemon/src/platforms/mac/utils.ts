@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 export const SHELL_SCRIPT_SEPARATOR = ' ; ';
 export const CURL_RC_FILE = '.curlrc';
 export const PROXY_GET_SEPARATOR = ':ic-separator:';
+export const FIREFOX_PROFILES_PATH = `Library/Application Support/Firefox/profiles`;
 
 export const getActiveNetworkService = (): string | null => {
   const networkServices = execSync(

@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 
 export const POWERSHELL_ESCAPED_QUOTES = '\\`"';
+export const FIREFOX_PROFILES_PATH = 'Mozilla\\Firefox\\Profiles';
 
 export const escapeString = (argument: string): string => {
   return POWERSHELL_ESCAPED_QUOTES + argument + POWERSHELL_ESCAPED_QUOTES;

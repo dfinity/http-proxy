@@ -46,7 +46,7 @@ export class ProxyUI {
   }
 
   async render(): Promise<void> {
-    this.tray = new Tray(this.images.logo.resize({ width: 18, height: 18 }));
+    this.tray = new Tray(this.images.tray);
     this.taskbar = new ProxyMenu(this.images);
 
     this.taskbar.onClick(ProxyMenuItem.Quit, this.onQuit.bind(this));
@@ -108,9 +108,7 @@ export class ProxyUI {
       ) {
         this.lastStatus = ProxyStatus.Enabled;
 
-        this.tray.setImage(
-          this.images.logoEnabled.resize({ width: 18, height: 18 })
-        );
+        this.tray.setImage(this.images.trayEnabled);
       } else if (
         !isProxyProcessRunning &&
         this.lastStatus !== ProxyStatus.Disabled &&
@@ -118,7 +116,7 @@ export class ProxyUI {
       ) {
         this.lastStatus = ProxyStatus.Disabled;
 
-        this.tray.setImage(this.images.logo.resize({ width: 18, height: 18 }));
+        this.tray.setImage(this.images.tray);
       }
 
       if (shouldBlockActionButtons) {

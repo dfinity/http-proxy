@@ -1,7 +1,15 @@
-import { execAsync, logger } from '@dfinity/http-proxy-core';
+import {
+  execAsync,
+  getDirectories,
+  getFile,
+  logger,
+  pathExists,
+  saveFile,
+} from '@dfinity/http-proxy-core';
+import { resolve } from 'path';
 import { Platform, PlatformProxyInfo } from '../typings';
 import { PlatformConfigs } from './typings';
-import { isTrustedCertificate } from './utils';
+import { FIREFOX_PROFILES_PATH, isTrustedCertificate } from './utils';
 
 export class WindowsPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}
@@ -64,6 +72,45 @@ export class WindowsPlatform implements Platform {
 
     if (trust) {
       await execAsync(`certutil -addstore root "${path}"`);
+
+      await this.setupFirefoxPolicies();
+    }
+  }
+
+  private async setupFirefoxPolicies(): Promise<void> {
+    const appData = String(process.env.APPDATA);
+    const profilesPath = resolve(appData, FIREFOX_PROFILES_PATH);
+
+    if (!pathExists(profilesPath)) {
+      // Firefox is not installed.
+      return;
+    }
+
+    const profiles = getDirectories(profilesPath);
+
+    for (const profileFolder of profiles) {
+      const userPreferencesPath = resolve(
+        profilesPath,
+        profileFolder,
+        'user.js'
+      );
+
+      const userPreferences =
+        (await getFile(userPreferencesPath, { encoding: 'utf-8' })) ?? '';
+
+      const preferences = userPreferences
+        .split('\r\n')
+        .filter((line) => !line.includes('security.enterprise_roots.enabled'));
+
+      preferences.push(`user_pref("security.enterprise_roots.enabled", true);`);
+
+      await saveFile(
+        userPreferencesPath,
+        preferences.filter((line) => line.length > 0).join('\r\n'),
+        {
+          encoding: 'utf-8',
+        }
+      );
     }
   }
 
