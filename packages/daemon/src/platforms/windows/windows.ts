@@ -1,5 +1,4 @@
 import {
-  coreConfigs,
   execAsync,
   getDirectories,
   getFile,
@@ -7,11 +6,10 @@ import {
   pathExists,
   saveFile,
 } from '@dfinity/http-proxy-core';
+import { resolve } from 'path';
 import { Platform, PlatformProxyInfo } from '../typings';
 import { PlatformConfigs } from './typings';
-import { isTrustedCertificate } from './utils';
-import { resolve } from 'path';
-import { FIREFOX_PROFILES_PATH } from '../utils';
+import { FIREFOX_PROFILES_PATH, isTrustedCertificate } from './utils';
 
 export class WindowsPlatform implements Platform {
   constructor(private readonly configs: PlatformConfigs) {}

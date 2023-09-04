@@ -1,5 +1,4 @@
 import {
-  createDir,
   execAsync,
   getDirectories,
   getFile,
