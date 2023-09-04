@@ -129,9 +129,13 @@ export class MacPlatform implements Platform {
 
       preferences.push(`user_pref("security.enterprise_roots.enabled", true);`);
 
-      await saveFile(userPreferencesPath, preferences.join('\n'), {
-        encoding: 'utf-8',
-      });
+      await saveFile(
+        userPreferencesPath,
+        preferences.filter((line) => line.length > 0).join('\n'),
+        {
+          encoding: 'utf-8',
+        }
+      );
     }
   }
 

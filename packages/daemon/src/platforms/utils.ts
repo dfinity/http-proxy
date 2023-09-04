@@ -1,4 +1,5 @@
 export const PAC_FILE_NAME = 'ic-proxy.pac';
+export const FIREFOX_PROFILES_PATH = 'Mozilla\\Firefox\\Profiles';
 
 export const getProxyAutoConfiguration = (
   proxyHost: string,
