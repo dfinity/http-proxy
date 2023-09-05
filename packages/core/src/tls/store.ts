@@ -14,6 +14,7 @@ import { CertificateDTO, CertificateStoreConfiguration } from './typings';
 
 export class CertificateStore {
   private readonly storePath: string;
+  private readonly serialIdPath: string;
   private static cachedLookups = new InMemoryCache({
     stdTTL: 60 * 5, // 5 minutes
     maxKeys: 250,
@@ -23,6 +24,7 @@ export class CertificateStore {
     private readonly configuration: CertificateStoreConfiguration
   ) {
     this.storePath = resolve(coreConfigs.dataPath, this.configuration.folder);
+    this.serialIdPath = resolve(this.storePath, "serial");
   }
 
   private static maybeGetFromCache(id: string): Certificate | undefined {
@@ -43,6 +45,7 @@ export class CertificateStore {
 
   private async init(): Promise<void> {
     createDir(this.storePath);
+    await this.setupSerialDependency();
   }
 
   private certificateDtoPath(id: string): string {
@@ -112,6 +115,29 @@ export class CertificateStore {
 
     CertificateStore.maybeSetInCache(certificate.id, certificate);
   }
+
+  public async setupSerialDependency(): Promise<void> {
+    if (pathExists(this.serialIdPath)) {
+      return;
+    }
+
+    const files = getFiles(this.storePath, ['json', 'cert']);
+    for (const file of files) {
+      rmSync(resolve(this.storePath, file), { force: true });
+    }
+  }
+
+  public async nextSerialId(): Promise<string> {
+    const serial = (await getFile(this.serialIdPath, { encoding: "utf-8" }) ?? "00");
+    const nextSerial = BigInt(serial) + BigInt(1);
+    const nextSerialStr = nextSerial.toString();
+
+    await saveFile(this.serialIdPath, nextSerialStr, {
+      encoding: "utf-8",
+    });
+
+    return nextSerialStr;
+  } 
 
   public static async create(
     configuration: CertificateStoreConfiguration

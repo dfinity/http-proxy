@@ -7,13 +7,17 @@ import {
 import { Platform, PlatformProxyInfo } from '../typings';
 import { PlatformConfigs } from './typings';
 import { resolve } from 'path';
-import { CURL_RC_FILE, FIREFOX_PROFILES_PATH, ROOT_CA_PATH, SNAP_FIREFOX_PROFILES_PATH } from './utils';
-import { execSync } from 'child_process';
+import { BASE_MOZILLA_PATH, BASE_SNAP_MOZZILA_PATH, CURL_RC_FILE, FIREFOX_PROFILES_FOLDER, MOZILLA_CERTIFICATES_FOLDER, ROOT_CA_PATH, findP11KitTrustPath } from './utils';
 
 export class LinuxPlatform implements Platform {
-  constructor(private readonly configs: PlatformConfigs) {}
+  constructor(
+    private readonly configs: PlatformConfigs,
+    private readonly username = String(process.env.LOGNAME ?? "root")
+  ) {}
 
   public async attach(): Promise<void> {
+    await this.setupDependencies();
+
     logger.info(
       `attaching proxy to system with: ` +
         `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
@@ -33,6 +37,8 @@ export class LinuxPlatform implements Platform {
   }
 
   public async detach(): Promise<void> {
+    await this.setupDependencies();
+
     logger.info(
       `detaching proxy from system with: ` +
         `host(${this.configs.proxy.host}:${this.configs.proxy.port}), ` +
@@ -80,27 +86,18 @@ export class LinuxPlatform implements Platform {
   }
 
   private async tooggleNetworkWebProxy(enable: boolean): Promise<void> {
-    const username = String(process.env.LOGNAME ?? "root");
-    const commandToGetDbus = `pgrep -u ${username} gnome-session | head -n 1`;
-    const PID = execSync(commandToGetDbus).toString().trim();
-    const dbusEnv = execSync(`grep -z DBUS_SESSION_BUS_ADDRESS /proc/${PID}/environ | cut -d= -f2-`).toString().trim();
-    const setDbusEnv = `export DBUS_SESSION_BUS_ADDRESS=${dbusEnv}`;
-
     const pacUrl = `http://${this.configs.pac.host}:${this.configs.pac.port}/proxy.pac`;
 
     if (enable) {
       await execAsync([
-        `${setDbusEnv}`,
-        `gsettings set org.gnome.system.proxy mode 'auto'`,
-        `gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'`
+        `su -l ${this.username} -c "gsettings set org.gnome.system.proxy mode 'auto' && gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'"`
       ].join(" && "));
     
       return;
     }
 
     await execAsync([
-      `${setDbusEnv}`,
-      `gsettings set org.gnome.system.proxy mode 'none'`
+      `su -l ${this.username} -c "gsettings set org.gnome.system.proxy mode 'none'"`
     ].join(" && "));
   }
 
@@ -111,24 +108,68 @@ export class LinuxPlatform implements Platform {
     if (trust) {
       await execAsync(`sudo cp "${path}" "${ROOT_CA_PATH}" && sudo update-ca-certificates`);
 
-      await this.setupFirefoxPolicies();
+      await this.firefoxTrustCertificate({ path });
       return;
     }
 
     await execAsync(`sudo rm -rf "${ROOT_CA_PATH}" && sudo update-ca-certificates`);
   }
 
-  private async setupFirefoxPolicies(): Promise<void> {
-    await this.setupFirefoxPoliciesForPath(FIREFOX_PROFILES_PATH);
-    await this.setupFirefoxPoliciesForPath(SNAP_FIREFOX_PROFILES_PATH);
+  private async firefoxTrustCertificate(cert: { path: string }): Promise<void> {
+    await this.setupFirefoxCertificateConfigurations(BASE_MOZILLA_PATH, cert);
+    await this.setupFirefoxCertificateConfigurations(BASE_SNAP_MOZZILA_PATH, cert);
   }
 
-  private async setupFirefoxPoliciesForPath(firefoxProfilesPath: string): Promise<void> {
+  private async setupFirefoxCertificateConfigurations(basePath: string, cert: { path: string }): Promise<void> {
     const homePath = String(process.env.HOME);
-    const profilesPath = resolve(homePath, firefoxProfilesPath);
+    const mozillaPathPath = resolve(homePath, basePath);
+    const certificatesPath = resolve(mozillaPathPath, MOZILLA_CERTIFICATES_FOLDER);
+    const profilesPath = resolve(mozillaPathPath, FIREFOX_PROFILES_FOLDER);
 
-    if (!pathExists(profilesPath)) {
+    if (!pathExists(mozillaPathPath)) {
       // Firefox is not installed.
+      return;
+    }
+
+    await this.firefoxSetupCertificates(certificatesPath, cert);
+    await this.firefoxSetupProfiles(profilesPath);
+  }
+
+  private async setupDependencies(): Promise<void> {
+    const p11KitPath = await findP11KitTrustPath();
+
+    if (!p11KitPath) {
+      await execAsync("sudo apt install p11-kit p11-kit-modules libnss3-tools -y");
+      const installed = await findP11KitTrustPath();
+
+      if (!installed) {
+        throw new Error("Failed to setup p11-kit dependency");
+      }
+    }
+  }
+
+  private async firefoxSetupCertificates(profilesPath: string, cert: { path: string }) : Promise<void> {
+    if (!pathExists(profilesPath)) {
+      return;
+    }
+
+    const p11KitPath = await findP11KitTrustPath();
+    if (!p11KitPath) {
+      throw new Error("Failed to find certificate store path");
+    }
+
+    // firefox profile directories end with .default|.default-release
+    const profiles = getDirectories(profilesPath).filter((dir) => dir.endsWith('.default') || dir.endsWith('.default-release'));
+
+    for (const profileFolder of profiles) {
+      const profilePath = resolve(profilesPath, profileFolder);
+
+      await execAsync(`modutil -dbdir sql:${profilePath} -add "P11 Kit" -libfile ${p11KitPath}`);
+    }
+  }
+
+  private async firefoxSetupProfiles(profilesPath: string) : Promise<void> {
+    if (!pathExists(profilesPath)) {
       return;
     }
 
@@ -153,11 +194,12 @@ export class LinuxPlatform implements Platform {
 
       await saveFile(
         userPreferencesPath,
-        preferences.filter((line) => line.length > 0).join('\n'),
+        preferences.filter((line) => line.length > 0).join('\n') + '\n',
         {
           encoding: 'utf-8',
         }
       );
+      await execAsync(`sudo chown ${this.username}:${this.username} "${userPreferencesPath}"`);
     }
   }
 }

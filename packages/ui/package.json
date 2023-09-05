@@ -10,7 +10,7 @@
     "copy-assets": "mkdirp ./built/assets && copyfiles -f ./src/assets/* ./built/assets",
     "lint": "eslint --ext ts,js src",
     "lint:fix": "eslint --ext ts,js --fix src",
-    "pkg": "node build.js"
+    "pkg": "USE_SYSTEM_FPM=true node build.js"
   },
   "repository": {
     "type": "git",

@@ -45,6 +45,7 @@ export interface GenerateCertificateOpts {
   issuer: pki.CertificateField[];
   extensions: object[];
   signingKey: pki.PrivateKey;
+  serialId: string;
 }
 
 export interface CertificateStoreConfiguration {

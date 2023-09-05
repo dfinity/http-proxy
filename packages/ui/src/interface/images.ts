@@ -11,6 +11,10 @@ export class Images {
       return join(Images.path, 'tray-Template.png');
     }
 
+    if (process.platform === 'linux') {
+      return join(Images.path, 'tray-dark.png');
+    }
+
     const image = this.isInDarkMode ? 'tray-dark.png' : 'tray-light.png';
 
     return join(Images.path, image);
@@ -19,6 +23,10 @@ export class Images {
   get trayEnabled(): string {
     if (process.platform === 'darwin') {
       return join(Images.path, 'tray-enabled-Template.png');
+    }
+
+    if (process.platform === 'linux') {
+      return join(Images.path, 'tray-dark-enabled.png');
     }
 
     const image = this.isInDarkMode
