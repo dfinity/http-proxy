@@ -32,7 +32,12 @@ const options = {
     icon: './src/assets/logo@256x256.icns',
     category: "System",
     files: [
+      '!bin/http-proxy-daemon-win.exe',
+      '!bin/http-proxy-daemon-win-x64.exe',
+      '!bin/http-proxy-daemon-win-arm64.exe',
       '!bin/http-proxy-daemon-macos',
+      '!bin/http-proxy-daemon-macos-x64',
+      '!bin/http-proxy-daemon-macos-arm64',
       '!.git/*',
       '!tsconfig.json',
       '!nodemon.json',
@@ -49,7 +54,7 @@ const build = async () => {
       config: options,
     })
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));
-  // build for linux intel
+  // build for linux x64
   await builder
     .build({
       targets: Platform.LINUX.createTarget('zip', builder.Arch.x64),
@@ -60,6 +65,13 @@ const build = async () => {
   await builder
     .build({
       targets: Platform.LINUX.createTarget('deb', builder.Arch.arm64),
+      config: options,
+    })
+    .then(async (builtFiles) => createReleaseHashFile(builtFiles));
+  // linux x64 installer (non deterministic)
+  await builder
+    .build({
+      targets: Platform.LINUX.createTarget('deb', builder.Arch.x64),
       config: options,
     })
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));

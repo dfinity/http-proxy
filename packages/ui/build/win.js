@@ -38,6 +38,11 @@ const options = {
     icon: './src/assets/logo@128x128.ico',
     files: [
       '!bin/http-proxy-daemon-macos',
+      '!bin/http-proxy-daemon-macos-x64',
+      '!bin/http-proxy-daemon-macos-arm64',
+      '!bin/http-proxy-daemon-linux',
+      '!bin/http-proxy-daemon-linux-x64',
+      '!bin/http-proxy-daemon-linux-arm64',
       '!.git/*',
       '!tsconfig.json',
       '!nodemon.json',

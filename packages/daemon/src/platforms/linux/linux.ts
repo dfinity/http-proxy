@@ -65,28 +65,19 @@ export class LinuxPlatform implements Platform {
     enable: boolean,
     { host, port }: PlatformProxyInfo
   ): Promise<void> {
-    return new Promise<void>(async (ok, err) => {
-      try {
-        // configure proxy for curl
-        const curlrcPath = resolve(String(process.env.HOME), CURL_RC_FILE);
-        const curlrc = (await getFile(curlrcPath, { encoding: 'utf-8' })) ?? '';
-        const curlrcLines = curlrc
-          .split('\n')
-          .filter((line) => !line.startsWith('proxy='));
-        if (enable) {
-          curlrcLines.push(`proxy=http://${host}:${port}`);
-        }
-        await saveFile(curlrcPath, curlrcLines.join('\n'), {
-          encoding: 'utf-8',
-        });
-
-        await this.tooggleNetworkWebProxy(enable);
-        ok();
-      } catch (e) {
-        // failed to setup web proxy
-        err(e);
-      }
+    const curlrcPath = resolve(String(process.env.HOME), CURL_RC_FILE);
+    const curlrc = (await getFile(curlrcPath, { encoding: 'utf-8' })) ?? '';
+    const curlrcLines = curlrc
+      .split('\n')
+      .filter((line) => !line.startsWith('proxy='));
+    if (enable) {
+      curlrcLines.push(`proxy=http://${host}:${port}`);
+    }
+    await saveFile(curlrcPath, curlrcLines.join('\n'), {
+      encoding: 'utf-8',
     });
+
+    await this.tooggleNetworkWebProxy(enable);
   }
 
   private async tooggleNetworkWebProxy(enable: boolean): Promise<void> {
