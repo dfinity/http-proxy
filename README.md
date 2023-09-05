@@ -1,6 +1,7 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
-[![GitHub license](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/0.0.4-alpha/ic-http-proxy-mac-universal-0.0.4-alpha.dmg)
-[![GitHub license](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.4-alpha/ic-http-proxy-win-x64-0.0.4-alpha.exe)
+[![Install MacOS](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-mac-universal-0.0.5-alpha.dmg)
+[![Install Windows](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-win-x64-0.0.5-alpha.exe)
+[![Install Debian](https://img.shields.io/badge/install-Debian-blue.svg?style=for-the-badge&logo=debian)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-linux-arm64-0.0.5-alpha.deb)
 
 # IC HTTP Proxy
 > This application is currently only a proof of concept implementation and should be used at your own risk.
@@ -36,6 +37,8 @@ An implementation of the [IC HTTP Gateway Protocol](https://internetcomputer.org
 * Windows
 
 * MacOSX
+
+* Debian
 
 Other platforms can also be supported by adding the generated root certificate to the device trusted store and adding the proxy HTTP server to the active network interface configuration.
 

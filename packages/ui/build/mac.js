@@ -67,7 +67,14 @@ const build = async () => {
   await builder
     .build({
       targets: Platform.MAC.createTarget('dmg', builder.Arch.universal),
-      config: options,
+      config: {
+        ...options,
+        mac: {
+          ...options.mac,
+          // since the dmg is not deterministic, we want to sign it with the default identity
+          identity: undefined,
+        }
+      },
     })
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));
 };
