@@ -34,6 +34,11 @@ const options = {
     identity: null,
     files: [
       '!bin/http-proxy-daemon-win.exe',
+      '!bin/http-proxy-daemon-win-x64.exe',
+      '!bin/http-proxy-daemon-win-arm64.exe',
+      '!bin/http-proxy-daemon-linux',
+      '!bin/http-proxy-daemon-linux-x64',
+      '!bin/http-proxy-daemon-linux-arm64',
       '!.git/*',
       '!tsconfig.json',
       '!nodemon.json',

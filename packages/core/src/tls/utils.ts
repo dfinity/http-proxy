@@ -22,11 +22,12 @@ export const generateCertificate = async ({
   issuer,
   extensions,
   signingKey,
+  serialId,
 }: GenerateCertificateOpts): Promise<string> => {
   const certificate = pki.createCertificate();
 
   certificate.publicKey = publicKey;
-  certificate.serialNumber = '01';
+  certificate.serialNumber = serialId;
   certificate.validity.notBefore = createValidityDate();
   certificate.validity.notAfter = createValidityDate(365);
 

@@ -23,8 +23,11 @@
   },
   "pkg": {
     "targets": [
+      "node18-macos-arm64",
       "node18-macos-x64",
-      "node18-win-x64"
+      "node18-win-x64",
+      "node18-linux-arm64",
+      "node18-linux-x64"
     ],
     "compress": "GZip",
     "outputPath": "bin"

@@ -1,18 +1,15 @@
 'use strict';
 
+const { execSync } = require('child_process');
 const builder = require('electron-builder');
 const { createReleaseHashFile } = require('./utils');
-const { execSync, exec } = require('child_process');
-const { resolve } = require('path');
 const Platform = builder.Platform;
 
-// Let's get that intellisense working
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
  */
 const options = {
-  // "store” | “normal” | "maximum". - For testing builds, use 'store' to reduce build time significantly.
   compression: 'normal',
   removePackageScripts: true,
   appId: 'com.dfinity.ichttpproxy',
@@ -26,23 +23,21 @@ const options = {
   directories: {
     output: 'pkg',
   },
-  afterSign: async (context) => {
+  afterPack: (context) => {
     execSync(
-      `& "${resolve(__dirname, 'win.ps1')}" "${context.appOutDir}"`, {
-        env: process.env,
-        shell: 'powershell.exe'
-      }
+      `find "${context.appOutDir}" -exec touch -mht 202201010000.00 {} +`
     );
   },
-  win: {
-    icon: './src/assets/logo@128x128.ico',
+  linux: {
+    icon: './src/assets/logo@256x256.icns',
+    category: "System",
     files: [
+      '!bin/http-proxy-daemon-win.exe',
+      '!bin/http-proxy-daemon-win-x64.exe',
+      '!bin/http-proxy-daemon-win-arm64.exe',
       '!bin/http-proxy-daemon-macos',
       '!bin/http-proxy-daemon-macos-x64',
       '!bin/http-proxy-daemon-macos-arm64',
-      '!bin/http-proxy-daemon-linux',
-      '!bin/http-proxy-daemon-linux-x64',
-      '!bin/http-proxy-daemon-linux-arm64',
       '!.git/*',
       '!tsconfig.json',
       '!nodemon.json',
@@ -52,17 +47,31 @@ const options = {
 };
 
 const build = async () => {
-  // windows zip
+  // build for linux arm
   await builder
     .build({
-      targets: Platform.WINDOWS.createTarget('zip', builder.Arch.x64),
+      targets: Platform.LINUX.createTarget('zip', builder.Arch.arm64),
       config: options,
     })
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));
-  // windows installer (non deterministic)
+  // build for linux x64
   await builder
     .build({
-      targets: Platform.WINDOWS.createTarget('nsis', builder.Arch.x64),
+      targets: Platform.LINUX.createTarget('zip', builder.Arch.x64),
+      config: options,
+    })
+    .then(async (builtFiles) => createReleaseHashFile(builtFiles));
+  // linux arm installer (non deterministic)
+  await builder
+    .build({
+      targets: Platform.LINUX.createTarget('deb', builder.Arch.arm64),
+      config: options,
+    })
+    .then(async (builtFiles) => createReleaseHashFile(builtFiles));
+  // linux x64 installer (non deterministic)
+  await builder
+    .build({
+      targets: Platform.LINUX.createTarget('deb', builder.Arch.x64),
       config: options,
     })
     .then(async (builtFiles) => createReleaseHashFile(builtFiles));

@@ -130,7 +130,7 @@ export class MacPlatform implements Platform {
 
       await saveFile(
         userPreferencesPath,
-        preferences.filter((line) => line.length > 0).join('\n'),
+        preferences.filter((line) => line.length > 0).join('\n') + '\n',
         {
           encoding: 'utf-8',
         }

@@ -23,12 +23,14 @@ if (!existsSync(dataPath)) {
 
 const isMaxOSX = platform === SupportedPlatforms.MacOSX;
 const isWindows = platform === SupportedPlatforms.Windows;
+const isLinux = platform === SupportedPlatforms.Linux;
 
 const coreConfigs: CoreConfiguration = {
   dataPath,
   platform,
   macosx: isMaxOSX,
   windows: isWindows,
+  linux: isLinux,
   encoding: isWindows ? 'utf16le' : 'utf8',
   ipcChannels: {
     daemon: isWindows

@@ -86,6 +86,7 @@ export class CertificateFactory {
           publicKey: keyPair.publicKey,
           signingKey: keyPair.privateKey,
           issuer: [...this.issuer],
+          serialId: await this.store.nextSerialId(),
           // same as issuer since this is self signed
           subject: [...this.issuer],
           extensions: [
@@ -157,6 +158,7 @@ export class CertificateFactory {
           publicKey: keyPair.publicKey,
           signingKey: ca.key,
           issuer: caCert.subject.attributes,
+          serialId: await this.store.nextSerialId(),
           subject: [
             { name: 'commonName', value: hostname },
             {

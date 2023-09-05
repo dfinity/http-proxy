@@ -4,19 +4,41 @@ import {
   coreConfigs,
   execAsync,
 } from '@dfinity/http-proxy-core';
+import { spawnSync } from 'child_process';
 
 export const WAIT_UNTIL_ACTIVE_MS = 10000;
 export const WAIT_INTERVAL_CHECK_MS = 250;
+
+export const daemonArch = (systemArch = process.arch): string => {
+  switch (systemArch) {
+    case 'x64':
+      return 'x64';
+    case 'arm64':
+      return 'arm64';
+    default:
+      throw new UnsupportedPlatformError(systemArch);
+  }
+};
 
 export const daemonBinPath = async (platform: string): Promise<string> => {
   switch (platform) {
     case SupportedPlatforms.MacOSX:
       return require
-        .resolve('@dfinity/http-proxy-daemon/bin/http-proxy-daemon-macos')
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-macos-${daemonArch()}`
+        )
         .replace('.asar', '.asar.unpacked');
     case SupportedPlatforms.Windows:
       return require
-        .resolve('@dfinity/http-proxy-daemon/bin/http-proxy-daemon-win.exe')
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-win-${daemonArch()}.exe`
+        )
+        .replace('.asar', '.asar.unpacked');
+    case SupportedPlatforms.Linux:
+      return require
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-linux-${daemonArch()}`
+        )
         .replace('.asar', '.asar.unpacked');
     default:
       throw new UnsupportedPlatformError(platform);
@@ -52,6 +74,26 @@ const spawnDaemonProcessWindows = async (daemonPath: string): Promise<void> => {
   await execAsync(spawnCommand);
 };
 
+const spawnDaemonProcessUbuntu = (daemonPath: string) => {
+  const escapedDaemonPath = daemonPath.replace(/ /g, '\\ ');
+  const command = 'pkexec';
+  const args = [
+    'sh',
+    '-c',
+    `HOME="${process.env.HOME}" LOGNAME="${process.env.LOGNAME}" nohup ${escapedDaemonPath} &>/dev/null &`,
+  ];
+
+  const result = spawnSync(command, args, {
+    stdio: 'ignore',
+    env: process.env,
+  });
+  if (result.status !== 0) {
+    throw new Error(
+      `Spawn error (err: ${result.status}): ${result.error ?? 'unknown'}`
+    );
+  }
+};
+
 export const spawnDaemonProcess = async (platform: string): Promise<void> => {
   const daemonPath = await daemonBinPath(platform);
 
@@ -60,6 +102,8 @@ export const spawnDaemonProcess = async (platform: string): Promise<void> => {
       return await spawnDaemonProcessMacOSX(daemonPath);
     case SupportedPlatforms.Windows:
       return await spawnDaemonProcessWindows(daemonPath);
+    case SupportedPlatforms.Linux:
+      return await spawnDaemonProcessUbuntu(daemonPath);
     default:
       throw new UnsupportedPlatformError(platform);
   }
