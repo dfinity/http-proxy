@@ -86,14 +86,16 @@ export class LinuxPlatform implements Platform {
     const pacUrl = `http://${this.configs.pac.host}:${this.configs.pac.port}/proxy.pac`;
 
     if (pathExists(dconfCachePath)) {
-      await execAsync(`sudo chown -R "${this.username}":"${this.username}" "${dconfCachePath}"`);
+      await execAsync(
+        `sudo chown -R "${this.username}":"${this.username}" "${dconfCachePath}"`
+      );
     }
 
     if (enable) {
       await execAsync(
         [
           `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy mode 'auto'`,
-          `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'`
+          `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'`,
         ].join(' && ')
       );
 
