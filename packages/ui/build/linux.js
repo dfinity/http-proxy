@@ -29,7 +29,7 @@ const options = {
     );
   },
   linux: {
-    icon: './src/assets/logo.png',
+    icon: './src/assets/logo@256x256.icns',
     category: "System",
     files: [
       '!bin/http-proxy-daemon-macos',
