@@ -102,7 +102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dfinity/http-proxy-core@0.0.5-alpha, @dfinity/http-proxy-core@workspace:packages/core":
+"@dfinity/http-proxy-core@0.0.6-alpha, @dfinity/http-proxy-core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@dfinity/http-proxy-core@workspace:packages/core"
   dependencies:
@@ -127,11 +127,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dfinity/http-proxy-daemon@0.0.5-alpha, @dfinity/http-proxy-daemon@workspace:packages/daemon":
+"@dfinity/http-proxy-daemon@0.0.6-alpha, @dfinity/http-proxy-daemon@workspace:packages/daemon":
   version: 0.0.0-use.local
   resolution: "@dfinity/http-proxy-daemon@workspace:packages/daemon"
   dependencies:
-    "@dfinity/http-proxy-core": 0.0.5-alpha
+    "@dfinity/http-proxy-core": 0.0.6-alpha
     "@types/node": ^18.14.0
     "@types/node-forge": ^1.3.1
     "@types/pako": ^2.0.0
@@ -155,14 +155,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dfinity/http-proxy-server@0.0.5-alpha, @dfinity/http-proxy-server@workspace:packages/server":
+"@dfinity/http-proxy-server@0.0.6-alpha, @dfinity/http-proxy-server@workspace:packages/server":
   version: 0.0.0-use.local
   resolution: "@dfinity/http-proxy-server@workspace:packages/server"
   dependencies:
     "@dfinity/agent": ^0.19.0
     "@dfinity/candid": ^0.19.0
-    "@dfinity/http-proxy-core": 0.0.5-alpha
-    "@dfinity/http-proxy-daemon": 0.0.5-alpha
+    "@dfinity/http-proxy-core": 0.0.6-alpha
+    "@dfinity/http-proxy-daemon": 0.0.6-alpha
     "@dfinity/principal": ^0.19.0
     "@dfinity/response-verification": ^1.0.2
     "@types/isomorphic-fetch": ^0.0.36
@@ -191,8 +191,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dfinity/http-proxy-ui@workspace:packages/ui"
   dependencies:
-    "@dfinity/http-proxy-core": 0.0.5-alpha
-    "@dfinity/http-proxy-server": 0.0.5-alpha
+    "@dfinity/http-proxy-core": 0.0.6-alpha
+    "@dfinity/http-proxy-server": 0.0.6-alpha
     "@types/node": ^18.14.0
     "@typescript-eslint/eslint-plugin": ^5.54.1
     "@typescript-eslint/parser": ^5.54.1
