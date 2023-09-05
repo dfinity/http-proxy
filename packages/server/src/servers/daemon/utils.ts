@@ -9,19 +9,36 @@ import { spawnSync } from 'child_process';
 export const WAIT_UNTIL_ACTIVE_MS = 10000;
 export const WAIT_INTERVAL_CHECK_MS = 250;
 
+export const daemonArch = (systemArch = process.arch): string => {
+  switch (systemArch) {
+    case 'x64':
+      return 'x64';
+    case 'arm64':
+      return 'arm64';
+    default:
+      throw new UnsupportedPlatformError(systemArch);
+  }
+};
+
 export const daemonBinPath = async (platform: string): Promise<string> => {
   switch (platform) {
     case SupportedPlatforms.MacOSX:
       return require
-        .resolve('@dfinity/http-proxy-daemon/bin/http-proxy-daemon-macos-x64')
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-macos-${daemonArch()}`
+        )
         .replace('.asar', '.asar.unpacked');
     case SupportedPlatforms.Windows:
       return require
-        .resolve('@dfinity/http-proxy-daemon/bin/http-proxy-daemon-win-x64.exe')
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-win-${daemonArch()}.exe`
+        )
         .replace('.asar', '.asar.unpacked');
     case SupportedPlatforms.Linux:
       return require
-        .resolve('@dfinity/http-proxy-daemon/bin/http-proxy-daemon-linux-arm64')
+        .resolve(
+          `@dfinity/http-proxy-daemon/bin/http-proxy-daemon-linux-${daemonArch()}`
+        )
         .replace('.asar', '.asar.unpacked');
     default:
       throw new UnsupportedPlatformError(platform);
