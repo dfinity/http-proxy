@@ -1,6 +1,6 @@
 {
   "name": "@dfinity/http-proxy-server",
-  "version": "0.0.4-alpha",
+  "version": "0.0.5-alpha",
   "description": "Gateway server to enable trustless access to the Internet Computer.",
   "main": "built/main.js",
   "types": "built/main.d.ts",
@@ -51,8 +51,8 @@
   "dependencies": {
     "@dfinity/agent": "^0.19.0",
     "@dfinity/candid": "^0.19.0",
-    "@dfinity/http-proxy-core": "0.0.4-alpha",
-    "@dfinity/http-proxy-daemon": "0.0.4-alpha",
+    "@dfinity/http-proxy-core": "0.0.5-alpha",
+    "@dfinity/http-proxy-daemon": "0.0.5-alpha",
     "@dfinity/principal": "^0.19.0",
     "@dfinity/response-verification": "^1.0.2",
     "http-proxy": "^1.18.1",
