@@ -60,11 +60,20 @@ const spawnDaemonProcessWindows = async (daemonPath: string): Promise<void> => {
 const spawnDaemonProcessUbuntu = (daemonPath: string) => {
   const escapedDaemonPath = daemonPath.replace(/ /g, '\\ ');
   const command = 'pkexec';
-  const args = ['sh', '-c', `HOME="${process.env.HOME}" LOGNAME="${process.env.LOGNAME}" nohup ${escapedDaemonPath} &>/dev/null &`];
-  
-  const result = spawnSync(command, args, { stdio: 'ignore', env: process.env });
+  const args = [
+    'sh',
+    '-c',
+    `HOME="${process.env.HOME}" LOGNAME="${process.env.LOGNAME}" nohup ${escapedDaemonPath} &>/dev/null &`,
+  ];
+
+  const result = spawnSync(command, args, {
+    stdio: 'ignore',
+    env: process.env,
+  });
   if (result.status !== 0) {
-    throw new Error(`Spawn error (err: ${result.status}): ${result.error ?? 'unknown'}`);
+    throw new Error(
+      `Spawn error (err: ${result.status}): ${result.error ?? 'unknown'}`
+    );
   }
 };
 

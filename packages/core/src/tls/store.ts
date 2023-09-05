@@ -24,7 +24,7 @@ export class CertificateStore {
     private readonly configuration: CertificateStoreConfiguration
   ) {
     this.storePath = resolve(coreConfigs.dataPath, this.configuration.folder);
-    this.serialIdPath = resolve(this.storePath, "serial");
+    this.serialIdPath = resolve(this.storePath, 'serial');
   }
 
   private static maybeGetFromCache(id: string): Certificate | undefined {
@@ -128,16 +128,17 @@ export class CertificateStore {
   }
 
   public async nextSerialId(): Promise<string> {
-    const serial = (await getFile(this.serialIdPath, { encoding: "utf-8" }) ?? "00");
+    const serial =
+      (await getFile(this.serialIdPath, { encoding: 'utf-8' })) ?? '00';
     const nextSerial = BigInt(serial) + BigInt(1);
     const nextSerialStr = nextSerial.toString();
 
     await saveFile(this.serialIdPath, nextSerialStr, {
-      encoding: "utf-8",
+      encoding: 'utf-8',
     });
 
     return nextSerialStr;
-  } 
+  }
 
   public static async create(
     configuration: CertificateStoreConfiguration
