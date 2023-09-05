@@ -16,6 +16,7 @@ import {
   FIREFOX_PROFILES_FOLDER,
   MOZILLA_CERTIFICATES_FOLDER,
   ROOT_CA_PATH,
+  findDbusLaunchPath,
   findP11KitTrustPath,
 } from './utils';
 
@@ -81,12 +82,18 @@ export class LinuxPlatform implements Platform {
   }
 
   private async tooggleNetworkWebProxy(enable: boolean): Promise<void> {
+    const dconfCachePath = `/home/${this.username}/.cache/dconf`;
     const pacUrl = `http://${this.configs.pac.host}:${this.configs.pac.port}/proxy.pac`;
+
+    if (pathExists(dconfCachePath)) {
+      await execAsync(`sudo chown -R "${this.username}":"${this.username}" "${dconfCachePath}"`);
+    }
 
     if (enable) {
       await execAsync(
         [
-          `su -l ${this.username} -c "gsettings set org.gnome.system.proxy mode 'auto' && gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'"`,
+          `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy mode 'auto'`,
+          `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy autoconfig-url '${pacUrl}'`
         ].join(' && ')
       );
 
@@ -95,7 +102,7 @@ export class LinuxPlatform implements Platform {
 
     await execAsync(
       [
-        `su -l ${this.username} -c "gsettings set org.gnome.system.proxy mode 'none'"`,
+        `sudo -u "${this.username}" dbus-launch gsettings set org.gnome.system.proxy mode 'none'`,
       ].join(' && ')
     );
   }
@@ -151,6 +158,17 @@ export class LinuxPlatform implements Platform {
 
       if (!installed) {
         throw new Error('Failed to setup p11-kit dependency');
+      }
+    }
+
+    const dbusLaunchPath = await findDbusLaunchPath();
+    if (!dbusLaunchPath) {
+      await execAsync(`sudo apt install dbus-x11 -y`);
+
+      const installed = await findDbusLaunchPath();
+
+      if (!installed) {
+        throw new Error('Failed to setup dbus-x11 dependency');
       }
     }
   }
