@@ -164,7 +164,7 @@ __metadata:
     "@dfinity/http-proxy-core": 0.0.6-alpha
     "@dfinity/http-proxy-daemon": 0.0.6-alpha
     "@dfinity/principal": ^0.19.0
-    "@dfinity/response-verification": ^1.0.2
+    "@dfinity/response-verification": ^1.1.0
     "@types/isomorphic-fetch": ^0.0.36
     "@types/node": ^18.14.0
     "@types/node-forge": ^1.3.1
@@ -236,10 +236,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dfinity/response-verification@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@dfinity/response-verification@npm:1.0.2"
-  checksum: 55a037db53a87ffaf6f1b08645b2b5dcb88f17797697d1bc3e492d4504d52436f856afefbf874bd0e729d193fc12578afb6325c5642e902d1c844a89bb78bd11
+"@dfinity/response-verification@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@dfinity/response-verification@npm:1.1.0"
+  checksum: a125eec8ae28a4878dbaa536b0fb6ed31d9b17fc15727ee04fa052c20393eff7bee811f15d3f1f66dec5634dd93837da8679e8919fe1764653e3e4a37b1141a8
   languageName: node
   linkType: hard
 
