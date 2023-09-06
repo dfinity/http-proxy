@@ -57,7 +57,7 @@ export class ProxyService {
       return isStarted;
     }
 
-    fork(entrypoint, undefined, {
+    fork(entrypoint, [], {
       stdio: 'ignore',
       env: process.env,
       detached: true,

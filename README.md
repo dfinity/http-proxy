@@ -1,7 +1,7 @@
 [![GitHub license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
-[![Install MacOS](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-mac-universal-0.0.5-alpha.dmg)
-[![Install Windows](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-win-x64-0.0.5-alpha.exe)
-[![Install Debian](https://img.shields.io/badge/install-Debian-blue.svg?style=for-the-badge&logo=debian)](https://github.com/dfinity/http-proxy/releases/download/0.0.5-alpha/ic-http-proxy-linux-arm64-0.0.5-alpha.deb)
+[![Install MacOS](https://img.shields.io/badge/install-MacOSX-blue.svg?style=for-the-badge&logo=apple)](https://github.com/dfinity/http-proxy/releases/download/0.0.6-alpha/ic-http-proxy-mac-universal-0.0.6-alpha.dmg)
+[![Install Windows](https://img.shields.io/badge/install-Windows-blue.svg?style=for-the-badge&logo=windows)](https://github.com/dfinity/http-proxy/releases/download/0.0.6-alpha/ic-http-proxy-win-x64-0.0.6-alpha.exe)
+[![Install Debian](https://img.shields.io/badge/install-Debian-blue.svg?style=for-the-badge&logo=debian)](https://github.com/dfinity/http-proxy/releases/download/0.0.6-alpha/ic-http-proxy-linux-arm64-0.0.6-alpha.deb)
 
 # IC HTTP Proxy
 > This application is currently only a proof of concept implementation and should be used at your own risk.

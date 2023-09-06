@@ -13,3 +13,9 @@ export const findP11KitTrustPath = async (): Promise<string | null> => {
 
   return path.length ? path : null;
 };
+
+export const findDbusLaunchPath = async (): Promise<string | null> => {
+  const path = await execAsync('which dbus-launch');
+
+  return path.length ? path : null;
+};
