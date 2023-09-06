@@ -197,7 +197,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.54.1
     "@typescript-eslint/parser": ^5.54.1
     copyfiles: ^2.4.1
-    electron: 23.2.2
+    electron: 23.3.13
     electron-builder: ^23.6.0
     eslint: ^8.36.0
     eslint-config-prettier: ^8.7.0
@@ -1817,16 +1817,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:23.2.2":
-  version: 23.2.2
-  resolution: "electron@npm:23.2.2"
+"electron@npm:23.3.13":
+  version: 23.3.13
+  resolution: "electron@npm:23.3.13"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^16.11.26
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 49dc4ec9c456a74b379ce164ce3a3a9d2a1b5463953796f7b0c3a1c29e17d0c680b595c22423bd7366cf0bf8e58db70bfb4ea0bbdba2d7229f7b48cfc4c5688a
+  checksum: ada215540c2482471aa30293fe415da104e090a28d1fde6e720584bc28a6855a864d7cb977c60d560d0dc26d93c9f52febe33501b764bac21cf4725a299fa886
   languageName: node
   linkType: hard
 
@@ -4688,11 +4688,11 @@ __metadata:
 
 "typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
   version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=23ec76"
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=289587"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: ab417a2f398380c90a6cf5a5f74badd17866adf57f1165617d6a551f059c3ba0a3e4da0d147b3ac5681db9ac76a303c5876394b13b3de75fdd5b1eaa06181c9d
+  checksum: 1f8f3b6aaea19f0f67cba79057674ba580438a7db55057eb89cc06950483c5d632115c14077f6663ea76fd09fce3c190e6414bb98582ec80aa5a4eaf345d5b68
   languageName: node
   linkType: hard
 
