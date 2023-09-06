@@ -54,7 +54,7 @@
     "@dfinity/http-proxy-core": "0.0.6-alpha",
     "@dfinity/http-proxy-daemon": "0.0.6-alpha",
     "@dfinity/principal": "^0.19.0",
-    "@dfinity/response-verification": "^1.0.2",
+    "@dfinity/response-verification": "^1.1.0",
     "http-proxy": "^1.18.1",
     "isomorphic-fetch": "^3.0.0",
     "node-cache": "^5.1.2",
